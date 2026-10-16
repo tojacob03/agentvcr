@@ -1,12 +1,16 @@
 # agentvcr
 
+[![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) [![npm](https://img.shields.io/npm/v/agentvcr)](https://www.npmjs.com/package/agentvcr) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 **Replays for AI coding sessions.** One command turns a Claude Code or Codex session into a single HTML file you can watch, scrub and share. Secrets are masked on your machine. No account, no upload, no dependencies.
 
 ```bash
 npx agentvcr
 ```
 
-![A replay: diffs and terminal output play back with a scrubber that marks every prompt, edit and error](docs/replay.png)
+[![A replay playing back: commands type out, diffs and terminal output unfold, and the scrubber marks every prompt, edit and error](docs/demo.gif)](https://tojacob03.github.io/agentvcr/)
+
+**[▶ Watch a live replay](https://tojacob03.github.io/agentvcr/)**: the Claude Code session that built agentvcr, from the first prompt to the published repo. The session was in German, and outputs that showed the author's other, private sessions were removed.
 
 ## Why
 

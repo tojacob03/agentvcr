@@ -2,13 +2,11 @@
 
 ## Before you post
 
-1. Create the public repo `tojacob03/agentvcr` and push.
-   - Description: `Replays for AI coding sessions. Turn a Claude Code or Codex session into one HTML file you can watch and share.`
-   - Topics: `claude-code`, `codex`, `ai-agents`, `developer-tools`, `cli`, `replay`
-   - Social preview image: `docs/replay.png`
-2. `npm publish` so `npx agentvcr` works. Without it the repo loses most of its stars.
-3. Put a live demo on GitHub Pages: the replay of the session that built agentvcr, as `docs/index.html`. Read it fully first; it is your own session.
-4. Post on a Tuesday to Thursday, 15:00 to 17:00 German time (US morning). Spend the first two hours answering every comment.
+1. ✓ Public repo with description and topics, CI green, live demo on GitHub Pages.
+2. Upload `docs/social.png` as the social preview: repo Settings → General → Social preview. GitHub has no API for this.
+3. `npm login`, then `npm publish` in the repo, so `npx agentvcr` works. Without it the repo loses most of its stars.
+4. Watch the demo once from start to finish. It is your own session; outputs that showed your other sessions are already removed.
+5. Post on a Tuesday to Thursday, 15:00 to 17:00 German time (US morning). Spend the first two hours answering every comment.
 
 ## Show HN
 
@@ -21,7 +19,7 @@ agentvcr reads the session files Claude Code and Codex already write (~/.claude/
 
 `npx agentvcr`
 
-The demo is the replay of the session in which agentvcr itself was built: <DEMO-LINK>
+The demo is the replay of the session in which agentvcr itself was built: https://tojacob03.github.io/agentvcr/
 
 Masking is regex based. I'd love to hear about patterns it misses, and which agents to support next.
 
@@ -35,7 +33,7 @@ agentvcr turns a Claude Code or Codex session into a replay you can watch, scrub
 
 [video: 20 seconds of playback at 8×]
 
-2/ Here is the replay of the session that built agentvcr itself, prompts and dead ends included: <DEMO-LINK>
+2/ Here is the replay of the session that built agentvcr itself, prompts and dead ends included: https://tojacob03.github.io/agentvcr/
 
 3/ Every prompt, edit and failed command sits on the timeline. Link to the exact moment you mean: replay.html#42
 
@@ -52,11 +50,11 @@ I kept wanting to show people *how* a feature came together with Claude Code, no
 
 `npx agentvcr` picks a session from your current project and writes one self-contained HTML file: playback with speed control, a timeline marking prompts, edits and errors, real diffs, terminal output, and deep links to moments. Secrets get masked locally.
 
-Demo (the session that built it): <DEMO-LINK>
+Demo (the session that built it): https://tojacob03.github.io/agentvcr/
 Repo: https://github.com/tojacob03/agentvcr
 
 Feedback welcome, especially on what the redaction misses.
 
 ## Record the 20-second video
 
-Open the demo, press `4` for 8× speed and `space`, and record the screen (macOS: Cmd+Shift+5). This clip does more work than any text.
+`docs/demo.gif` is ready for the README and posts. For a sharper video, open the demo, press `4` for 8× speed and `space`, and record the screen (macOS: Cmd+Shift+5). This clip does more work than any text.
