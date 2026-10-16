@@ -51,6 +51,14 @@ test('claude: prompts, tools, diffs and harness noise', () => {
   assert.equal(s.stats.activeMs, 10000);
 });
 
+test('claude: a written file counts its lines, not the trailing newline', () => {
+  const s = parseClaude(jsonl(
+    { type: 'assistant', timestamp: T(0), message: { content: [{ type: 'tool_use', id: 'w', name: 'Write', input: { file_path: '/x/a.sql', content: 'a\nb\n' } }] } },
+    { type: 'user', timestamp: T(1), message: { content: [{ type: 'tool_result', tool_use_id: 'w', content: 'ok' }] } },
+  ));
+  assert.equal(s.events[0].detail.added, 2);
+});
+
 test('claude: subagent turns only with the flag', () => {
   const s = parseClaude(claudeRaw, { sidechains: true });
   assert.ok(s.events.some((e) => e.text === 'subagent chatter'));

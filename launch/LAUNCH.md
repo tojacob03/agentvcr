@@ -5,7 +5,7 @@
 1. ✓ Public repo with description and topics, CI green, live demo on GitHub Pages.
 2. Upload `docs/social.png` as the social preview: repo Settings → General → Social preview. GitHub has no API for this.
 3. `npm login`, then `npm publish` in the repo, so `npx agentvcr` works. Without it the repo loses most of its stars.
-4. Watch the demo once from start to finish. It is your own session; outputs that showed your other sessions are already removed.
+4. Watch the demo once from start to finish. It is a made-up example session built by `examples/demo.mjs` (`node examples/demo.mjs` regenerates it).
 5. Post on a Tuesday to Thursday, 15:00 to 17:00 German time (US morning). Spend the first two hours answering every comment.
 
 ## Show HN
@@ -19,7 +19,7 @@ agentvcr reads the session files Claude Code and Codex already write (~/.claude/
 
 `npx agentvcr`
 
-The demo is the replay of the session in which agentvcr itself was built: https://tojacob03.github.io/agentvcr/
+Here's what a replay looks like (an example session: Claude Code tracking down why a shop fulfills orders twice): https://tojacob03.github.io/agentvcr/
 
 Masking is regex based. I'd love to hear about patterns it misses, and which agents to support next.
 
@@ -33,7 +33,7 @@ agentvcr turns a Claude Code or Codex session into a replay you can watch, scrub
 
 [video: 20 seconds of playback at 8×]
 
-2/ Here is the replay of the session that built agentvcr itself, prompts and dead ends included: https://tojacob03.github.io/agentvcr/
+2/ Here's an example: Claude Code finds out why a shop ships orders twice, writes a failing test, fixes it, and trips over a type error on the way. https://tojacob03.github.io/agentvcr/
 
 3/ Every prompt, edit and failed command sits on the timeline. Link to the exact moment you mean: replay.html#42
 
@@ -50,7 +50,7 @@ I kept wanting to show people *how* a feature came together with Claude Code, no
 
 `npx agentvcr` picks a session from your current project and writes one self-contained HTML file: playback with speed control, a timeline marking prompts, edits and errors, real diffs, terminal output, and deep links to moments. Secrets get masked locally.
 
-Demo (the session that built it): https://tojacob03.github.io/agentvcr/
+Example replay: https://tojacob03.github.io/agentvcr/
 Repo: https://github.com/tojacob03/agentvcr
 
 Feedback welcome, especially on what the redaction misses.

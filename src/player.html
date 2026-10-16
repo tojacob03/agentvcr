@@ -9,199 +9,238 @@
 <meta property="og:description" content="__DESCRIPTION__">
 <meta name="description" content="__DESCRIPTION__">
 <style>
+/* Palette after a VCR front panel: graphite housing, the blue-green glow of the
+   fluorescent display for anything about time and position, red only for REC. */
 :root {
-  --bg: #0d0d0f;
-  --surface: #151518;
-  --surface-2: #1c1c21;
-  --border: #26262d;
-  --text: #e8e8eb;
-  --muted: #8d8d98;
-  --faint: #5c5c66;
-  --rec: #ff4a3d;
-  --add: #3fb950;
-  --add-bg: rgba(63, 185, 80, 0.12);
-  --del: #f26d5f;
-  --del-bg: rgba(242, 109, 95, 0.12);
-  --link: #8ab4ff;
-  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --bg: #15181d;
+  --panel: #1c2027;
+  --panel-2: #232831;
+  --seam: #2c323c;
+  --ink: #e7e9ed;
+  --dim: #8c939e;
+  --faint: #5d6470;
+  --vfd: #63e2c6;
+  --vfd-glow: rgba(99, 226, 198, 0.35);
+  --rec: #ff4b3e;
+  --add: #7cc973;
+  --add-bg: rgba(124, 201, 115, 0.12);
+  --del: #f2796a;
+  --del-bg: rgba(242, 121, 106, 0.12);
+  --link: #8fb8ff;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --gutter: 64px;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg: #fbfaf8;
-    --surface: #ffffff;
-    --surface-2: #f3f2ef;
-    --border: #e4e2dd;
-    --text: #1b1b1f;
-    --muted: #6b6b75;
-    --faint: #a3a3ab;
-    --rec: #e5352a;
-    --add: #1a7f37;
-    --add-bg: rgba(26, 127, 55, 0.1);
-    --del: #c93c2f;
-    --del-bg: rgba(201, 60, 47, 0.09);
-    --link: #2557c7;
+  :root {
+    --bg: #f3f4f6;
+    --panel: #ffffff;
+    --panel-2: #eceef1;
+    --seam: #dadde2;
+    --ink: #1b1e24;
+    --dim: #5f6670;
+    --faint: #a0a6af;
+    --vfd: #0b8a72;
+    --vfd-glow: rgba(11, 138, 114, 0.25);
+    --rec: #df3427;
+    --add: #2f7d32;
+    --add-bg: rgba(47, 125, 50, 0.1);
+    --del: #c2392b;
+    --del-bg: rgba(194, 57, 43, 0.09);
+    --link: #2457c5;
     color-scheme: light;
   }
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 15px/1.6 var(--sans);
-  padding-bottom: 120px;
-}
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.6 var(--sans); padding-bottom: 132px; }
 a { color: var(--link); }
-.wrap { max-width: 860px; margin: 0 auto; padding: 0 20px; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--vfd); outline-offset: 2px; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
 
-/* Header card */
-.top { display: flex; align-items: center; gap: 10px; padding: 22px 0 0; color: var(--muted); font: 12px/1 var(--mono); letter-spacing: 0.04em; }
-.top a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-.top a:hover { color: var(--text); }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rec); box-shadow: 0 0 0 3px color-mix(in srgb, var(--rec) 22%, transparent); }
-body.playing .dot { animation: blink 1.2s steps(2, start) infinite; }
+/* Masthead */
+.mast { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0; }
+.brand { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; font-weight: 650; letter-spacing: -0.01em; }
+.rec { width: 9px; height: 9px; border-radius: 50%; background: var(--rec); }
+body.playing .rec { animation: blink 1.2s steps(2, start) infinite; }
 @keyframes blink { to { visibility: hidden; } }
-.poster { padding: 44px 0 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
-.agent { display: inline-flex; gap: 8px; align-items: center; font: 12px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-.agent b { color: var(--text); font-weight: 600; }
-h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.02em; margin: 14px 0 18px; font-weight: 650; text-wrap: balance; }
-.meta { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
-.meta span { white-space: nowrap; }
-.stats { display: flex; flex-wrap: wrap; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 26px; }
-.stat { background: var(--surface); padding: 14px 16px; flex: 1 1 110px; }
-.stat b { display: block; font: 600 22px/1.1 var(--mono); letter-spacing: -0.02em; }
-.stat span { color: var(--muted); font-size: 12px; }
-.stat .plus { color: var(--add); }
-.stat .minus { color: var(--del); }
-.start { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; }
-.btn { font: 600 14px/1 var(--sans); border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; padding: 11px 18px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-.btn:hover { border-color: var(--faint); }
-.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
-.btn:focus-visible, .ctl:focus-visible, .tool-head:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+.copy { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--seam); background: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; color: var(--dim); font-size: 13px; }
+.copy code { font: 13px/1 var(--mono); color: var(--ink); }
+.copy:hover { border-color: var(--faint); }
 
-/* Feed */
-.ev { position: relative; margin: 0 0 18px; }
+/* Poster: what happened, in a sentence and a diffstat */
+.poster { padding: 36px 0 40px; }
+h1 { font-size: clamp(30px, 5vw, 46px); line-height: 1.08; letter-spacing: -0.025em; font-weight: 650; margin: 0 0 18px; max-width: 18em; text-wrap: balance; }
+.lede { color: var(--dim); margin: 0; max-width: 40em; }
+.lede b { color: var(--ink); font-weight: 600; }
+.lede + .lede { margin-top: 4px; }
+.plus { color: var(--add); }
+.minus { color: var(--del); }
+.stat-files { margin: 28px 0 0; padding: 0; list-style: none; font: 13px/1 var(--mono); border-top: 1px solid var(--seam); }
+.stat-files li { border-bottom: 1px solid var(--seam); }
+.stat-files button { display: grid; grid-template-columns: 1fr auto 72px; align-items: center; gap: 16px; width: 100%; padding: 10px 2px; background: none; border: 0; cursor: pointer; text-align: left; }
+.stat-files button:hover .file { color: var(--link); }
+.file { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
+.nums { color: var(--dim); white-space: nowrap; }
+.blocks { display: flex; gap: 2px; justify-content: flex-end; }
+.blocks i { width: 6px; height: 10px; border-radius: 1px; background: var(--seam); }
+.blocks i.a { background: var(--add); }
+.blocks i.d { background: var(--del); }
+.stat-more { color: var(--dim); font: 13px/1 var(--mono); padding: 10px 2px; }
+.start { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+.btn { border: 1px solid var(--seam); background: var(--panel); border-radius: 8px; padding: 11px 18px; cursor: pointer; font-weight: 600; font-size: 14.5px; display: inline-flex; align-items: center; gap: 9px; }
+.btn:hover { border-color: var(--faint); }
+.btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.btn svg { width: 13px; height: 13px; fill: currentColor; }
+
+/* Feed: one timeline, time in the gutter */
+.feed { position: relative; }
+.feed::before { content: ""; position: absolute; left: calc(var(--gutter) - 17px); top: 6px; bottom: 6px; width: 1px; background: var(--seam); }
+.ev { position: relative; padding-left: var(--gutter); margin: 0 0 14px; }
 .ev[hidden] { display: none; }
-.ev .anchor { position: absolute; left: -44px; top: 2px; width: 36px; text-align: right; font: 11px/1.6 var(--mono); color: var(--faint); text-decoration: none; opacity: 0; }
-.ev:hover .anchor { opacity: 1; }
-.prompt { margin-top: 34px; padding: 14px 16px 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
-.prompt .who { font: 11px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
-.prompt .body { white-space: pre-wrap; word-wrap: break-word; font-size: 16px; }
-.caret::after { content: ""; display: inline-block; width: 8px; height: 1.1em; margin-left: 1px; vertical-align: -2px; background: var(--rec); animation: blink 1s steps(2, start) infinite; }
+.when { position: absolute; left: 0; top: 3px; width: calc(var(--gutter) - 30px); text-align: right; font: 11.5px/1.5 var(--mono); color: var(--faint); font-variant-numeric: tabular-nums; text-decoration: none; }
+.ev:hover .when { color: var(--dim); }
+.node { position: absolute; left: calc(var(--gutter) - 20px); top: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); box-shadow: 0 0 0 3px var(--bg); }
+.ev.prompt { margin-top: 40px; }
+.ev.prompt .node { width: 11px; height: 11px; left: calc(var(--gutter) - 22px); top: 7px; background: var(--bg); border: 2px solid var(--ink); }
+.ev.prompt .when { top: 4px; color: var(--dim); }
+.ev.k-edit .node, .ev.k-write .node { background: var(--add); }
+.ev.err .node { background: var(--del); }
+.ev.text .node { background: var(--dim); }
+.ev.current .node { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--vfd-glow); }
+
+.who { font-size: 13px; color: var(--dim); margin-bottom: 3px; }
+.say { font-size: 17.5px; line-height: 1.5; font-weight: 500; white-space: pre-wrap; word-wrap: break-word; max-width: 40em; }
+.caret::after { content: ""; display: inline-block; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -3px; background: var(--vfd); animation: blink 1s steps(2, start) infinite; }
 .reveal { overflow: hidden; }
-.reveal.partial { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent); }
-.text { word-wrap: break-word; }
+.reveal.partial { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent); }
+.text { max-width: 42em; word-wrap: break-word; }
 .text > :first-child { margin-top: 0; }
 .text > :last-child { margin-bottom: 0; }
 .text p, .text ul, .text ol, .text pre, .text table, .text blockquote { margin: 0 0 12px; }
-.text h3, .text h4, .text h5 { margin: 18px 0 8px; font-size: 15px; }
+.text h3, .text h4, .text h5 { margin: 18px 0 8px; font-size: 15.5px; }
 .text ul, .text ol { padding-left: 22px; }
 .text li { margin: 3px 0; }
-.text code { font: 13px/1.5 var(--mono); background: var(--surface-2); border-radius: 4px; padding: 1px 5px; }
-.text pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+.text code { font: 0.86em/1.5 var(--mono); background: var(--panel-2); border-radius: 4px; padding: 1px 5px; }
+.text pre { background: var(--panel); border: 1px solid var(--seam); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
 .text pre code { background: none; padding: 0; }
-.text blockquote { border-left: 3px solid var(--border); padding-left: 12px; color: var(--muted); }
-.text table { border-collapse: collapse; display: block; overflow-x: auto; font-size: 14px; }
-.text th, .text td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
-.text th { background: var(--surface); }
-.thinking { color: var(--muted); font-style: italic; border-left: 2px solid var(--border); padding-left: 12px; font-size: 14px; white-space: pre-wrap; }
-.note { text-align: center; font: 12px/1 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.text blockquote { border-left: 3px solid var(--seam); padding-left: 12px; color: var(--dim); }
+.text table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+.text th, .text td { border-bottom: 1px solid var(--seam); padding: 7px 18px 7px 0; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.text th { color: var(--dim); font-weight: 500; }
+.thinking { color: var(--dim); font-style: italic; font-size: 14.5px; white-space: pre-wrap; }
+.note { color: var(--faint); font-size: 13px; font-style: italic; }
 
-/* Tools */
-.tool { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); font-size: 13px; }
-.tool-head { display: flex; align-items: center; gap: 10px; padding: 8px 12px; cursor: pointer; user-select: none; min-height: 36px; border-radius: 8px; }
-.tool-head:hover { background: var(--surface-2); }
-.kind { font: 600 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); flex: none; width: 52px; }
-.tool-title { font-family: var(--mono); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
-.status { flex: none; font: 12px/1 var(--mono); color: var(--faint); }
-.status.ok { color: var(--add); }
-.status.err { color: var(--del); }
-.status.run::before { content: ""; display: inline-block; width: 10px; height: 10px; border: 2px solid var(--faint); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; }
+/* Tool calls read as sentences: verb, then what it touched */
+.tool-head { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 3px 0; background: none; border: 0; text-align: left; cursor: pointer; min-height: 30px; }
+.verb { color: var(--dim); flex: none; font-size: 14.5px; }
+.target { font: 13.5px/1.5 var(--mono); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 0 1 auto; }
+.tool-head:hover .target { color: var(--link); }
+.fill-gap { flex: 1; }
+.counts { flex: none; font: 12.5px/1 var(--mono); white-space: nowrap; }
+.counts .minus { margin-left: 6px; }
+.state { flex: none; font-size: 12.5px; color: var(--del); }
+.spin { flex: none; width: 10px; height: 10px; border: 2px solid var(--faint); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; align-self: center; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.counts { flex: none; font: 12px/1 var(--mono); }
-.counts .plus { color: var(--add); }
-.counts .minus { color: var(--del); margin-left: 6px; }
-.tool-body { display: none; border-top: 1px solid var(--border); }
+.chev { flex: none; width: 10px; color: var(--faint); font-size: 10px; transition: transform 0.15s; }
+.tool.open .chev { transform: rotate(90deg); }
+.tool-body { display: none; margin: 6px 0 4px; background: var(--panel); border: 1px solid var(--seam); border-radius: 8px; overflow: hidden; }
 .tool.open .tool-body { display: block; }
-.term { margin: 0; padding: 10px 14px; font: 12.5px/1.55 var(--mono); white-space: pre-wrap; word-break: break-word; overflow-x: auto; }
-.term .cmd { color: var(--text); }
-.term .cmd::before { content: "$ "; color: var(--rec); }
-.term .out { color: var(--muted); }
-.term .cmd-plain { color: var(--text); }
-.tool.error .term .out { color: var(--del); }
-.clip { max-height: 320px; overflow: hidden; position: relative; }
-.clip.cut::after { content: ""; position: absolute; inset: auto 0 0 0; height: 48px; background: linear-gradient(transparent, var(--surface)); pointer-events: none; }
-.more { display: block; width: 100%; border: 0; border-top: 1px solid var(--border); background: none; color: var(--muted); font: 12px/1 var(--mono); padding: 9px; cursor: pointer; border-radius: 0 0 8px 8px; }
+.term { margin: 0; padding: 11px 14px; font: 12.5px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; }
+.term .cmd { color: var(--ink); }
+.term .cmd::before { content: "$ "; color: var(--vfd); }
+.term .out { color: var(--dim); }
+.tool.err .term .out { color: var(--del); }
+.clip { max-height: 300px; overflow: hidden; position: relative; }
+.clip.cut::after { content: ""; position: absolute; inset: auto 0 0 0; height: 44px; background: linear-gradient(transparent, var(--panel)); pointer-events: none; }
+.more { display: block; width: 100%; border: 0; border-top: 1px solid var(--seam); background: none; color: var(--dim); font-size: 13px; padding: 8px; cursor: pointer; }
 .more[hidden] { display: none; }
-.more:hover { color: var(--text); background: var(--surface-2); }
-.diff { margin: 0; font: 12.5px/1.55 var(--mono); overflow-x: auto; padding: 6px 0; }
-.diff div { padding: 0 14px 0 30px; white-space: pre-wrap; word-break: break-word; position: relative; min-height: 1.55em; }
-.diff div::before { position: absolute; left: 12px; color: var(--faint); }
+.more:hover { color: var(--ink); background: var(--panel-2); }
+.diff { font: 12.5px/1.6 var(--mono); padding: 6px 0; overflow-x: auto; }
+.diff div { padding: 0 14px 0 32px; white-space: pre-wrap; word-break: break-word; position: relative; min-height: 1.6em; }
+.diff div::before { position: absolute; left: 13px; color: var(--faint); }
 .diff .a { background: var(--add-bg); }
 .diff .a::before { content: "+"; color: var(--add); }
 .diff .d { background: var(--del-bg); }
 .diff .d::before { content: "−"; color: var(--del); }
-.diff .s { color: var(--faint); font-style: italic; padding-top: 2px; padding-bottom: 2px; }
-.plan { list-style: none; margin: 0; padding: 10px 14px; }
-.plan li { padding: 2px 0 2px 24px; position: relative; }
-.plan li::before { content: "○"; position: absolute; left: 2px; color: var(--faint); }
-.plan li.completed { color: var(--muted); text-decoration: line-through; }
-.plan li.completed::before { content: "✓"; color: var(--add); text-decoration: none; }
-.plan li.in_progress::before { content: "◐"; color: var(--rec); }
+.diff .s { color: var(--faint); font-style: italic; }
+.plan { list-style: none; margin: 0; padding: 10px 14px; font-size: 14.5px; }
+.plan li { padding: 2px 0 2px 26px; position: relative; }
+.plan li::before { content: ""; position: absolute; left: 3px; top: 8px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--faint); }
+.plan li.completed { color: var(--dim); }
+.plan li.completed::before { background: var(--add); border-color: var(--add); }
+.plan li.in_progress::before { border-color: var(--vfd); background: linear-gradient(90deg, var(--vfd) 50%, transparent 50%); }
 
-/* Controls */
-.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--border); }
-.bar .wrap { display: flex; align-items: center; gap: 14px; height: 64px; }
-.ctl { flex: none; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; height: 36px; min-width: 36px; padding: 0 12px; font: 600 12px/1 var(--mono); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+/* End of tape */
+.end { padding-left: var(--gutter); margin: 48px 0 0; }
+.end[hidden] { display: none; }
+.end p { margin: 0 0 14px; color: var(--dim); max-width: 40em; }
+.end b { color: var(--ink); font-weight: 600; }
+.foot { color: var(--faint); font-size: 13px; padding: 56px 0 0; }
+.foot a { color: var(--dim); }
+
+/* Transport: the one loud element. The tape shows the whole session as bars. */
+.deck { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: color-mix(in srgb, var(--panel) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--seam); }
+.deck .wrap { display: flex; align-items: center; gap: 16px; height: 76px; max-width: 1100px; }
+.play { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--ink); color: var(--bg); cursor: pointer; display: grid; place-items: center; }
+.play svg { width: 16px; height: 16px; fill: currentColor; }
+.clock { flex: none; font: 600 15px/1 var(--mono); font-variant-numeric: tabular-nums; color: var(--vfd); text-shadow: 0 0 10px var(--vfd-glow); min-width: 104px; }
+.clock span { color: var(--faint); text-shadow: none; font-weight: 400; }
+.tape { flex: 1; position: relative; height: 46px; cursor: pointer; touch-action: none; min-width: 80px; }
+.bar { position: absolute; top: 50%; transform: translateY(-50%); width: 3px; border-radius: 2px; background: var(--faint); opacity: 0.45; pointer-events: none; }
+.bar.past { opacity: 1; }
+.bar.k-prompt { background: var(--ink); width: 4px; }
+.bar.k-edit { background: var(--add); }
+.bar.k-err { background: var(--del); }
+.bar.k-text { background: var(--dim); }
+.head { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--vfd); box-shadow: 0 0 8px var(--vfd-glow); pointer-events: none; left: 0; }
+.head::before { content: ""; position: absolute; top: -3px; left: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--vfd); }
+.tip { position: absolute; bottom: 54px; transform: translateX(-50%); background: var(--panel-2); border: 1px solid var(--seam); font-size: 12.5px; padding: 6px 9px; border-radius: 6px; white-space: nowrap; max-width: 340px; overflow: hidden; text-overflow: ellipsis; pointer-events: none; display: none; }
+.tip b { font: 600 12px/1 var(--mono); color: var(--vfd); margin-right: 6px; }
+.ctl { flex: none; border: 1px solid var(--seam); background: none; border-radius: 6px; height: 34px; min-width: 44px; padding: 0 10px; font: 600 13px/1 var(--mono); cursor: pointer; }
 .ctl:hover { border-color: var(--faint); }
-.ctl.play { width: 44px; height: 44px; padding: 0; background: var(--text); color: var(--bg); border-color: var(--text); }
-.ctl svg { width: 16px; height: 16px; fill: currentColor; }
-.track { flex: 1; height: 44px; position: relative; cursor: pointer; touch-action: none; min-width: 60px; }
-.rail { position: absolute; left: 0; right: 0; top: 20px; height: 4px; border-radius: 2px; background: var(--border); }
-.fill { position: absolute; left: 0; top: 20px; height: 4px; border-radius: 2px; background: var(--text); width: 0; }
-.tick { position: absolute; top: 15px; width: 2px; height: 14px; border-radius: 1px; background: var(--faint); opacity: 0.55; pointer-events: none; }
-.tick.p { background: var(--text); opacity: 1; top: 11px; height: 22px; }
-.tick.e { background: var(--add); opacity: 0.8; }
-.tick.x { background: var(--del); opacity: 0.9; }
-.head { position: absolute; top: 14px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--rec); box-shadow: 0 0 0 4px color-mix(in srgb, var(--rec) 25%, transparent); left: 0; pointer-events: none; }
-.tip { position: absolute; bottom: 46px; transform: translateX(-50%); background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font: 12px/1.3 var(--mono); padding: 6px 9px; border-radius: 6px; white-space: nowrap; max-width: 320px; overflow: hidden; text-overflow: ellipsis; pointer-events: none; display: none; }
-.pos { flex: none; font: 12px/1 var(--mono); color: var(--muted); min-width: 64px; text-align: right; }
-.follow { position: fixed; left: 50%; bottom: 80px; transform: translateX(-50%); z-index: 11; display: none; }
-.foot { color: var(--faint); font-size: 12px; text-align: center; padding: 40px 0 0; }
-.foot a { color: var(--muted); }
+.follow { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%); z-index: 11; display: none; }
+
 @media (max-width: 640px) {
-  body { font-size: 14.5px; }
+  :root { --gutter: 30px; }
+  body { font-size: 15px; }
   .wrap { padding: 0 16px; }
-  .ev .anchor { display: none; }
-  .bar .wrap { gap: 8px; }
-  .pos, .ctl.end { display: none; }
-  .kind { width: auto; }
+  .when { display: none; }
+  .copy span { display: none; }
+  .deck .wrap { gap: 10px; height: 68px; }
+  .clock { min-width: 0; font-size: 13px; }
+  .clock span, .ctl.all { display: none; }
+  .stat-files button { grid-template-columns: 1fr auto; }
+  .blocks { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .dot, .caret::after, .status.run::before { animation: none !important; }
+  .rec, .caret::after, .spin { animation: none !important; }
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><a href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener"><span class="dot"></span>AGENTVCR</a></div>
-  <header class="poster" id="poster"></header>
-  <main id="feed"></main>
-  <footer class="foot">Recorded with <a href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener">agentvcr</a>. Secrets were redacted before export.</footer>
+  <header class="mast">
+    <a class="brand" href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener"><span class="rec"></span>agentvcr</a>
+    <button class="copy" id="copy" type="button" title="Copy the command"><span>Make one from your session</span><code>npx agentvcr</code></button>
+  </header>
+  <section class="poster" id="poster"></section>
+  <main class="feed" id="feed"></main>
+  <section class="end" id="end" hidden></section>
+  <footer class="foot">Made with <a href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener">agentvcr</a>. Secrets were masked before export.</footer>
 </div>
-<button class="btn follow" id="follow" type="button">↓ Follow</button>
-<div class="bar" role="toolbar" aria-label="Playback">
+<button class="btn follow" id="follow" type="button">Follow along</button>
+<div class="deck" role="toolbar" aria-label="Playback">
   <div class="wrap">
-    <button class="ctl play" id="play" type="button" aria-label="Play (space)"></button>
-    <div class="track" id="track" role="slider" aria-label="Seek" tabindex="0" aria-valuemin="0">
-      <div class="rail"></div><div class="fill" id="fill"></div><div id="ticks"></div><div class="head" id="head"></div><div class="tip" id="tip"></div>
+    <button class="play" id="play" type="button" aria-label="Play (space)"></button>
+    <div class="clock" id="clock" aria-live="off"></div>
+    <div class="tape" id="tape" role="slider" aria-label="Position in the session" tabindex="0" aria-valuemin="0" aria-valuemax="100">
+      <div id="bars"></div><div class="head" id="head"></div><div class="tip" id="tip"></div>
     </div>
-    <span class="pos" id="pos"></span>
     <button class="ctl" id="speed" type="button" aria-label="Playback speed">2×</button>
-    <button class="ctl end" id="end" type="button" aria-label="Show everything (End)">Show all</button>
+    <button class="ctl all" id="all" type="button" aria-label="Skip to the end (End key)">Skip to end</button>
   </div>
 </div>
 <script type="application/json" id="agentvcr-data">__DATA__</script>
@@ -214,6 +253,7 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const ICON_PLAY = '<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>';
   const ICON_PAUSE = '<svg viewBox="0 0 16 16"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>';
+  const N = S.events.length;
 
   // ---------- Markdown (escape first, then a small safe subset) ----------
   function inline(s) {
@@ -277,61 +317,117 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
     return out;
   }
 
-  // ---------- Formatting ----------
-  function dur(ms) {
-    if (!ms || ms < 0) return '0m';
-    const m = Math.round(ms / 60000);
-    if (m < 1) return Math.max(1, Math.round(ms / 1000)) + 's';
-    if (m < 60) return m + 'm';
-    return Math.floor(m / 60) + 'h ' + String(m % 60).padStart(2, '0') + 'm';
+  // ---------- Session clock: active time, gaps over 5 min count as away ----------
+  const activeAt = [];
+  {
+    let acc = 0, prev = null;
+    for (const e of S.events) {
+      const t = Date.parse(e.ts);
+      if (!Number.isNaN(t)) { if (prev !== null) acc += clamp(t - prev, 0, 300000); prev = t; }
+      activeAt.push(acc);
+    }
   }
+  const totalMs = activeAt[N - 1] || 0;
+  const clockText = (ms) => {
+    const s = Math.round(ms / 1000);
+    const hh = Math.floor(s / 3600), mm = Math.floor((s % 3600) / 60), ss = String(s % 60).padStart(2, '0');
+    return hh ? `${hh}:${String(mm).padStart(2, '0')}:${ss}` : `${mm}:${ss}`;
+  };
+  const minutes = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'under a minute' : m === 1 ? '1 minute' : m < 90 ? `${m} minutes` : `${Math.floor(m / 60)} h ${m % 60} min`; };
   const num = (n) => Number(n || 0).toLocaleString('en-US');
+  const plural = (n, one, many) => `${num(n)} ${n === 1 ? one : many}`;
 
   // ---------- Poster ----------
   const st = S.stats || {};
+  const files = new Map();
+  S.events.forEach((e, i) => {
+    if (e.type !== 'tool' || e.error || (e.kind !== 'edit' && e.kind !== 'write')) return;
+    const d = e.detail || {};
+    const path = (d.paths && d.paths[0]) || d.path;
+    if (!path) return;
+    const f = files.get(path) || { add: 0, del: 0, first: i };
+    f.add += d.added || 0;
+    f.del += d.removed || 0;
+    files.set(path, f);
+  });
+  const date = S.startedAt ? new Date(S.startedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+  let who = `A ${esc(S.agent)} session`;
+  if (S.project) who += ` in <b>${esc(S.project)}</b>`;
+  if (S.branch && S.branch !== 'HEAD' && S.branch !== 'main' && S.branch !== 'master') who += ` on ${esc(S.branch)}`;
+  if (date) who += `, ${date}`;
+  if (S.model) who += `, with ${esc(S.model)}`;
+  const work = `${totalMs ? `<b>${minutes(totalMs)}</b> of work, ` : ''}${plural(st.prompts, 'prompt', 'prompts')} and ${plural(st.tools, 'tool call', 'tool calls')}. ` +
+    (st.files ? `${plural(st.files, 'file', 'files')} changed, <span class="plus">+${num(st.added)}</span> <span class="minus">−${num(st.removed)}</span>.` : 'No files changed.');
   const poster = $('poster');
-  const date = S.startedAt ? new Date(S.startedAt) : null;
-  poster.innerHTML =
-    `<div class="agent"><b>${esc(S.agent)}</b>${S.model ? '<span>·</span><span>' + esc(S.model) + '</span>' : ''}</div>` +
-    `<h1>${esc(S.title)}</h1>` +
-    '<div class="meta">' +
-      (date ? `<span>${esc(date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }))}</span>` : '') +
-      (S.project ? `<span>${esc(S.project)}</span>` : '') +
-      (S.branch && S.branch !== 'HEAD' ? `<span>⎇ ${esc(S.branch)}</span>` : '') +
-    '</div>' +
-    '<div class="stats">' +
-      `<div class="stat"><b>${dur(st.activeMs)}</b><span>active time</span></div>` +
-      `<div class="stat"><b>${num(st.prompts)}</b><span>prompts</span></div>` +
-      `<div class="stat"><b>${num(st.tools)}</b><span>tool calls</span></div>` +
-      `<div class="stat"><b>${num(st.files)}</b><span>files changed</span></div>` +
-      `<div class="stat"><b><span class="plus">+${num(st.added)}</span> <span class="minus">−${num(st.removed)}</span></b><span>lines</span></div>` +
-    '</div>' +
-    '<div class="start"><button class="btn primary" id="go" type="button">' + ICON_PLAY.replace('<svg', '<svg width="14" height="14" fill="currentColor"') + ' Play replay</button><button class="btn" id="readall" type="button">Read transcript</button></div>';
+  poster.innerHTML = `<h1>${esc(S.title)}</h1><p class="lede">${who}.</p><p class="lede">${work}</p>`;
+  if (files.size) {
+    const ul = h('ul', 'stat-files');
+    const list = [...files.entries()].sort((a, b) => (b[1].add + b[1].del) - (a[1].add + a[1].del));
+    const max = Math.max(...list.map(([, f]) => f.add + f.del), 1);
+    for (const [path, f] of list.slice(0, 8)) {
+      const li = h('li');
+      const b = h('button');
+      b.type = 'button';
+      b.title = 'Jump to the first change in this file';
+      b.append(h('span', 'file', path));
+      const nums = h('span', 'nums');
+      nums.innerHTML = `<span class="plus">+${f.add}</span> <span class="minus">−${f.del}</span>`;
+      b.append(nums);
+      // git diff --stat style: ten blocks scaled to the largest file
+      const blocks = h('span', 'blocks');
+      const total = Math.max(1, Math.round(((f.add + f.del) / max) * 10));
+      const adds = Math.round(total * (f.add / Math.max(1, f.add + f.del)));
+      for (let k = 0; k < 10; k++) blocks.append(h('i', k < adds ? 'a' : k < total ? 'd' : ''));
+      b.append(blocks);
+      b.addEventListener('click', () => jumpTo(f.first));
+      li.append(b);
+      ul.append(li);
+    }
+    poster.append(ul);
+    if (list.length > 8) poster.append(h('div', 'stat-more', `and ${list.length - 8} more`));
+  }
+  const start = h('div', 'start');
+  const go = h('button', 'btn primary');
+  go.type = 'button';
+  go.innerHTML = ICON_PLAY + 'Play the session';
+  const readAll = h('button', 'btn', 'Read it all');
+  readAll.type = 'button';
+  start.append(go, readAll);
+  poster.append(start);
 
   // ---------- Events ----------
-  const KIND = { shell: 'shell', edit: 'edit', write: 'write', read: 'read', search: 'search', web: 'web', task: 'agent', plan: 'plan', mcp: 'mcp', other: 'tool' };
-  const OPEN = { shell: 1, edit: 1, write: 1, plan: 1, task: 1 };
+  const VERB = {
+    shell: ['Running', 'Ran'], edit: ['Editing', 'Edited'], write: ['Writing', 'Wrote'], read: ['Reading', 'Read'],
+    search: ['Searching for', 'Searched for'], web: ['Searching the web for', 'Searched the web for'],
+    task: ['Delegating', 'Delegated'], plan: ['Updating the plan', 'Updated the plan'], mcp: ['Calling', 'Called'], other: ['Calling', 'Called'],
+  };
+  const OPEN = { shell: 1, edit: 1, write: 1, plan: 1 };
   const feed = $('feed');
+  const lines = (s) => (s ? s.split('\n').length : 0);
+  let lastLabel = -Infinity;
   const items = S.events.map((e, i) => build(e, i));
 
-  function lines(s) { return s ? s.split('\n').length : 0; }
-
   function build(e, i) {
-    const el = h('section', 'ev');
+    const kindClass = e.type === 'tool' ? ' k-' + e.kind + (e.error ? ' err' : '') : '';
+    const el = h('section', 'ev ' + e.type + kindClass);
     el.id = 'e' + i;
     el.hidden = true;
-    const a = h('a', 'anchor', '#' + i);
-    a.href = '#' + i;
-    el.append(a);
+    // Time in the gutter at each prompt and after a minute without a label.
+    if (e.type === 'prompt' || activeAt[i] - lastLabel >= 60000) {
+      const w = h('a', 'when', totalMs ? clockText(activeAt[i]) : '#' + i);
+      w.href = '#' + i;
+      w.title = 'Link to this moment';
+      el.append(w);
+      lastLabel = activeAt[i];
+    }
+    el.append(h('span', 'node'));
     let dur = 0.5;
     let apply = () => {};
 
     if (e.type === 'prompt') {
-      const box = h('div', 'prompt');
-      box.append(h('div', 'who', 'You'));
-      const body = h('div', 'body');
-      box.append(body);
-      el.append(box);
+      el.append(h('div', 'who', 'You'));
+      const body = h('div', 'say');
+      el.append(body);
       dur = clamp(e.text.length / 55, 0.8, 2.6);
       apply = (p) => {
         body.textContent = p >= 1 ? e.text : e.text.slice(0, Math.ceil(e.text.length * p));
@@ -339,34 +435,43 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
       };
     } else if (e.type === 'text' || e.type === 'thinking') {
       const r = h('div', 'reveal');
-      const inner = h('div', e.type === 'text' ? 'text' : 'thinking');
+      const inner = h('div', e.type);
       if (e.type === 'text') inner.innerHTML = markdown(e.text); else inner.textContent = e.text;
       r.append(inner);
       el.append(r);
       dur = e.type === 'text' ? clamp(e.text.length / 160, 0.6, 4.5) : 0.6;
       apply = (p) => reveal(r, p);
     } else if (e.type === 'note') {
-      el.append(h('div', 'note', '— ' + e.text + ' —'));
+      el.append(h('div', 'note', e.text));
       dur = 0.4;
-      apply = () => {};
     } else if (e.type === 'tool') {
-      const t = h('div', 'tool' + (e.error ? ' error' : '') + (OPEN[e.kind] ? ' open' : ''));
-      const head = h('div', 'tool-head');
-      head.tabIndex = 0;
-      head.setAttribute('role', 'button');
-      head.append(h('span', 'kind', KIND[e.kind] || 'tool'));
-      head.append(h('span', 'tool-title', e.title || e.name));
       const d = e.detail || {};
+      const t = h('div', 'tool' + (e.error ? ' err' : '') + (OPEN[e.kind] ? ' open' : ''));
+      const head = h('button', 'tool-head');
+      head.type = 'button';
+      head.setAttribute('aria-expanded', OPEN[e.kind] ? 'true' : 'false');
+      const chev = h('span', 'chev', '▶');
+      const verb = h('span', 'verb');
+      let target = e.title || e.name;
+      if (e.kind === 'plan') {
+        const done = (d.items || []).filter((x) => x.status === 'completed').length;
+        target = `${done} of ${(d.items || []).length} done`;
+      }
+      const tgt = h('span', 'target', target);
+      head.append(chev, verb, tgt, h('span', 'fill-gap'));
       if (e.kind === 'edit' || e.kind === 'write') {
         const c = h('span', 'counts');
         c.innerHTML = `<span class="plus">+${d.added || 0}</span><span class="minus">−${d.removed || 0}</span>`;
         head.append(c);
       }
-      const status = h('span', 'status');
-      head.append(status);
-      const toggle = () => { t.classList.toggle('open'); measureClips(t); };
-      head.addEventListener('click', toggle);
-      head.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); } });
+      const spin = h('span', 'spin');
+      const state = h('span', 'state', 'failed');
+      head.append(spin, state);
+      head.addEventListener('click', () => {
+        t.classList.toggle('open');
+        head.setAttribute('aria-expanded', String(t.classList.contains('open')));
+        measureClips(t);
+      });
       t.append(head);
 
       const body = h('div', 'tool-body');
@@ -390,19 +495,21 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
         r.append(ul);
       } else {
         const pre = h('pre', 'term');
-        const parts = [d.input, d.prompt, d.query && 'query: ' + d.query, d.url, d.pattern && 'pattern: ' + d.pattern].filter(Boolean);
+        const parts = [d.input, d.prompt, d.url, d.path && 'in ' + d.path].filter(Boolean);
         if (parts.length) pre.append(h('span', 'cmd-plain', parts.join('\n')), '\n');
         if (e.output) pre.append(h('span', 'out', e.output));
         r.append(clip(pre, body));
       }
       t.append(body);
       el.append(t);
-      const outLines = lines(e.output) + (d.diff ? d.diff.length : 0);
-      dur = 0.7 + Math.min(outLines * 0.025, 1.4);
+      dur = 0.7 + Math.min((lines(e.output) + (d.diff ? d.diff.length : 0)) * 0.025, 1.4);
       const cmd = d.command || '';
+      const [ing, ed] = VERB[e.kind] || VERB.other;
       apply = (p) => {
-        status.className = 'status ' + (p < 1 ? 'run' : e.error ? 'err' : 'ok');
-        status.textContent = p < 1 ? '' : e.error ? '✕' : '✓';
+        const running = p < 1;
+        verb.textContent = running ? ing : ed;
+        spin.hidden = !running;
+        state.hidden = running || !e.error;
         if (cmdEl) {
           const q = clamp(p / 0.4, 0, 1);
           cmdEl.textContent = q >= 1 ? cmd : cmd.slice(0, Math.ceil(cmd.length * q));
@@ -432,16 +539,11 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
   }
 
   function reveal(r, p) {
-    if (p >= 1) {
-      r.style.height = '';
-      r.classList.remove('partial');
-      return;
-    }
+    if (p >= 1) { r.style.height = ''; r.classList.remove('partial'); return; }
     r.classList.add('partial');
     r.style.height = Math.round(r.scrollHeight * p) + 'px';
   }
 
-  // Mark long tool outputs once they are visible and measurable.
   function measureClips(el) {
     for (const box of el.querySelectorAll('.clip')) {
       if (box._measured || !box.offsetParent) continue;
@@ -452,17 +554,52 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
     }
   }
 
+  // ---------- End card ----------
+  const end = $('end');
+  end.innerHTML = `<p>That's the whole session: ${totalMs ? `<b>${minutes(totalMs)}</b> of work, ` : ''}${plural(st.tools, 'tool call', 'tool calls')}, ${plural(st.files, 'file', 'files')} changed.</p>`;
+  const again = h('button', 'btn', 'Play it again');
+  again.type = 'button';
+  end.append(again);
+
   // ---------- Timeline ----------
   const starts = [];
   let T = 0;
   for (const it of items) { starts.push(T); T += it.dur; }
-  const N = items.length;
   let t = 0;
   let playing = false;
   let speed = 2;
-  let shown = -1;     // events [0, shown) are fully rendered
+  let shown = -1;
   let follow = true;
   let last = 0;
+  let current = null;
+
+  // Tape: one bar per prompt, answer and tool call, height by how much happened.
+  const bars = $('bars');
+  const barEls = [];
+  items.forEach((it, i) => {
+    const e = it.e;
+    if (e.type !== 'prompt' && e.type !== 'tool' && e.type !== 'text') { barEls.push(null); return; }
+    let k = 'other', hgt = 0.3;
+    if (e.type === 'prompt') { k = 'prompt'; hgt = 1; }
+    else if (e.type === 'text') { k = 'text'; hgt = 0.18 + Math.min(e.text.length / 1500, 1) * 0.3; }
+    else {
+      const d = e.detail || {};
+      hgt = 0.26 + Math.min((lines(e.output) + (d.diff ? d.diff.length : 0)) / 30, 1) * 0.56;
+      if (e.kind === 'edit' || e.kind === 'write') k = 'edit';
+      if (e.error) { k = 'err'; hgt = Math.max(hgt, 0.62); }
+    }
+    const b = h('div', 'bar k-' + k);
+    b.style.left = (T ? starts[i] / T : 0) * 100 + '%';
+    b.style.height = Math.round(hgt * 100) + '%';
+    bars.append(b);
+    barEls.push(b);
+  });
+  let pastUpTo = 0;
+  function paintTape(idx) {
+    if (idx > pastUpTo) for (let i = pastUpTo; i < idx; i++) barEls[i] && barEls[i].classList.add('past');
+    else for (let i = idx; i < pastUpTo; i++) barEls[i] && barEls[i].classList.remove('past');
+    pastUpTo = idx;
+  }
 
   function indexAt(time) {
     let lo = 0, hi = N - 1, ans = 0;
@@ -473,10 +610,9 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
   function render() {
     if (!N) return;
     if (t <= 0 && !playing) {
-      // Before the first play only the poster shows.
       for (const it of items) it.el.hidden = true;
       shown = 0;
-      bar(0);
+      chrome(0, 0);
       return;
     }
     const idx = t >= T ? N : indexAt(t);
@@ -486,26 +622,34 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
       items[i].apply(1);
       measureClips(items[i].el);
     }
-    let count = idx;
+    let p = 1;
+    let cur = idx < N ? idx : N - 1;
     if (idx < N) {
       const it = items[idx];
-      const p = clamp((t - starts[idx]) / it.dur, 0, 1);
+      p = clamp((t - starts[idx]) / it.dur, 0, 1);
       // Paused exactly on a boundary: the next event has not started yet.
       it.el.hidden = p <= 0 && !playing;
-      if (!it.el.hidden) { it.apply(p); count++; }
+      if (!it.el.hidden) it.apply(p);
+      else cur = idx - 1;
       for (let i = idx + 1; i < N && !items[i].el.hidden; i++) items[i].el.hidden = true;
     }
     shown = idx;
-    bar(count);
+    if (current) current.classList.remove('current');
+    current = cur >= 0 && t < T ? items[cur].el : null;
+    if (current) current.classList.add('current');
+    const ms = idx >= N ? totalMs : activeAt[idx] + p * ((activeAt[idx + 1] ?? activeAt[idx]) - activeAt[idx]);
+    chrome(ms, idx);
     if (follow && playing) window.scrollTo(0, document.documentElement.scrollHeight);
   }
 
-  function bar(count) {
+  function chrome(ms, idx) {
     const frac = T ? t / T : 0;
-    $('fill').style.width = frac * 100 + '%';
     $('head').style.left = frac * 100 + '%';
-    $('pos').textContent = count + ' / ' + N;
-    $('track').setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+    $('clock').innerHTML = totalMs ? `${clockText(ms)}<span> / ${clockText(totalMs)}</span>` : `${Math.min(idx, N)}<span> / ${N}</span>`;
+    $('tape').setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+    $('tape').setAttribute('aria-valuetext', totalMs ? clockText(ms) + ' of ' + clockText(totalMs) : idx + ' of ' + N);
+    paintTape(Math.min(idx + (t > 0 ? 1 : 0), N));
+    end.hidden = !(N && t >= T);
   }
 
   function frame(now) {
@@ -539,57 +683,54 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
     items[i].el.scrollIntoView({ block: 'center' });
   }
 
-  // Scrubber ticks: prompts tall, edits green, errors red.
-  const ticks = $('ticks');
-  const frag = document.createDocumentFragment();
-  items.forEach((it, i) => {
-    const e = it.e;
-    if (e.type !== 'prompt' && e.type !== 'tool') return;
-    const k = h('div', 'tick' + (e.type === 'prompt' ? ' p' : e.error ? ' x' : e.kind === 'edit' || e.kind === 'write' ? ' e' : ''));
-    k.style.left = (T ? starts[i] / T : 0) * 100 + '%';
-    frag.append(k);
-  });
-  ticks.append(frag);
-
-  const track = $('track');
+  const tape = $('tape');
   const tip = $('tip');
-  const timeAt = (x) => { const r = track.getBoundingClientRect(); return clamp((x - r.left) / r.width, 0, 1) * T; };
+  const timeAt = (x) => { const r = tape.getBoundingClientRect(); return clamp((x - r.left) / r.width, 0, 1) * T; };
   let dragging = false;
-  track.addEventListener('pointerdown', (ev) => {
+  tape.addEventListener('pointerdown', (ev) => {
     dragging = true;
     seek(timeAt(ev.clientX), true);
-    try { track.setPointerCapture(ev.pointerId); } catch { /* synthetic pointers */ }
+    try { tape.setPointerCapture(ev.pointerId); } catch { /* synthetic pointers */ }
   });
-  track.addEventListener('pointermove', (ev) => {
+  tape.addEventListener('pointermove', (ev) => {
     const time = timeAt(ev.clientX);
     if (dragging) seek(time, true);
-    const it = items[indexAt(time)];
-    if (!it) return;
-    const e = it.e;
-    tip.textContent = e.type === 'prompt' ? 'You: ' + e.text.split('\n')[0] : e.type === 'tool' ? (KIND[e.kind] || 'tool') + ' · ' + (e.title || e.name) : e.type === 'text' ? e.text.split('\n')[0] : e.text || e.type;
+    const i = indexAt(time);
+    const e = items[i] && items[i].e;
+    if (!e) return;
+    const label = e.type === 'prompt' ? 'You: ' + e.text.split('\n')[0]
+      : e.type === 'tool' ? (VERB[e.kind] || VERB.other)[1] + ' ' + (e.title || e.name)
+      : e.type === 'text' ? e.text.split('\n')[0] : e.text || e.type;
+    tip.innerHTML = (totalMs ? `<b>${clockText(activeAt[i])}</b>` : '') + esc(label);
     tip.style.display = 'block';
-    const r = track.getBoundingClientRect();
-    tip.style.left = clamp(ev.clientX - r.left, 80, r.width - 80) + 'px';
+    const r = tape.getBoundingClientRect();
+    tip.style.left = clamp(ev.clientX - r.left, 90, r.width - 90) + 'px';
   });
-  track.addEventListener('pointerup', () => {
+  tape.addEventListener('pointerup', () => {
     dragging = false;
-    // Land the reader on the moment they scrubbed to.
     const it = items[Math.min(shown, N - 1)];
     if (it && t < T) it.el.scrollIntoView({ block: 'end' });
   });
-  track.addEventListener('pointerleave', () => { tip.style.display = 'none'; });
-  track.addEventListener('keydown', (ev) => {
+  tape.addEventListener('pointerleave', () => { tip.style.display = 'none'; });
+  tape.addEventListener('keydown', (ev) => {
     if (ev.key === 'ArrowRight') { ev.preventDefault(); jumpTo(Math.min(shown, N - 1) + 1); }
     if (ev.key === 'ArrowLeft') { ev.preventDefault(); jumpTo(Math.min(shown, N) - 2); }
   });
 
   const SPEEDS = [1, 2, 4, 8, 16];
-  $('speed').addEventListener('click', () => { speed = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]; $('speed').textContent = speed + '×'; });
+  const setSpeed = (s) => { speed = s; $('speed').textContent = s + '×'; };
+  $('speed').addEventListener('click', () => setSpeed(SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length]));
   $('play').addEventListener('click', () => setPlaying(!playing));
-  $('end').addEventListener('click', () => { seek(T, true); });
-  $('go').addEventListener('click', () => { seek(0, true); setPlaying(true); });
-  $('readall').addEventListener('click', () => { seek(T, true); items[0] && items[0].el.scrollIntoView({ block: 'start' }); });
+  $('all').addEventListener('click', () => seek(T, true));
+  go.addEventListener('click', () => { seek(0, true); setPlaying(true); });
+  again.addEventListener('click', () => { seek(0, true); window.scrollTo(0, 0); setPlaying(true); });
+  readAll.addEventListener('click', () => { seek(T, true); items[0] && items[0].el.scrollIntoView({ block: 'start' }); });
   $('follow').addEventListener('click', () => { follow = true; $('follow').style.display = 'none'; window.scrollTo(0, document.documentElement.scrollHeight); });
+  $('copy').addEventListener('click', async () => {
+    const code = $('copy').querySelector('code');
+    try { await navigator.clipboard.writeText('npx agentvcr'); code.textContent = 'Copied'; } catch { code.textContent = 'npx agentvcr'; }
+    setTimeout(() => { code.textContent = 'npx agentvcr'; }, 1500);
+  });
 
   // Scrolling up while playing stops auto-follow until the reader asks for it again.
   const unfollow = () => { if (playing && follow) { follow = false; $('follow').style.display = 'inline-flex'; } };
@@ -598,12 +739,12 @@ h1 { font-size: clamp(26px, 4.4vw, 40px); line-height: 1.12; letter-spacing: -0.
 
   document.addEventListener('keydown', (ev) => {
     if (ev.target.closest && ev.target.closest('input, textarea, [contenteditable]')) return;
-    if (ev.key === ' ' && !ev.target.closest('button, [role="button"]')) { ev.preventDefault(); setPlaying(!playing); }
+    if (ev.key === ' ' && !ev.target.closest('button')) { ev.preventDefault(); setPlaying(!playing); }
     else if (ev.key === 'End') { ev.preventDefault(); seek(T, true); }
     else if (ev.key === 'Home') { ev.preventDefault(); seek(0, true); window.scrollTo(0, 0); }
     else if (ev.key === 'ArrowRight' && ev.target === document.body) jumpTo(Math.min(shown, N - 1) + 1);
     else if (ev.key === 'ArrowLeft' && ev.target === document.body) jumpTo(Math.min(shown, N) - 2);
-    else if (/^[1-5]$/.test(ev.key)) { speed = SPEEDS[+ev.key - 1]; $('speed').textContent = speed + '×'; }
+    else if (/^[1-5]$/.test(ev.key)) setSpeed(SPEEDS[+ev.key - 1]);
   });
 
   // #42 links to the moment right after event 42.

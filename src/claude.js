@@ -88,7 +88,8 @@ export function toolEvent(name, input, cwd, ts) {
       return { ...base, kind: 'edit', title: shortPath(path, cwd), detail: editDetail(shortPath(path, cwd), diff) };
     }
     case 'Write':
-      return { ...base, kind: 'write', title: shortPath(path, cwd), detail: editDetail(shortPath(path, cwd), lineDiff('', input.content || '')) };
+      // A trailing newline is the end of the last line, not an extra empty line.
+      return { ...base, kind: 'write', title: shortPath(path, cwd), detail: editDetail(shortPath(path, cwd), lineDiff('', (input.content || '').replace(/\n$/, ''))) };
     case 'Read':
     case 'NotebookRead':
       return { ...base, kind: 'read', title: shortPath(path, cwd), detail: { path: shortPath(path, cwd) } };

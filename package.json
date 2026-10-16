@@ -11,7 +11,8 @@
     "src"
   ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "demo": "node examples/demo.mjs"
   },
   "engines": {
     "node": ">=18"

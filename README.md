@@ -10,7 +10,7 @@ npx agentvcr
 
 [![A replay playing back: commands type out, diffs and terminal output unfold, and the scrubber marks every prompt, edit and error](docs/demo.gif)](https://tojacob03.github.io/agentvcr/)
 
-**[▶ Watch a live replay](https://tojacob03.github.io/agentvcr/)**: the Claude Code session that built agentvcr, from the first prompt to the published repo. The session was in German, and outputs that showed the author's other, private sessions were removed.
+**[▶ Watch the example replay](https://tojacob03.github.io/agentvcr/)**: Claude Code tracks down why a shop fulfills orders twice, reproduces it in a failing test, fixes it, and recovers from a type error on the way. The session is made up for the demo (see [`examples/demo.mjs`](examples/demo.mjs)); the replay is exactly what agentvcr produces.
 
 ## Why
 
@@ -44,11 +44,11 @@ It writes `agentvcr-<title>.html` and opens it in your browser.
 
 ## What's in a replay
 
-- Playback that types prompts and commands and streams answers, at 1× to 16×
-- A scrubber that marks every prompt (white), file edit (green) and failed tool call (red)
-- Links to exact moments: `replay.html#42`
+- A summary up top: what happened in one sentence, and a diffstat of every file changed. Click a file to jump to its first edit.
+- Playback that types prompts and commands and streams answers, at 1× to 16×, with a clock that shows real working time
+- The whole session as a waveform under the player: prompts tall and white, edits green, failures red. Drag to scrub.
 - Real diffs for edits and patches, terminal output, plans and checklists, rendered Markdown
-- A summary of active time, prompts, tool calls, files changed and lines added and removed
+- Links to exact moments: `replay.html#42`
 - One self-contained file that works offline, in dark and light mode, and on phones
 
 Keys: `space` play/pause · `←` `→` previous/next step · `1`–`5` speed · `Home` / `End`
