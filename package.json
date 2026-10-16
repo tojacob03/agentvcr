@@ -1,0 +1,35 @@
+{
+  "name": "agentvcr",
+  "version": "0.1.0",
+  "description": "Turn Claude Code and Codex sessions into replays you can watch and share. One self-contained HTML file, secrets redacted.",
+  "type": "module",
+  "bin": {
+    "agentvcr": "bin/agentvcr.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "claude-code",
+    "codex",
+    "ai-agents",
+    "replay",
+    "transcript",
+    "asciinema",
+    "coding-agent"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tojacob03/agentvcr.git"
+  },
+  "homepage": "https://github.com/tojacob03/agentvcr",
+  "author": "Till Oscar Jacob"
+}
