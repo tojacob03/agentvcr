@@ -288,7 +288,7 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 <script type="application/json" id="agentvcr-data">__DATA__</script>
 <script>
 (() => {
-  const S = JSON.parse(document.getElementById('agentvcr-data').textContent);
+function boot(S) {
   const $ = (id) => document.getElementById(id);
   const h = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -834,6 +834,34 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
     if (/[?&]autoplay\b/.test(location.search)) setPlaying(true);
     else render();
   }
+}
+
+// Exported files carry their data. The share viewer has none and loads a gist
+// named in the URL instead: /v/?g=<owner>/<gist id>
+function loadShared() {
+  const poster = document.getElementById('poster');
+  const show = (big, small) => { poster.innerHTML = `<div class="counter">${big}</div><p class="lede">${small}</p>`; };
+  const g = new URLSearchParams(location.search).get('g') || '';
+  if (!/^[\w-]+\/[0-9a-f]+$/i.test(g)) {
+    show('NO SIGNAL', 'This link has no replay in it. Make one from your own session with <code>npx agentvcr --share</code>.');
+    return;
+  }
+  show('LOADING', 'Fetching the replay.');
+  const [owner, id] = g.split('/');
+  fetch(`https://gist.githubusercontent.com/${owner}/${id}/raw/agentvcr.json`)
+    .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+    .then((d) => {
+      const S = d.session || d;
+      if (!S || !Array.isArray(S.events)) throw new Error('not a replay');
+      document.title = S.title;
+      boot(S);
+    })
+    .catch(() => show('NO SIGNAL', 'This replay could not be loaded. The gist may have been deleted, or the link is incomplete.'));
+}
+
+const embedded = JSON.parse(document.getElementById('agentvcr-data').textContent);
+if (embedded) boot(embedded);
+else loadShared();
 })();
 </script>
 </body>

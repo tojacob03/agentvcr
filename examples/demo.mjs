@@ -1,10 +1,10 @@
-// Builds the public demo: a made-up but realistic Claude Code session in a
-// fictional shop codebase, rendered to docs/index.html.
+// Builds the site's replay pages: docs/demo/ plays a made-up but realistic
+// Claude Code session in a fictional shop codebase, docs/v/ is the share viewer.
 //
-//   node examples/demo.mjs
+//   npm run site
 
-import { writeFileSync } from 'node:fs';
-import { loadSession, renderHtml } from '../src/index.js';
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { loadSession, renderHtml, renderViewer } from '../src/index.js';
 
 const CWD = '/home/dev/tinyshop';
 const start = Date.parse('2026-03-03T14:02:00Z');
@@ -257,12 +257,19 @@ writeFileSync(jsonlPath, rows.map((r) => JSON.stringify(r)).join('\n') + '\n');
 
 const { session } = loadSession(jsonlPath);
 const site = 'https://tojacob03.github.io/agentvcr/';
-const html = renderHtml(session).replace('<meta name="description"', [
+const social = (html, url) => html.replace('<meta name="description"', [
   `<meta property="og:image" content="${site}social.png">`,
-  `<meta property="og:url" content="${site}">`,
+  `<meta property="og:url" content="${url}">`,
   '<meta name="twitter:card" content="summary_large_image">',
   `<meta name="twitter:image" content="${site}social.png">`,
   '<meta name="description"',
 ].join('\n'));
-writeFileSync(new URL('../docs/index.html', import.meta.url), html);
-console.log(`docs/index.html: ${session.events.length} events, ${session.stats.tools} tool calls, ${session.stats.files} files changed`);
+
+const write = (rel, html) => {
+  const url = new URL(`../docs/${rel}`, import.meta.url);
+  mkdirSync(new URL('.', url), { recursive: true });
+  writeFileSync(url, html);
+};
+write('demo/index.html', social(renderHtml(session), `${site}demo/`));
+write('v/index.html', social(renderViewer(), `${site}v/`));
+console.log(`docs/demo: ${session.events.length} events, ${session.stats.tools} tool calls, ${session.stats.files} files changed; docs/v: share viewer`);

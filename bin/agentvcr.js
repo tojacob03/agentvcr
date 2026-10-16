@@ -5,15 +5,19 @@ import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline/promises';
 import { loadSession, renderHtml } from '../src/index.js';
 import { listSessions, findById, readHead, readTail } from '../src/sources.js';
+import { share } from '../src/share.js';
 
-const HELP = `agentvcr: turn a Claude Code or Codex session into a replay you can share.
+const HELP = `agentvcr: turn a coding agent session into a replay you can share.
 
 Usage
   agentvcr                 pick a session from this project
   agentvcr last            the most recent session in this project
   agentvcr <file|id>       a .jsonl transcript or a session id
+  agentvcr last --share    upload it as a secret gist and get a link
 
 Options
+  -s, --share        upload the redacted replay as a secret gist and print a link
+                     (uses the GitHub CLI, or GITHUB_TOKEN with the gist scope)
   -o, --out <file>   where to write the HTML (default: ./agentvcr-<title>.html)
   -l, --list         list sessions and exit
   -a, --all          look at sessions from every project, not just this one
@@ -33,6 +37,7 @@ for (let i = 0; i < args.length; i++) {
   if (a === '-h' || a === '--help') { console.log(HELP); process.exit(0); }
   else if (a === '-v' || a === '--version') { console.log(JSON.parse(readFileSync(new URL('../package.json', import.meta.url))).version); process.exit(0); }
   else if (a === '-o' || a === '--out') opts.out = args[++i];
+  else if (a === '-s' || a === '--share') opts.share = true;
   else if (a === '-l' || a === '--list') opts.list = true;
   else if (a === '-a' || a === '--all') opts.all = true;
   else if (a === '--title') opts.title = args[++i];
@@ -117,17 +122,31 @@ async function main() {
     path = hit.path;
   }
 
+  if (opts.share && !opts.redact) fail('--share always masks secrets; it cannot be combined with --no-redact.');
   const { session, redactions } = loadSession(path, opts);
   if (!session.events.length) fail('That session has no events to replay.');
+  const summary = () => {
+    console.log(dim(`  ${session.events.length} events, ${session.stats.tools} tool calls, ${session.stats.files} files changed`));
+    if (opts.redact) console.log(dim(`  ${redactions} secret${redactions === 1 ? '' : 's'} masked, home path replaced with ~.`));
+    else console.log(red('  Redaction is off. Do not share this file without reading it.'));
+  };
+
+  if (opts.share) {
+    const { url, gist } = await share(session);
+    console.log(`\n✓ ${url}`);
+    summary();
+    console.log(dim(`  Secret gist: ${gist} (delete it there to take the replay down)`));
+    if (opts.out) writeFileSync(resolve(opts.out), renderHtml(session));
+    if (opts.open) openFile(url);
+    return;
+  }
+
   const out = resolve(opts.out || `agentvcr-${slug(session.title)}.html`);
   const html = renderHtml(session);
   writeFileSync(out, html);
-
-  const kb = Math.round(Buffer.byteLength(html) / 1024);
-  console.log(`\n✓ ${out} ${dim(`(${kb} KB)`)}`);
-  console.log(dim(`  ${session.events.length} events · ${session.stats.tools} tool calls · ${session.stats.files} files changed`));
-  if (opts.redact) console.log(dim(`  ${redactions} secret${redactions === 1 ? '' : 's'} masked, home path replaced with ~. Skim it before sharing.`));
-  else console.log(red('  Redaction is off. Do not share this file without reading it.'));
+  console.log(`\n✓ ${out} ${dim(`(${Math.round(Buffer.byteLength(html) / 1024)} KB)`)}`);
+  summary();
+  console.log(dim('  Skim it before sharing, or run with --share to get a link.'));
   if (opts.open) openFile(out);
 }
 

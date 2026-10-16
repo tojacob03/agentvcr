@@ -138,3 +138,25 @@ test('diff: line diff and trimming', () => {
   assert.ok(d.length < 12);
   assert.equal(d[0][0], '…');
 });
+
+test('share: the gist holds player data without the full working directory', async () => {
+  const { gistBody, viewerUrl } = await import('../src/share.js');
+  const s = parseClaude(claudeRaw);
+  s.cwd = '/home/ada/secret-client/app';
+  const body = gistBody(s);
+  assert.equal(body.public, false);
+  const json = body.files['agentvcr.json'].content;
+  assert.ok(!json.includes('/home/ada'), 'no absolute path');
+  const data = JSON.parse(json);
+  assert.equal(data.agentvcr, 1);
+  assert.equal(data.session.project, 'app');
+  assert.equal(data.session.events.length, s.events.length);
+  assert.equal(viewerUrl('ada', 'abc123', 'https://x.test/v/'), 'https://x.test/v/?g=ada/abc123');
+});
+
+test('viewer: renders without embedded data', async () => {
+  const { renderViewer } = await import('../src/render.js');
+  const html = renderViewer();
+  assert.ok(html.includes('id="agentvcr-data">null</script>'));
+  assert.ok(html.includes('function loadShared()'));
+});

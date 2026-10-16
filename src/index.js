@@ -3,9 +3,9 @@ import { parseClaude } from './claude.js';
 import { parseCodex } from './codex.js';
 import { makeRedactor, deepMap } from './redact.js';
 import { detectAgent, readHead } from './sources.js';
-import { renderHtml } from './render.js';
+import { renderHtml, renderViewer, toPlayerData } from './render.js';
 
-export { renderHtml };
+export { renderHtml, renderViewer, toPlayerData };
 
 export function loadSession(path, { redact = true, thinking = false, sidechains = false, title } = {}) {
   const raw = readFileSync(path, 'utf8');

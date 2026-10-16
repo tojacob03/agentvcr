@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="agentvcr">
+<title>Webhook retries fulfilled orders twice</title>
+<meta property="og:title" content="Webhook retries fulfilled orders twice">
+<meta property="og:description" content="Claude Code session · 6 min active · 24 tool calls · 5 files changed">
+<meta property="og:image" content="https://tojacob03.github.io/agentvcr/social.png">
+<meta property="og:url" content="https://tojacob03.github.io/agentvcr/demo/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tojacob03.github.io/agentvcr/social.png">
+<meta name="description" content="Claude Code session · 6 min active · 24 tool calls · 5 files changed">
+<style>
+/* VT323, Copyright 2011 The VT323 Project Authors, SIL Open Font License 1.1.
+   Subset to ASCII. Used for everything a VCR would show on screen. */
+@font-face { font-family: "VT323"; src: url(data:font/woff2;base64,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) format("woff2"); font-display: block; }
+
+/* Three materials from a VCR: the blue no-signal screen with its white
+   on-screen display, the paper of the tape label, and the black deck with
+   its fluorescent counter. */
+:root {
+  --screen: #1b2ae6;
+  --screen-dim: rgba(255, 255, 255, 0.74);
+  --screen-rule: rgba(255, 255, 255, 0.24);
+  --screen-add: #a6f5bb;
+  --screen-del: #ffb9b0;
+  --paper: #f5f6fa;
+  --panel: #ffffff;
+  --panel-2: #eceef5;
+  --rule: #d8dbe6;
+  --ink: #0e1122;
+  --dim: #565d75;
+  --faint: #9aa0b4;
+  --add: #1d8a4c;
+  --add-bg: rgba(29, 138, 76, 0.1);
+  --del: #c93a2f;
+  --del-bg: rgba(201, 58, 47, 0.08);
+  --link: #1b2ae6;
+  --deck: #0b0b0e;
+  --deck-2: #18181d;
+  --deck-rule: #2b2b33;
+  --deck-ink: #e8e8ee;
+  --deck-dim: #7c7c8a;
+  --vfd: #6ff0d2;
+  --vfd-glow: rgba(111, 240, 210, 0.5);
+  --rec: #ff3b30;
+  --osd: "VT323", ui-monospace, monospace;
+  --sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --gutter: 96px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --screen: #1824cc;
+    --paper: #0c0e19;
+    --panel: #131627;
+    --panel-2: #1b1f35;
+    --rule: #262b44;
+    --ink: #e8eaf6;
+    --dim: #8f95ae;
+    --faint: #5a617e;
+    --add: #7ddb92;
+    --add-bg: rgba(125, 219, 146, 0.12);
+    --del: #ff8a7d;
+    --del-bg: rgba(255, 138, 125, 0.12);
+    --link: #a3adff;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.58 var(--sans); padding-bottom: 140px; }
+a { color: var(--link); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--vfd); outline-offset: 2px; }
+.wrap { max-width: 940px; margin: 0 auto; padding: 0 28px; }
+
+/* ---------- The screen ---------- */
+.screen { background-color: var(--screen); color: #fff; position: relative; overflow: hidden;
+  background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 20, 0.11) 0 1px, transparent 1px 3px); }
+.screen::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0, 0, 30, 0.35)); }
+.screen > .wrap { position: relative; z-index: 1; }
+.mast { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 0; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; font: 26px/1 var(--osd); letter-spacing: 0.02em; }
+.rec { width: 10px; height: 10px; background: var(--rec); border-radius: 50%; }
+body.playing .rec { animation: blink 1.2s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+.copy { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--screen-rule); background: rgba(0, 0, 40, 0.18); border-radius: 2px; padding: 7px 11px; cursor: pointer; color: var(--screen-dim); font-size: 13px; }
+.copy code { font: 14px/1 var(--mono); color: #fff; }
+.copy:hover { border-color: #fff; }
+.poster { padding: 52px 0 56px; }
+.counter { font: 64px/0.9 var(--osd); letter-spacing: 0.02em; text-shadow: 0 0 18px rgba(255, 255, 255, 0.35); display: flex; align-items: baseline; gap: 18px; margin-bottom: 26px; }
+.counter small { font-size: 28px; color: var(--screen-dim); text-shadow: none; }
+h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.035em; font-weight: 800; margin: 0 0 20px; max-width: 16em; text-wrap: balance; }
+.lede { color: var(--screen-dim); margin: 0; max-width: 40em; font-size: 17px; }
+.lede b { color: #fff; font-weight: 700; }
+.lede + .lede { margin-top: 2px; }
+.screen .plus { color: var(--screen-add); }
+.screen .minus { color: var(--screen-del); }
+.stat-files { margin: 30px 0 0; padding: 0; list-style: none; font: 13.5px/1 var(--mono); border-top: 1px solid var(--screen-rule); max-width: 760px; }
+.stat-files li { border-bottom: 1px solid var(--screen-rule); }
+.stat-files button { display: grid; grid-template-columns: 1fr auto 84px; align-items: center; gap: 18px; width: 100%; padding: 10px 0; background: none; border: 0; cursor: pointer; text-align: left; color: #fff; }
+.stat-files button:hover .file { text-decoration: underline; text-underline-offset: 3px; }
+.file { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nums { white-space: nowrap; }
+.blocks { display: flex; gap: 2px; justify-content: flex-end; }
+.blocks i { width: 7px; height: 11px; background: rgba(255, 255, 255, 0.18); }
+.blocks i.a { background: var(--screen-add); }
+.blocks i.d { background: var(--screen-del); }
+.stat-more { color: var(--screen-dim); font: 13.5px/1 var(--mono); padding: 10px 0; }
+.start { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+.key { display: inline-flex; align-items: center; gap: 10px; border-radius: 2px; padding: 9px 18px 8px; cursor: pointer; font: 26px/1 var(--osd); letter-spacing: 0.04em; border: 2px solid #fff; background: none; color: #fff; }
+.key.solid { background: #fff; color: var(--screen); }
+.key:hover { box-shadow: 4px 4px 0 rgba(0, 0, 40, 0.45); transform: translate(-1px, -1px); }
+.key svg { width: 15px; height: 15px; fill: currentColor; }
+
+/* ---------- On-screen display ---------- */
+.osd { position: fixed; top: 18px; right: 22px; z-index: 20; background: var(--screen); color: #fff; font: 32px/1 var(--osd); letter-spacing: 0.04em; padding: 8px 14px 6px; display: flex; align-items: center; gap: 10px; opacity: 0; transition: opacity 0.25s; pointer-events: none; box-shadow: 4px 4px 0 rgba(0, 0, 40, 0.35); }
+.osd.on { opacity: 1; transition: none; }
+.osd svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* ---------- Tape: the feed ---------- */
+.feed { position: relative; padding-top: 44px; }
+.feed::before { content: ""; position: absolute; left: calc(var(--gutter) - 18px); top: 44px; bottom: 0; width: 1px; background: var(--rule); }
+.ev { position: relative; padding-left: var(--gutter); margin: 0 0 14px; }
+.ev[hidden] { display: none; }
+.tc { position: absolute; left: 0; top: 0; width: calc(var(--gutter) - 32px); text-align: right; font: 20px/1.3 var(--osd); color: var(--faint); text-decoration: none; letter-spacing: 0.02em; }
+.ev:hover .tc { color: var(--dim); }
+.ev.current::before { content: ""; position: absolute; left: calc(var(--gutter) - 22px); top: 7px; width: 9px; height: 9px; background: var(--screen); }
+.ev.prompt { margin-top: 36px; }
+.band { background: var(--screen); color: #fff; padding: 14px 20px 16px; max-width: 46em; box-shadow: 5px 5px 0 rgba(27, 42, 230, 0.18); }
+.band .who { font: 20px/1 var(--osd); letter-spacing: 0.06em; color: var(--screen-dim); margin-bottom: 6px; }
+.say { font-size: 18px; line-height: 1.45; font-weight: 600; white-space: pre-wrap; word-wrap: break-word; }
+.caret::after { content: ""; display: inline-block; width: 9px; height: 1.05em; margin-left: 2px; vertical-align: -3px; background: #fff; animation: blink 1s steps(2, start) infinite; }
+.ev.prompt .tc { top: 14px; color: var(--screen); }
+.reveal { overflow: hidden; }
+.reveal.partial { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent); }
+.text { max-width: 42em; word-wrap: break-word; }
+.text > :first-child { margin-top: 0; }
+.text > :last-child { margin-bottom: 0; }
+.text p, .text ul, .text ol, .text pre, .text table, .text blockquote { margin: 0 0 12px; }
+.text h3, .text h4, .text h5 { margin: 18px 0 8px; font-size: 16px; }
+.text ul, .text ol { padding-left: 22px; }
+.text li { margin: 3px 0; }
+.text strong { font-weight: 700; }
+.text code { font: 0.85em/1.5 var(--mono); background: var(--panel-2); padding: 1px 5px; }
+.text pre { background: var(--deck); color: var(--deck-ink); padding: 12px 14px; overflow-x: auto; }
+.text pre code { background: none; padding: 0; color: inherit; }
+.text blockquote { border-left: 3px solid var(--rule); padding-left: 12px; color: var(--dim); }
+.text table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.text th, .text td { border-bottom: 1px solid var(--rule); padding: 7px 18px 7px 0; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.text th { color: var(--dim); font-weight: 500; }
+.thinking { color: var(--dim); font-style: italic; font-size: 15px; white-space: pre-wrap; }
+.note { color: var(--faint); font: 20px/1.3 var(--osd); letter-spacing: 0.04em; }
+
+/* Tool calls read as sentences: verb, then what it touched. */
+.tool-head { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 2px 0; background: none; border: 0; text-align: left; cursor: pointer; min-height: 30px; }
+.chev { flex: none; width: 10px; color: var(--faint); font-size: 11px; transition: transform 0.15s; }
+.tool.open .chev { transform: rotate(90deg); }
+.verb { color: var(--dim); flex: none; font-size: 15px; }
+.target { font: 14px/1.5 var(--mono); color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 0 1 auto; }
+.tool-head:hover .target { color: var(--link); }
+.gap { flex: 1; }
+.counts { flex: none; font: 13px/1 var(--mono); white-space: nowrap; }
+.plus { color: var(--add); }
+.minus { color: var(--del); }
+.counts .minus { margin-left: 6px; }
+.state { flex: none; font: 20px/1 var(--osd); letter-spacing: 0.04em; color: var(--del); }
+.spin { flex: none; font: 20px/1 var(--osd); color: var(--screen); align-self: center; }
+.spin::after { content: "▮"; animation: blink 0.6s steps(2, start) infinite; }
+.tool-body { display: none; margin: 6px 0 4px; border: 1px solid var(--rule); background: var(--panel); overflow: hidden; }
+.tool.open .tool-body { display: block; }
+.tool-body:has(.term) { background: var(--deck); border-color: var(--deck); }
+.term { margin: 0; padding: 12px 15px; font: 13px/1.6 var(--mono); white-space: pre-wrap; word-break: break-word; color: var(--deck-dim); }
+.term .cmd { color: var(--deck-ink); }
+.term .cmd::before { content: "$ "; color: var(--vfd); }
+.term .cmd-plain { color: var(--deck-ink); }
+.tool.err .term .out { color: #ff8a7d; }
+.clip { max-height: 300px; overflow: hidden; position: relative; }
+.clip.cut::after { content: ""; position: absolute; inset: auto 0 0 0; height: 44px; background: linear-gradient(transparent, var(--panel)); pointer-events: none; }
+.tool-body:has(.term) .clip.cut::after { background: linear-gradient(transparent, var(--deck)); }
+.more { display: block; width: 100%; border: 0; border-top: 1px solid var(--rule); background: none; color: var(--dim); font: 19px/1 var(--osd); letter-spacing: 0.04em; padding: 7px; cursor: pointer; }
+.tool-body:has(.term) .more { border-color: var(--deck-rule); color: var(--deck-dim); }
+.more[hidden] { display: none; }
+.more:hover { color: var(--link); }
+.diff { font: 13px/1.6 var(--mono); padding: 6px 0; overflow-x: auto; }
+.diff div { padding: 0 14px 0 32px; white-space: pre-wrap; word-break: break-word; position: relative; min-height: 1.6em; }
+.diff div::before { position: absolute; left: 13px; color: var(--faint); }
+.diff .a { background: var(--add-bg); }
+.diff .a::before { content: "+"; color: var(--add); }
+.diff .d { background: var(--del-bg); }
+.diff .d::before { content: "−"; color: var(--del); }
+.diff .s { color: var(--faint); font-style: italic; }
+.plan { list-style: none; margin: 0; padding: 10px 14px; font-size: 15px; }
+.plan li { padding: 2px 0 2px 26px; position: relative; }
+.plan li::before { content: ""; position: absolute; left: 3px; top: 8px; width: 10px; height: 10px; border: 1.5px solid var(--faint); }
+.plan li.completed { color: var(--dim); }
+.plan li.completed::before { background: var(--add); border-color: var(--add); }
+.plan li.in_progress::before { border-color: var(--screen); background: linear-gradient(90deg, var(--screen) 50%, transparent 50%); }
+
+/* ---------- Stop ---------- */
+.end { padding-left: var(--gutter); margin: 52px 0 0; }
+.end[hidden] { display: none; }
+.end .stop { font: 34px/1 var(--osd); letter-spacing: 0.04em; margin-bottom: 8px; }
+.end p { margin: 0 0 16px; color: var(--screen-dim); }
+.end b { color: #fff; }
+.end .key { font-size: 22px; padding: 7px 14px 6px; }
+.foot { color: var(--faint); font-size: 13px; padding: 60px 0 0; }
+.foot a { color: var(--dim); }
+.follow { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 11; display: none; background: var(--screen); color: #fff; border: 0; font: 22px/1 var(--osd); letter-spacing: 0.04em; padding: 8px 14px 6px; cursor: pointer; box-shadow: 4px 4px 0 rgba(0, 0, 40, 0.35); }
+
+/* ---------- The deck ---------- */
+.deck { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--deck); color: var(--deck-ink); border-top: 1px solid #000; }
+.deck .wrap { display: flex; align-items: center; gap: 14px; height: 80px; max-width: 1140px; }
+.dk { flex: none; height: 44px; min-width: 44px; display: grid; place-items: center; background: var(--deck-2); border: 1px solid var(--deck-rule); border-radius: 4px; cursor: pointer; color: var(--deck-ink); box-shadow: 0 2px 0 #000; }
+.dk:active { transform: translateY(1px); box-shadow: 0 1px 0 #000; }
+.dk svg { width: 16px; height: 16px; fill: currentColor; }
+.dk.play { width: 52px; color: var(--vfd); }
+.vfd { flex: none; background: #040405; border: 1px solid var(--deck-rule); border-radius: 3px; padding: 7px 12px 4px; font: 32px/1 var(--osd); color: var(--vfd); text-shadow: 0 0 10px var(--vfd-glow); letter-spacing: 0.04em; min-width: 196px; white-space: nowrap; }
+.vfd span { color: rgba(111, 240, 210, 0.35); text-shadow: none; }
+.tape { flex: 1; position: relative; height: 48px; cursor: pointer; touch-action: none; min-width: 80px; }
+.bar { position: absolute; top: 50%; transform: translateY(-50%); width: 3px; background: var(--deck-dim); opacity: 0.4; pointer-events: none; }
+.bar.past { opacity: 1; }
+.bar.k-prompt { background: #fff; width: 4px; }
+.bar.k-edit { background: #7ddb92; }
+.bar.k-err { background: var(--rec); }
+.bar.k-text { background: #a9a9b6; }
+.head { position: absolute; top: -2px; bottom: -2px; width: 2px; margin-left: -1px; background: var(--vfd); box-shadow: 0 0 10px var(--vfd-glow); pointer-events: none; left: 0; }
+.tip { position: absolute; bottom: 58px; transform: translateX(-50%); background: var(--deck-2); border: 1px solid var(--deck-rule); color: var(--deck-ink); font-size: 13px; padding: 6px 9px; white-space: nowrap; max-width: 340px; overflow: hidden; text-overflow: ellipsis; pointer-events: none; display: none; }
+.tip b { font: 20px/1 var(--osd); color: var(--vfd); margin-right: 8px; font-weight: 400; }
+.speeds { flex: none; display: flex; background: #040405; border: 1px solid var(--deck-rule); border-radius: 4px; padding: 3px; gap: 2px; }
+.speeds button { border: 0; background: none; color: var(--deck-dim); font: 22px/1 var(--osd); padding: 7px 9px 5px; border-radius: 2px; cursor: pointer; min-width: 38px; }
+.speeds button:hover { color: var(--deck-ink); }
+.speeds button[aria-checked="true"] { color: var(--vfd); background: var(--deck-2); text-shadow: 0 0 8px var(--vfd-glow); }
+
+@media (max-width: 680px) {
+  :root { --gutter: 0px; }
+  body { font-size: 15.5px; }
+  .wrap { padding: 0 16px; }
+  .feed::before, .tc, .ev.current::before { display: none; }
+  .copy span { display: none; }
+  .poster { padding: 36px 0 40px; }
+  .counter { font-size: 48px; }
+  .stat-files button { grid-template-columns: 1fr auto; }
+  .blocks { display: none; }
+  .deck .wrap { gap: 8px; height: 68px; padding: 0 12px; }
+  .dk.play { width: 40px; height: 40px; min-width: 40px; }
+  .vfd { min-width: 0; font-size: 22px; padding: 6px 7px 3px; }
+  .vfd span, .dk.skip { display: none; }
+  .tape { min-width: 60px; }
+  .speeds { padding: 2px; gap: 0; }
+  .speeds button { min-width: 0; padding: 5px 5px 3px; font-size: 18px; }
+  .osd { top: 12px; right: 12px; font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rec, .caret::after, .spin::after { animation: none !important; }
+  .osd { transition: none; }
+}
+</style>
+</head>
+<body>
+<header class="screen">
+  <div class="wrap">
+    <div class="mast">
+      <a class="brand" href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener"><span class="rec"></span>agentvcr</a>
+      <button class="copy" id="copy" type="button" title="Copy the command"><span>Make one from your session</span><code>npx agentvcr</code></button>
+    </div>
+    <section class="poster" id="poster"></section>
+  </div>
+</header>
+<div class="wrap">
+  <main class="feed" id="feed"></main>
+  <section class="end" id="end" hidden></section>
+  <footer class="foot">Made with <a href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener">agentvcr</a>. Secrets were masked before export.</footer>
+</div>
+<div class="osd" id="osd" aria-hidden="true"></div>
+<button class="follow" id="follow" type="button">FOLLOW</button>
+<div class="deck" role="toolbar" aria-label="Playback">
+  <div class="wrap">
+    <button class="dk play" id="play" type="button" aria-label="Play (space)"></button>
+    <div class="vfd" id="clock"></div>
+    <div class="tape" id="tape" role="slider" aria-label="Position in the session" tabindex="0" aria-valuemin="0" aria-valuemax="100">
+      <div id="bars"></div><div class="head" id="head"></div><div class="tip" id="tip"></div>
+    </div>
+    <div class="speeds" id="speeds" role="radiogroup" aria-label="Playback speed"></div>
+    <button class="dk skip" id="all" type="button" aria-label="Skip to the end (End key)" title="Skip to the end"><svg viewBox="0 0 16 16"><path d="M1 2.5v11l7-5.5zM8 2.5v11l7-5.5z"/></svg></button>
+  </div>
+</div>
+<script type="application/json" id="agentvcr-data">{"agent":"Claude Code","title":"Webhook retries fulfilled orders twice","branch":"fix/webhook-idempotency","model":"claude-opus-5-5","version":"2.1.300","startedAt":"2026-03-03T14:02:00.000Z","endedAt":"2026-03-03T14:08:07.000Z","events":[{"type":"prompt","text":"Customers are getting two order confirmation emails, and stock drops by 2 for a single purchase. It started after we moved webhooks to the new payments provider. Can you find out why and fix it?","ts":"2026-03-03T14:02:00.000Z"},{"type":"text","text":"I'll start with the webhook handler and follow it into fulfillment.","ts":"2026-03-03T14:02:05.000Z"},{"type":"tool","name":"TodoWrite","ts":"2026-03-03T14:02:08.000Z","end":"2026-03-03T14:02:09.000Z","output":"Todos updated","error":false,"kind":"plan","title":"Plan","detail":{"items":[{"text":"Find where payment webhooks are handled","status":"in_progress"},{"text":"Reproduce the double fulfillment in a test","status":"pending"},{"text":"Make the handler safe to run twice","status":"pending"},{"text":"Run typecheck and the full suite","status":"pending"}]}},{"type":"tool","name":"Grep","ts":"2026-03-03T14:02:13.000Z","end":"2026-03-03T14:02:15.000Z","output":"src/webhooks/payments.ts:11:  if (event.type === \"payment.succeeded\") {\nsrc/webhooks/payments.test.ts:24:      type: \"payment.succeeded\",\ndocs/webhooks.md:31:`payment.succeeded` is delivered at least once. The provider retries any delivery that is not answered within 10 seconds.","error":false,"kind":"search","title":"payment.succeeded","detail":{"pattern":"payment.succeeded","path":""}},{"type":"tool","name":"Read","ts":"2026-03-03T14:02:21.000Z","end":"2026-03-03T14:02:22.000Z","output":"     1\timport { Router } from \"express\";\n     2\timport { verifySignature } from \"../payments/signature\";\n     3\timport { fulfillOrder } from \"../orders/fulfill\";\n     4\t\n     5\texport const payments = Router();\n     6\t\n     7\tpayments.post(\"/webhooks/payments\", async (req, res) => {\n     8\t  const event = verifySignature(req);\n     9\t  if (!event) return res.status(400).send(\"bad signature\");\n    10\t\n    11\t  if (event.type === \"payment.succeeded\") {\n    12\t    await fulfillOrder(event.data.orderId);\n    13\t  }\n    14\t\n    15\t  res.sendStatus(200);\n    16\t});","error":false,"kind":"read","title":"src/webhooks/payments.ts","detail":{"path":"src/webhooks/payments.ts"}},{"type":"tool","name":"Read","ts":"2026-03-03T14:02:27.000Z","end":"2026-03-03T14:02:28.000Z","output":"     1\timport { db } from \"../db\";\n     2\timport { email } from \"../email\";\n     3\t\n     4\texport async function fulfillOrder(orderId: string) {\n     5\t  const order = await db.orders.find(orderId);\n     6\t  await db.inventory.decrement(order.items);\n     7\t  await email.send(\"order-confirmed\", order.customer, { order });\n     8\t  await db.orders.update(orderId, { status: \"paid\" });\n     9\t}","error":false,"kind":"read","title":"src/orders/fulfill.ts","detail":{"path":"src/orders/fulfill.ts"}},{"type":"text","text":"Found it. The provider delivers `payment.succeeded` **at least once** and retries when we don't answer within 10 seconds. The handler only answers after `fulfillOrder` is done, and that sends an email and calls the inventory service, which can take longer than 10 seconds.\n\nSo the retry arrives while the first call is still running, and nothing stops it from fulfilling the same order again. That's the second email and the second stock decrement.\n\nI'll reproduce it in a test before changing anything.","ts":"2026-03-03T14:02:50.000Z"},{"type":"tool","name":"TodoWrite","ts":"2026-03-03T14:02:52.000Z","end":"2026-03-03T14:02:53.000Z","output":"Todos updated","error":false,"kind":"plan","title":"Plan","detail":{"items":[{"text":"Find where payment webhooks are handled","status":"completed"},{"text":"Reproduce the double fulfillment in a test","status":"in_progress"},{"text":"Make the handler safe to run twice","status":"pending"},{"text":"Run typecheck and the full suite","status":"pending"}]}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:03:07.000Z","end":"2026-03-03T14:03:08.000Z","output":"The file src/webhooks/payments.test.ts has been updated successfully.","error":false,"kind":"edit","title":"src/webhooks/payments.test.ts","detail":{"path":"src/webhooks/payments.test.ts","diff":[[" ","describe(\"payment webhooks\", () => {"],["+","  it(\"fulfills an order once when the same event is delivered twice\", async () => {"],["+","    const event = paymentSucceeded({ id: \"evt_123\", orderId: \"ord_42\" });"],["+","    await Promise.all([post(\"/webhooks/payments\", event), post(\"/webhooks/payments\", event)]);"],["+","    expect(fulfillOrder).toHaveBeenCalledTimes(1);"],["+","  });"],["+",""]],"added":6,"removed":0}},{"type":"tool","name":"Bash","ts":"2026-03-03T14:03:12.000Z","end":"2026-03-03T14:03:19.000Z","output":" FAIL  src/webhooks/payments.test.ts\n  payment webhooks\n    ✓ rejects a bad signature (4 ms)\n    ✓ fulfills an order on payment.succeeded (11 ms)\n    ✕ fulfills an order once when the same event is delivered twice (9 ms)\n\n  ● payment webhooks › fulfills an order once when the same event is delivered twice\n\n    expect(jest.fn()).toHaveBeenCalledTimes(expected)\n\n    Expected number of calls: 1\n    Received number of calls: 2\n\nTests:       1 failed, 2 passed, 3 total","error":true,"kind":"shell","title":"npm test -- webhooks","detail":{"command":"npm test -- webhooks","description":"Run the webhook tests"}},{"type":"text","text":"Reproduced. The handler has to remember which events it already handled, and the check has to be atomic, or two deliveries arriving together both pass it. A primary key on the event id gives us that for free: only one insert can win.","ts":"2026-03-03T14:03:28.000Z"},{"type":"tool","name":"TodoWrite","ts":"2026-03-03T14:03:30.000Z","end":"2026-03-03T14:03:31.000Z","output":"Todos updated","error":false,"kind":"plan","title":"Plan","detail":{"items":[{"text":"Find where payment webhooks are handled","status":"completed"},{"text":"Reproduce the double fulfillment in a test","status":"completed"},{"text":"Make the handler safe to run twice","status":"in_progress"},{"text":"Run typecheck and the full suite","status":"pending"}]}},{"type":"tool","name":"Write","ts":"2026-03-03T14:03:49.000Z","end":"2026-03-03T14:03:50.000Z","output":"File created successfully at: migrations/0042_processed_events.sql","error":false,"kind":"write","title":"migrations/0042_processed_events.sql","detail":{"path":"migrations/0042_processed_events.sql","diff":[["+","-- Payment events we have already handled. The primary key makes a"],["+","-- second delivery of the same event fail to insert."],["+","CREATE TABLE processed_events ("],["+","  event_id     text PRIMARY KEY,"],["+","  processed_at timestamptz NOT NULL DEFAULT now()"],["+",");"]],"added":6,"removed":0}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:04:02.000Z","end":"2026-03-03T14:04:03.000Z","output":"The file src/webhooks/payments.ts has been updated successfully.","error":false,"kind":"edit","title":"src/webhooks/payments.ts","detail":{"path":"src/webhooks/payments.ts","diff":[[" ","  if (event.type === \"payment.succeeded\") {"],["-","    await fulfillOrder(event.data.orderId);"],["+","    // Deliveries are at-least-once. Claim the event id first so a retry"],["+","    // that arrives mid-fulfillment does nothing."],["+","    const claimed = await db.processedEvents.insertIfAbsent(event.id);"],["+","    if (claimed) await fulfillOrder(event.data.orderId);"],[" ","  }"]],"added":4,"removed":1}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:04:08.000Z","end":"2026-03-03T14:04:09.000Z","output":"The file src/webhooks/payments.ts has been updated successfully.","error":false,"kind":"edit","title":"src/webhooks/payments.ts","detail":{"path":"src/webhooks/payments.ts","diff":[[" ","import { fulfillOrder } from \"../orders/fulfill\";"],["+","import { db } from \"../db\";"]],"added":1,"removed":0}},{"type":"tool","name":"Bash","ts":"2026-03-03T14:04:13.000Z","end":"2026-03-03T14:04:19.000Z","output":" PASS  src/webhooks/payments.test.ts\n  payment webhooks\n    ✓ rejects a bad signature (4 ms)\n    ✓ fulfills an order on payment.succeeded (10 ms)\n    ✓ fulfills an order once when the same event is delivered twice (8 ms)\n\nTests:       3 passed, 3 total","error":false,"kind":"shell","title":"npm test -- webhooks","detail":{"command":"npm test -- webhooks","description":""}},{"type":"tool","name":"Bash","ts":"2026-03-03T14:04:22.000Z","end":"2026-03-03T14:04:31.000Z","output":"> tinyshop@1.8.0 typecheck\n> tsc --noEmit\n\nsrc/webhooks/payments.ts(15,40): error TS2339: Property 'processedEvents' does not exist on type 'Database'.","error":true,"kind":"shell","title":"npm run typecheck","detail":{"command":"npm run typecheck","description":""}},{"type":"text","text":"The test passes because it mocks the database, but the typed client doesn't know about the new table yet. Adding it there.","ts":"2026-03-03T14:04:37.000Z"},{"type":"tool","name":"Edit","ts":"2026-03-03T14:04:51.000Z","end":"2026-03-03T14:04:52.000Z","output":"The file src/db/index.ts has been updated successfully.","error":false,"kind":"edit","title":"src/db/index.ts","detail":{"path":"src/db/index.ts","diff":[[" ","  orders: table\u003cOrder>(\"orders\"),"],[" ","  inventory: inventoryClient,"],["+","  processedEvents: {"],["+","    // true if this call inserted the id, false if it was already there"],["+","    insertIfAbsent: async (eventId: string) =>"],["+","      (await sql`INSERT INTO processed_events (event_id) VALUES (${eventId})"],["+","                 ON CONFLICT DO NOTHING RETURNING event_id`).length > 0,"],["+","  },"]],"added":6,"removed":0}},{"type":"tool","name":"TodoWrite","ts":"2026-03-03T14:04:54.000Z","end":"2026-03-03T14:04:55.000Z","output":"Todos updated","error":false,"kind":"plan","title":"Plan","detail":{"items":[{"text":"Find where payment webhooks are handled","status":"completed"},{"text":"Reproduce the double fulfillment in a test","status":"completed"},{"text":"Make the handler safe to run twice","status":"completed"},{"text":"Run typecheck and the full suite","status":"in_progress"}]}},{"type":"tool","name":"Bash","ts":"2026-03-03T14:04:58.000Z","end":"2026-03-03T14:05:14.000Z","output":"> tinyshop@1.8.0 typecheck\n> tsc --noEmit\n\n PASS  src/webhooks/payments.test.ts\n PASS  src/orders/fulfill.test.ts\n PASS  src/cart/pricing.test.ts\n PASS  src/cart/abandoned.test.ts\n PASS  src/jobs/worker.test.ts\n\nTest Suites: 14 passed, 14 total\nTests:       148 passed, 148 total\nTime:        6.214 s","error":false,"kind":"shell","title":"npm run typecheck && npm test","detail":{"command":"npm run typecheck && npm test","description":""}},{"type":"tool","name":"TodoWrite","ts":"2026-03-03T14:05:16.000Z","end":"2026-03-03T14:05:17.000Z","output":"Todos updated","error":false,"kind":"plan","title":"Plan","detail":{"items":[{"text":"Find where payment webhooks are handled","status":"completed"},{"text":"Reproduce the double fulfillment in a test","status":"completed"},{"text":"Make the handler safe to run twice","status":"completed"},{"text":"Run typecheck and the full suite","status":"completed"}]}},{"type":"text","text":"Fixed. Each payment event is now handled once, even when two deliveries arrive at the same moment.\n\n| File | Change |\n|---|---|\n| `src/webhooks/payments.ts` | claims the event id before fulfilling |\n| `src/db/index.ts` | `processedEvents.insertIfAbsent` |\n| `migrations/0042_processed_events.sql` | new table, event id as primary key |\n| `src/webhooks/payments.test.ts` | regression test for a repeated delivery |\n\nOne thing is left: the handler still answers only after fulfillment finishes, so slow emails keep triggering retries. They are harmless now, but they add load and noise in the provider's dashboard.","ts":"2026-03-03T14:05:25.000Z"},{"type":"prompt","text":"yes, make it answer right away","ts":"2026-03-03T14:07:00.000Z"},{"type":"text","text":"I'll acknowledge the webhook first and hand fulfillment to the existing job queue.","ts":"2026-03-03T14:07:04.000Z"},{"type":"tool","name":"Grep","ts":"2026-03-03T14:07:07.000Z","end":"2026-03-03T14:07:09.000Z","output":"src/jobs/queue.ts:8:export async function enqueue\u003cT>(name: string, payload: T) {\nsrc/cart/abandoned.ts:21:  await enqueue(\"cart-reminder\", { cartId });","error":false,"kind":"search","title":"enqueue\\(","detail":{"pattern":"enqueue\\(","path":""}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:07:19.000Z","end":"2026-03-03T14:07:20.000Z","output":"The file src/webhooks/payments.ts has been updated successfully.","error":false,"kind":"edit","title":"src/webhooks/payments.ts","detail":{"path":"src/webhooks/payments.ts","diff":[["-","    if (claimed) await fulfillOrder(event.data.orderId);"],["+","    if (claimed) await enqueue(\"fulfill-order\", { orderId: event.data.orderId });"],[" ","  }"],[" ",""],["+","  // Answer inside the provider's 10 s window; the worker does the slow part."],[" ","  res.sendStatus(200);"]],"added":2,"removed":1}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:07:24.000Z","end":"2026-03-03T14:07:25.000Z","output":"The file src/webhooks/payments.ts has been updated successfully.","error":false,"kind":"edit","title":"src/webhooks/payments.ts","detail":{"path":"src/webhooks/payments.ts","diff":[["-","import { fulfillOrder } from \"../orders/fulfill\";"],["+","import { enqueue } from \"../jobs/queue\";"]],"added":1,"removed":1}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:07:31.000Z","end":"2026-03-03T14:07:32.000Z","output":"The file src/jobs/worker.ts has been updated successfully.","error":false,"kind":"edit","title":"src/jobs/worker.ts","detail":{"path":"src/jobs/worker.ts","diff":[[" ","const handlers = {"],[" ","  \"cart-reminder\": ({ cartId }) => sendCartReminder(cartId),"],["+","  \"fulfill-order\": ({ orderId }) => fulfillOrder(orderId),"]],"added":1,"removed":0}},{"type":"tool","name":"Edit","ts":"2026-03-03T14:07:37.000Z","end":"2026-03-03T14:07:38.000Z","output":"The file src/webhooks/payments.test.ts has been updated successfully.","error":false,"kind":"edit","title":"src/webhooks/payments.test.ts","detail":{"path":"src/webhooks/payments.test.ts","diff":[["-","    expect(fulfillOrder).toHaveBeenCalledTimes(1);"],["+","    expect(enqueue).toHaveBeenCalledTimes(1);"],["+","    expect(enqueue).toHaveBeenCalledWith(\"fulfill-order\", { orderId: \"ord_42\" });"]],"added":2,"removed":1}},{"type":"tool","name":"Bash","ts":"2026-03-03T14:07:41.000Z","end":"2026-03-03T14:07:56.000Z","output":"> tinyshop@1.8.0 typecheck\n> tsc --noEmit\n\nTest Suites: 14 passed, 14 total\nTests:       148 passed, 148 total\nTime:        5.987 s","error":false,"kind":"shell","title":"npm run typecheck && npm test","detail":{"command":"npm run typecheck && npm test","description":""}},{"type":"tool","name":"Bash","ts":"2026-03-03T14:08:00.000Z","end":"2026-03-03T14:08:01.000Z","output":"[fix/webhook-idempotency 3e1a9c2] Handle each payment event once and fulfill orders in the worker\n 5 files changed, 34 insertions(+), 4 deletions(-)\n create mode 100644 migrations/0042_processed_events.sql","error":false,"kind":"shell","title":"git add -A && git commit -m \"Handle each payment event once and fulfill orders in the worker\"","detail":{"command":"git add -A && git commit -m \"Handle each payment event once and fulfill orders in the worker\"","description":""}},{"type":"text","text":"Committed on `fix/webhook-idempotency`. The webhook now answers in a few milliseconds, each event is fulfilled once, and the slow work runs in the worker.\n\nBefore you deploy, run migration `0042`. The handler expects the `processed_events` table to exist.","ts":"2026-03-03T14:08:07.000Z"}],"stats":{"prompts":2,"tools":24,"commands":6,"errors":2,"files":5,"added":29,"removed":4,"activeMs":367000},"project":"tinyshop"}</script>
+<script>
+(() => {
+function boot(S) {
+  const $ = (id) => document.getElementById(id);
+  const h = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const ICON = {
+    play: '<svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z"/></svg>',
+    pause: '<svg viewBox="0 0 16 16"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg>',
+    stop: '<svg viewBox="0 0 16 16"><path d="M3 3h10v10H3z"/></svg>',
+    ff: '<svg viewBox="0 0 16 16"><path d="M1 2.5v11l7-5.5zM8 2.5v11l7-5.5z"/></svg>',
+    rew: '<svg viewBox="0 0 16 16"><path d="M15 2.5v11L8 8zM8 2.5v11L1 8z"/></svg>',
+  };
+  const N = S.events.length;
+
+  // ---------- Markdown (escape first, then a small safe subset) ----------
+  function inline(s) {
+    const codes = [];
+    s = s.replace(/`([^`\n]+)`/g, (_, c) => { codes.push(c); return '\u0000' + (codes.length - 1) + '\u0000'; });
+    s = esc(s)
+      .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[\s(])\*([^*\n]+)\*(?=[\s).,!?:;]|$)/g, '$1<em>$2</em>')
+      .replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener nofollow">$1</a>');
+    return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + esc(codes[+i]) + '</code>');
+  }
+  function markdown(src) {
+    const lines = String(src).replace(/\r/g, '').split('\n');
+    let out = '';
+    let i = 0;
+    while (i < lines.length) {
+      const line = lines[i];
+      const fence = line.match(/^\s*(```|~~~)/);
+      if (fence) {
+        const buf = [];
+        i++;
+        while (i < lines.length && !lines[i].trim().startsWith(fence[1])) buf.push(lines[i++]);
+        i++;
+        out += '<pre><code>' + esc(buf.join('\n')) + '</code></pre>';
+        continue;
+      }
+      if (/^\s*$/.test(line)) { i++; continue; }
+      const hd = line.match(/^(#{1,6})\s+(.*)$/);
+      if (hd) { const n = Math.min(5, hd[1].length + 2); out += `<h${n}>${inline(hd[2])}</h${n}>`; i++; continue; }
+      if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1])) {
+        const cells = (l) => l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+        let t = '<table><thead><tr>' + cells(line).map((c) => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>';
+        i += 2;
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) t += '<tr>' + cells(lines[i++]).map((c) => '<td>' + inline(c) + '</td>').join('') + '</tr>';
+        out += t + '</tbody></table>';
+        continue;
+      }
+      if (/^\s*>/.test(line)) {
+        const buf = [];
+        while (i < lines.length && /^\s*>/.test(lines[i])) buf.push(lines[i++].replace(/^\s*>\s?/, ''));
+        out += '<blockquote>' + inline(buf.join(' ')) + '</blockquote>';
+        continue;
+      }
+      const li = line.match(/^\s*([-*+]|\d+[.)])\s+/);
+      if (li) {
+        const ordered = /\d/.test(li[1]);
+        let items = '';
+        while (i < lines.length && /^\s*([-*+]|\d+[.)])\s+/.test(lines[i])) {
+          let item = lines[i++].replace(/^\s*([-*+]|\d+[.)])\s+/, '');
+          while (i < lines.length && /^\s{2,}\S/.test(lines[i]) && !/^\s*([-*+]|\d+[.)])\s+/.test(lines[i])) item += ' ' + lines[i++].trim();
+          items += '<li>' + inline(item) + '</li>';
+        }
+        out += ordered ? '<ol>' + items + '</ol>' : '<ul>' + items + '</ul>';
+        continue;
+      }
+      const buf = [];
+      while (i < lines.length && lines[i].trim() && !/^\s*(```|~~~|#{1,6}\s|>|([-*+]|\d+[.)])\s)/.test(lines[i]) && !/^\s*\|.*\|\s*$/.test(lines[i])) buf.push(lines[i++]);
+      if (!buf.length) buf.push(lines[i++]);
+      out += '<p>' + buf.map(inline).join('<br>') + '</p>';
+    }
+    return out;
+  }
+
+  // ---------- Counter: working time, gaps over 5 min count as away ----------
+  const activeAt = [];
+  {
+    let acc = 0, prev = null;
+    for (const e of S.events) {
+      const t = Date.parse(e.ts);
+      if (!Number.isNaN(t)) { if (prev !== null) acc += clamp(t - prev, 0, 300000); prev = t; }
+      activeAt.push(acc);
+    }
+  }
+  const totalMs = activeAt[N - 1] || 0;
+  const tc = (ms) => {
+    const s = Math.round(ms / 1000);
+    return `${Math.floor(s / 3600)}:${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  };
+  const minutes = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'under a minute' : m === 1 ? '1 minute' : m < 90 ? `${m} minutes` : `${Math.floor(m / 60)} h ${m % 60} min`; };
+  const num = (n) => Number(n || 0).toLocaleString('en-US');
+  const plural = (n, one, many) => `${num(n)} ${n === 1 ? one : many}`;
+
+  // ---------- Poster on the blue screen ----------
+  const st = S.stats || {};
+  const files = new Map();
+  S.events.forEach((e, i) => {
+    if (e.type !== 'tool' || e.error || (e.kind !== 'edit' && e.kind !== 'write')) return;
+    const d = e.detail || {};
+    const path = (d.paths && d.paths[0]) || d.path;
+    if (!path) return;
+    const f = files.get(path) || { add: 0, del: 0, first: i };
+    f.add += d.added || 0;
+    f.del += d.removed || 0;
+    files.set(path, f);
+  });
+  const date = S.startedAt ? new Date(S.startedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+  let who = `A ${esc(S.agent)} session`;
+  if (S.project) who += ` in <b>${esc(S.project)}</b>`;
+  if (S.branch && !['HEAD', 'main', 'master'].includes(S.branch)) who += ` on ${esc(S.branch)}`;
+  if (date) who += `, ${date}`;
+  if (S.model) who += `, with ${esc(S.model)}`;
+  const work = `${totalMs ? `<b>${minutes(totalMs)}</b> of work, ` : ''}${plural(st.prompts, 'prompt', 'prompts')} and ${plural(st.tools, 'tool call', 'tool calls')}. ` +
+    (st.files ? `${plural(st.files, 'file', 'files')} changed, <span class="plus">+${num(st.added)}</span> <span class="minus">−${num(st.removed)}</span>.` : 'No files changed.');
+  const poster = $('poster');
+  poster.innerHTML = (totalMs ? `<div class="counter"><small>SP</small>${tc(totalMs)}</div>` : '') +
+    `<h1>${esc(S.title)}</h1><p class="lede">${who}.</p><p class="lede">${work}</p>`;
+  if (files.size) {
+    const ul = h('ul', 'stat-files');
+    const list = [...files.entries()].sort((a, b) => (b[1].add + b[1].del) - (a[1].add + a[1].del));
+    const max = Math.max(...list.map(([, f]) => f.add + f.del), 1);
+    for (const [path, f] of list.slice(0, 8)) {
+      const li = h('li');
+      const b = h('button');
+      b.type = 'button';
+      b.title = 'Jump to the first change in this file';
+      b.append(h('span', 'file', path));
+      const nums = h('span', 'nums');
+      nums.innerHTML = `<span class="plus">+${f.add}</span> <span class="minus">−${f.del}</span>`;
+      b.append(nums);
+      // git diff --stat: ten blocks scaled to the largest file
+      const blocks = h('span', 'blocks');
+      const total = Math.max(1, Math.round(((f.add + f.del) / max) * 10));
+      const adds = Math.round(total * (f.add / Math.max(1, f.add + f.del)));
+      for (let k = 0; k < 10; k++) blocks.append(h('i', k < adds ? 'a' : k < total ? 'd' : ''));
+      b.append(blocks);
+      b.addEventListener('click', () => jumpTo(f.first));
+      li.append(b);
+      ul.append(li);
+    }
+    poster.append(ul);
+    if (list.length > 8) poster.append(h('div', 'stat-more', `and ${list.length - 8} more`));
+  }
+  const start = h('div', 'start');
+  const go = h('button', 'key solid');
+  go.type = 'button';
+  go.innerHTML = ICON.play + 'PLAY';
+  const readAll = h('button', 'key', 'READ IT ALL');
+  readAll.type = 'button';
+  start.append(go, readAll);
+  poster.append(start);
+
+  // ---------- Events ----------
+  const VERB = {
+    shell: ['Running', 'Ran'], edit: ['Editing', 'Edited'], write: ['Writing', 'Wrote'], read: ['Reading', 'Read'],
+    search: ['Searching for', 'Searched for'], web: ['Searching the web for', 'Searched the web for'],
+    task: ['Delegating', 'Delegated'], plan: ['Updating the plan', 'Updated the plan'], mcp: ['Calling', 'Called'], other: ['Calling', 'Called'],
+  };
+  const OPEN = { shell: 1, edit: 1, write: 1, plan: 1 };
+  const feed = $('feed');
+  const lines = (s) => (s ? s.split('\n').length : 0);
+  let lastLabel = -Infinity;
+  const items = S.events.map((e, i) => build(e, i));
+
+  function build(e, i) {
+    const kindClass = e.type === 'tool' ? ' k-' + e.kind + (e.error ? ' err' : '') : '';
+    const el = h('section', 'ev ' + e.type + kindClass);
+    el.id = 'e' + i;
+    el.hidden = true;
+    // Counter reading at each prompt and after a minute without one.
+    if (e.type === 'prompt' || activeAt[i] - lastLabel >= 60000) {
+      const w = h('a', 'tc', totalMs ? tc(activeAt[i]) : '#' + i);
+      w.href = '#' + i;
+      w.title = 'Link to this moment';
+      el.append(w);
+      lastLabel = activeAt[i];
+    }
+    let dur = 0.5;
+    let apply = () => {};
+
+    if (e.type === 'prompt') {
+      const band = h('div', 'band');
+      band.append(h('div', 'who', 'YOU'));
+      const body = h('div', 'say');
+      band.append(body);
+      el.append(band);
+      dur = clamp(e.text.length / 55, 0.8, 2.6);
+      apply = (p) => {
+        body.textContent = p >= 1 ? e.text : e.text.slice(0, Math.ceil(e.text.length * p));
+        body.classList.toggle('caret', p < 1);
+      };
+    } else if (e.type === 'text' || e.type === 'thinking') {
+      const r = h('div', 'reveal');
+      const inner = h('div', e.type);
+      if (e.type === 'text') inner.innerHTML = markdown(e.text); else inner.textContent = e.text;
+      r.append(inner);
+      el.append(r);
+      dur = e.type === 'text' ? clamp(e.text.length / 160, 0.6, 4.5) : 0.6;
+      apply = (p) => reveal(r, p);
+    } else if (e.type === 'note') {
+      el.append(h('div', 'note', e.text.toUpperCase()));
+      dur = 0.4;
+    } else if (e.type === 'tool') {
+      const d = e.detail || {};
+      const t = h('div', 'tool' + (e.error ? ' err' : '') + (OPEN[e.kind] ? ' open' : ''));
+      const head = h('button', 'tool-head');
+      head.type = 'button';
+      head.setAttribute('aria-expanded', OPEN[e.kind] ? 'true' : 'false');
+      const verb = h('span', 'verb');
+      let target = e.title || e.name;
+      if (e.kind === 'plan') {
+        const done = (d.items || []).filter((x) => x.status === 'completed').length;
+        target = `${done} of ${(d.items || []).length} done`;
+      }
+      head.append(h('span', 'chev', '▶'), verb, h('span', 'target', target), h('span', 'gap'));
+      if (e.kind === 'edit' || e.kind === 'write') {
+        const c = h('span', 'counts');
+        c.innerHTML = `<span class="plus">+${d.added || 0}</span><span class="minus">−${d.removed || 0}</span>`;
+        head.append(c);
+      }
+      const spin = h('span', 'spin');
+      const state = h('span', 'state', 'FAILED');
+      head.append(spin, state);
+      head.addEventListener('click', () => {
+        t.classList.toggle('open');
+        head.setAttribute('aria-expanded', String(t.classList.contains('open')));
+        measureClips(t);
+      });
+      t.append(head);
+
+      const body = h('div', 'tool-body');
+      const r = h('div', 'reveal');
+      body.append(r);
+      let cmdEl = null;
+      if (e.kind === 'shell') {
+        const pre = h('pre', 'term');
+        cmdEl = h('span', 'cmd');
+        pre.append(cmdEl);
+        if (e.output) pre.append('\n', h('span', 'out', e.output));
+        r.append(clip(pre, body));
+      } else if (e.kind === 'edit' || e.kind === 'write') {
+        const pre = h('div', 'diff');
+        for (const [op, line] of d.diff || []) pre.append(h('div', op === '+' ? 'a' : op === '-' ? 'd' : op === '…' ? 's' : '', op === '…' ? '⋯ ' + line : line));
+        if (e.error && e.output) pre.append(h('div', 'd', e.output));
+        r.append(clip(pre, body));
+      } else if (e.kind === 'plan') {
+        const ul = h('ul', 'plan');
+        for (const it of d.items || []) ul.append(h('li', it.status, it.text));
+        r.append(ul);
+      } else {
+        const pre = h('pre', 'term');
+        const parts = [d.input, d.prompt, d.url, d.path && 'in ' + d.path].filter(Boolean);
+        if (parts.length) pre.append(h('span', 'cmd-plain', parts.join('\n')), '\n');
+        if (e.output) pre.append(h('span', 'out', e.output));
+        r.append(clip(pre, body));
+      }
+      t.append(body);
+      el.append(t);
+      dur = 0.7 + Math.min((lines(e.output) + (d.diff ? d.diff.length : 0)) * 0.025, 1.4);
+      const cmd = d.command || '';
+      const [ing, ed] = VERB[e.kind] || VERB.other;
+      apply = (p) => {
+        const running = p < 1;
+        verb.textContent = running ? ing : ed;
+        spin.hidden = !running;
+        state.hidden = running || !e.error;
+        if (cmdEl) {
+          const q = clamp(p / 0.4, 0, 1);
+          cmdEl.textContent = q >= 1 ? cmd : cmd.slice(0, Math.ceil(cmd.length * q));
+        }
+        reveal(r, cmdEl ? clamp((p - 0.25) / 0.75, 0.08, 1) : p);
+      };
+    }
+    feed.append(el);
+    return { el, dur, apply, e };
+  }
+
+  function clip(node, body) {
+    const box = h('div', 'clip');
+    box.append(node);
+    const more = h('button', 'more', 'SHOW ALL');
+    more.type = 'button';
+    more.hidden = true;
+    more.addEventListener('click', () => {
+      const open = box.style.maxHeight === 'none';
+      box.style.maxHeight = open ? '' : 'none';
+      box.classList.toggle('cut', open);
+      more.textContent = open ? 'SHOW ALL' : 'SHOW LESS';
+    });
+    box._more = more;
+    body.append(more);
+    return box;
+  }
+
+  function reveal(r, p) {
+    if (p >= 1) { r.style.height = ''; r.classList.remove('partial'); return; }
+    r.classList.add('partial');
+    r.style.height = Math.round(r.scrollHeight * p) + 'px';
+  }
+
+  function measureClips(el) {
+    for (const box of el.querySelectorAll('.clip')) {
+      if (box._measured || !box.offsetParent) continue;
+      box._measured = true;
+      const cut = box.scrollHeight > box.clientHeight + 4;
+      box.classList.toggle('cut', cut);
+      box._more.hidden = !cut;
+    }
+  }
+
+  // ---------- Stop card ----------
+  const end = $('end');
+  const endBand = h('div', 'band');
+  endBand.innerHTML = `<div class="stop">STOP</div><p>That's the whole session: ${totalMs ? `<b>${minutes(totalMs)}</b> of work, ` : ''}${plural(st.tools, 'tool call', 'tool calls')}, ${plural(st.files, 'file', 'files')} changed.</p>`;
+  const again = h('button', 'key');
+  again.type = 'button';
+  again.innerHTML = ICON.rew + 'REWIND';
+  endBand.append(again);
+  end.append(endBand);
+
+  // ---------- On-screen display ----------
+  const osd = $('osd');
+  let osdTimer = 0;
+  function showOsd(icon, text) {
+    osd.innerHTML = ICON[icon] + esc(text);
+    osd.classList.add('on');
+    clearTimeout(osdTimer);
+    osdTimer = setTimeout(() => osd.classList.remove('on'), 1400);
+  }
+
+  // ---------- Timeline ----------
+  const starts = [];
+  let T = 0;
+  for (const it of items) { starts.push(T); T += it.dur; }
+  let t = 0;
+  let playing = false;
+  let speed = 2;
+  let shown = -1;
+  let follow = true;
+  let last = 0;
+  let current = null;
+
+  // Tape: one bar per prompt, answer and tool call, height by how much happened.
+  const bars = $('bars');
+  const barEls = [];
+  items.forEach((it, i) => {
+    const e = it.e;
+    if (e.type !== 'prompt' && e.type !== 'tool' && e.type !== 'text') { barEls.push(null); return; }
+    let k = 'other', hgt = 0.3;
+    if (e.type === 'prompt') { k = 'prompt'; hgt = 1; }
+    else if (e.type === 'text') { k = 'text'; hgt = 0.18 + Math.min(e.text.length / 1500, 1) * 0.3; }
+    else {
+      const d = e.detail || {};
+      hgt = 0.26 + Math.min((lines(e.output) + (d.diff ? d.diff.length : 0)) / 30, 1) * 0.56;
+      if (e.kind === 'edit' || e.kind === 'write') k = 'edit';
+      if (e.error) { k = 'err'; hgt = Math.max(hgt, 0.62); }
+    }
+    const b = h('div', 'bar k-' + k);
+    b.style.left = (T ? starts[i] / T : 0) * 100 + '%';
+    b.style.height = Math.round(hgt * 100) + '%';
+    bars.append(b);
+    barEls.push(b);
+  });
+  let pastUpTo = 0;
+  function paintTape(idx) {
+    if (idx > pastUpTo) for (let i = pastUpTo; i < idx; i++) barEls[i] && barEls[i].classList.add('past');
+    else for (let i = idx; i < pastUpTo; i++) barEls[i] && barEls[i].classList.remove('past');
+    pastUpTo = idx;
+  }
+
+  function indexAt(time) {
+    let lo = 0, hi = N - 1, ans = 0;
+    while (lo <= hi) { const m = (lo + hi) >> 1; if (starts[m] <= time) { ans = m; lo = m + 1; } else hi = m - 1; }
+    return ans;
+  }
+
+  function render() {
+    if (!N) return;
+    if (t <= 0 && !playing) {
+      for (const it of items) it.el.hidden = true;
+      shown = 0;
+      display(0, 0);
+      return;
+    }
+    const idx = t >= T ? N : indexAt(t);
+    if (idx < shown) for (let i = idx; i < Math.min(shown + 1, N); i++) items[i].el.hidden = true;
+    for (let i = Math.max(0, Math.min(shown, idx)); i < idx; i++) {
+      items[i].el.hidden = false;
+      items[i].apply(1);
+      measureClips(items[i].el);
+    }
+    let p = 1;
+    let cur = idx < N ? idx : N - 1;
+    if (idx < N) {
+      const it = items[idx];
+      p = clamp((t - starts[idx]) / it.dur, 0, 1);
+      // Paused exactly on a boundary: the next event has not started yet.
+      it.el.hidden = p <= 0 && !playing;
+      if (!it.el.hidden) it.apply(p);
+      else cur = idx - 1;
+      for (let i = idx + 1; i < N && !items[i].el.hidden; i++) items[i].el.hidden = true;
+    }
+    shown = idx;
+    if (current) current.classList.remove('current');
+    current = cur >= 0 && t < T ? items[cur].el : null;
+    if (current) current.classList.add('current');
+    const ms = idx >= N ? totalMs : activeAt[idx] + p * ((activeAt[idx + 1] ?? activeAt[idx]) - activeAt[idx]);
+    display(ms, idx);
+    if (follow && playing) window.scrollTo(0, document.documentElement.scrollHeight);
+  }
+
+  function display(ms, idx) {
+    const frac = T ? t / T : 0;
+    $('head').style.left = frac * 100 + '%';
+    $('clock').innerHTML = totalMs ? `${tc(ms)}<span> ${tc(totalMs)}</span>` : `${String(Math.min(idx, N)).padStart(3, '0')}<span> ${N}</span>`;
+    $('tape').setAttribute('aria-valuenow', String(Math.round(frac * 100)));
+    $('tape').setAttribute('aria-valuetext', totalMs ? tc(ms) + ' of ' + tc(totalMs) : idx + ' of ' + N);
+    paintTape(Math.min(idx + (t > 0 ? 1 : 0), N));
+    end.hidden = !(N && t >= T);
+  }
+
+  function frame(now) {
+    if (!playing) return;
+    const dt = Math.min((now - last) / 1000, 0.1);
+    last = now;
+    t = Math.min(T, t + dt * speed);
+    render();
+    if (t >= T) { setPlaying(false, true); showOsd('stop', 'STOP'); return; }
+    requestAnimationFrame(frame);
+  }
+
+  function setPlaying(on, quiet) {
+    if (on && t >= T) { t = 0; shown = N; render(); }
+    if (on !== playing && !quiet) showOsd(on ? 'play' : 'pause', on ? 'PLAY' : 'PAUSE');
+    playing = on;
+    document.body.classList.toggle('playing', on);
+    $('play').innerHTML = on ? ICON.pause : ICON.play;
+    $('play').setAttribute('aria-label', on ? 'Pause (space)' : 'Play (space)');
+    if (on) { follow = true; $('follow').style.display = 'none'; last = performance.now(); requestAnimationFrame(frame); }
+  }
+
+  function seek(time, stop) {
+    t = clamp(time, 0, T);
+    if (stop) setPlaying(false, true);
+    render();
+  }
+
+  function jumpTo(i) {
+    i = clamp(i, 0, N - 1);
+    seek(starts[i] + items[i].dur, true);
+    items[i].el.scrollIntoView({ block: 'center' });
+  }
+
+  const tape = $('tape');
+  const tip = $('tip');
+  const timeAt = (x) => { const r = tape.getBoundingClientRect(); return clamp((x - r.left) / r.width, 0, 1) * T; };
+  let dragging = false;
+  tape.addEventListener('pointerdown', (ev) => {
+    dragging = true;
+    seek(timeAt(ev.clientX), true);
+    try { tape.setPointerCapture(ev.pointerId); } catch { /* synthetic pointers */ }
+  });
+  tape.addEventListener('pointermove', (ev) => {
+    const time = timeAt(ev.clientX);
+    if (dragging) seek(time, true);
+    const i = indexAt(time);
+    const e = items[i] && items[i].e;
+    if (!e) return;
+    const label = e.type === 'prompt' ? 'You: ' + e.text.split('\n')[0]
+      : e.type === 'tool' ? (VERB[e.kind] || VERB.other)[1] + ' ' + (e.title || e.name)
+      : e.type === 'text' ? e.text.split('\n')[0] : e.text || e.type;
+    tip.innerHTML = (totalMs ? `<b>${tc(activeAt[i])}</b>` : '') + esc(label);
+    tip.style.display = 'block';
+    const r = tape.getBoundingClientRect();
+    tip.style.left = clamp(ev.clientX - r.left, 90, r.width - 90) + 'px';
+  });
+  tape.addEventListener('pointerup', () => {
+    dragging = false;
+    const it = items[Math.min(shown, N - 1)];
+    if (it && t < T) it.el.scrollIntoView({ block: 'end' });
+  });
+  tape.addEventListener('pointerleave', () => { tip.style.display = 'none'; });
+  tape.addEventListener('keydown', (ev) => {
+    if (ev.key === 'ArrowRight') { ev.preventDefault(); jumpTo(Math.min(shown, N - 1) + 1); }
+    if (ev.key === 'ArrowLeft') { ev.preventDefault(); jumpTo(Math.min(shown, N) - 2); }
+  });
+
+  // Speed: every option visible, one click each.
+  const SPEEDS = [1, 2, 4, 8];
+  const speedButtons = SPEEDS.map((s, i) => {
+    const b = h('button', '', s + '×');
+    b.type = 'button';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-label', `${s} times speed (key ${i + 1})`);
+    b.addEventListener('click', () => setSpeed(s, true));
+    $('speeds').append(b);
+    return b;
+  });
+  function setSpeed(s, announce) {
+    speed = s;
+    speedButtons.forEach((b, i) => b.setAttribute('aria-checked', String(SPEEDS[i] === s)));
+    if (announce) showOsd(s === 1 ? 'play' : 'ff', s === 1 ? 'PLAY 1×' : `FF ${s}×`);
+  }
+  setSpeed(2);
+
+  $('play').addEventListener('click', () => setPlaying(!playing));
+  $('all').addEventListener('click', () => { seek(T, true); showOsd('ff', 'END'); });
+  go.addEventListener('click', () => { seek(0, true); setPlaying(true); });
+  again.addEventListener('click', () => { seek(0, true); window.scrollTo(0, 0); showOsd('rew', 'REW'); setPlaying(true, true); });
+  readAll.addEventListener('click', () => { seek(T, true); items[0] && items[0].el.scrollIntoView({ block: 'start' }); });
+  $('follow').addEventListener('click', () => { follow = true; $('follow').style.display = 'none'; window.scrollTo(0, document.documentElement.scrollHeight); });
+  $('copy').addEventListener('click', async () => {
+    const code = $('copy').querySelector('code');
+    try { await navigator.clipboard.writeText('npx agentvcr'); code.textContent = 'Copied'; } catch { code.textContent = 'npx agentvcr'; }
+    setTimeout(() => { code.textContent = 'npx agentvcr'; }, 1500);
+  });
+
+  // Scrolling up while playing stops auto-follow until the reader asks for it again.
+  const unfollow = () => { if (playing && follow) { follow = false; $('follow').style.display = 'block'; } };
+  window.addEventListener('wheel', (ev) => { if (ev.deltaY < 0) unfollow(); }, { passive: true });
+  window.addEventListener('touchmove', unfollow, { passive: true });
+
+  document.addEventListener('keydown', (ev) => {
+    if (ev.target.closest && ev.target.closest('input, textarea, [contenteditable]')) return;
+    if (ev.key === ' ' && !ev.target.closest('button')) { ev.preventDefault(); setPlaying(!playing); }
+    else if (ev.key === 'End') { ev.preventDefault(); seek(T, true); }
+    else if (ev.key === 'Home') { ev.preventDefault(); seek(0, true); window.scrollTo(0, 0); }
+    else if (ev.key === 'ArrowRight' && ev.target === document.body) jumpTo(Math.min(shown, N - 1) + 1);
+    else if (ev.key === 'ArrowLeft' && ev.target === document.body) jumpTo(Math.min(shown, N) - 2);
+    else if (/^[1-4]$/.test(ev.key)) setSpeed(SPEEDS[+ev.key - 1], true);
+  });
+
+  // #42 links to the moment right after event 42.
+  function fromHash() {
+    const m = location.hash.match(/^#(\d+)$/);
+    if (m && +m[1] < N) { jumpTo(+m[1]); return true; }
+    return false;
+  }
+  window.addEventListener('hashchange', fromHash);
+  $('play').innerHTML = ICON.play;
+  if (!fromHash()) {
+    if (/[?&]autoplay\b/.test(location.search)) setPlaying(true);
+    else render();
+  }
+}
+
+// Exported files carry their data. The share viewer has none and loads a gist
+// named in the URL instead: /v/?g=<owner>/<gist id>
+function loadShared() {
+  const poster = document.getElementById('poster');
+  const show = (big, small) => { poster.innerHTML = `<div class="counter">${big}</div><p class="lede">${small}</p>`; };
+  const g = new URLSearchParams(location.search).get('g') || '';
+  if (!/^[\w-]+\/[0-9a-f]+$/i.test(g)) {
+    show('NO SIGNAL', 'This link has no replay in it. Make one from your own session with <code>npx agentvcr --share</code>.');
+    return;
+  }
+  show('LOADING', 'Fetching the replay.');
+  const [owner, id] = g.split('/');
+  fetch(`https://gist.githubusercontent.com/${owner}/${id}/raw/agentvcr.json`)
+    .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+    .then((d) => {
+      const S = d.session || d;
+      if (!S || !Array.isArray(S.events)) throw new Error('not a replay');
+      document.title = S.title;
+      boot(S);
+    })
+    .catch(() => show('NO SIGNAL', 'This replay could not be loaded. The gist may have been deleted, or the link is incomplete.'));
+}
+
+const embedded = JSON.parse(document.getElementById('agentvcr-data').textContent);
+if (embedded) boot(embedded);
+else loadShared();
+})();
+</script>
+</body>
+</html>
