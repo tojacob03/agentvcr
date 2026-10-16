@@ -45,13 +45,13 @@ It writes `agentvcr-<title>.html` and opens it in your browser.
 ## What's in a replay
 
 - A summary up top: what happened in one sentence, and a diffstat of every file changed. Click a file to jump to its first edit.
-- Playback that types prompts and commands and streams answers, at 1× to 16×, with a clock that shows real working time
+- Playback that types prompts and commands and streams answers, with 1×, 2×, 4× and 8× one click away and a counter that shows real working time
 - The whole session as a waveform under the player: prompts tall and white, edits green, failures red. Drag to scrub.
 - Real diffs for edits and patches, terminal output, plans and checklists, rendered Markdown
 - Links to exact moments: `replay.html#42`
 - One self-contained file that works offline, in dark and light mode, and on phones
 
-Keys: `space` play/pause · `←` `→` previous/next step · `1`–`5` speed · `Home` / `End`
+Keys: `space` play/pause, `←` `→` previous/next step, `1`–`4` speed, `Home` / `End`.
 
 ## Privacy
 
@@ -91,4 +91,4 @@ Adding an agent means writing one parser that returns the shared format. See `sr
 
 ## License
 
-MIT
+MIT. Replays embed a subset of the [VT323](https://fonts.google.com/specimen/VT323) font, licensed under the SIL Open Font License 1.1 (see [`licenses/VT323-OFL.txt`](licenses/VT323-OFL.txt)).
