@@ -131,6 +131,9 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 .ev:hover .tc { color: var(--dim); }
 .ev.current::before { content: ""; position: absolute; left: calc(var(--gutter) - 22px); top: 7px; width: 9px; height: 9px; background: var(--screen); }
 .ev.prompt { margin-top: 36px; }
+/* Runs of closed tool calls (reads, searches, browser steps) sit tight together. */
+.ev.closed { margin-bottom: 2px; }
+.ev.closed + .ev:not(.closed) { margin-top: 12px; }
 .band { background: var(--screen); color: #fff; padding: 14px 20px 16px; max-width: 46em; box-shadow: 5px 5px 0 rgba(27, 42, 230, 0.18); }
 .band .who { font: 20px/1 var(--osd); letter-spacing: 0.06em; color: var(--screen-dim); margin-bottom: 6px; }
 .say { font-size: 18px; line-height: 1.45; font-weight: 600; white-space: pre-wrap; word-wrap: break-word; }
@@ -459,7 +462,7 @@ function boot(S) {
   const items = S.events.map((e, i) => build(e, i));
 
   function build(e, i) {
-    const kindClass = e.type === 'tool' ? ' k-' + e.kind + (e.error ? ' err' : '') : '';
+    const kindClass = e.type === 'tool' ? ' k-' + e.kind + (e.error ? ' err' : '') + (OPEN[e.kind] ? '' : ' closed') : '';
     const el = h('section', 'ev ' + e.type + kindClass);
     el.id = 'e' + i;
     el.hidden = true;

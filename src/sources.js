@@ -3,15 +3,20 @@
 import { readdirSync, statSync, openSync, readSync, closeSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { homedir } from 'node:os';
+import { createHash } from 'node:crypto';
 
 export const claudeRoot = () => join(process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude'), 'projects');
 export const codexRoot = () => join(process.env.CODEX_HOME || join(homedir(), '.codex'), 'sessions');
+export const cursorRoot = () => join(homedir(), '.cursor', 'projects');
+export const geminiRoot = () => join(process.env.GEMINI_CLI_HOME || join(homedir(), '.gemini'), 'tmp');
 
 // Claude Code stores each project under its cwd with every non-alphanumeric char as "-".
 export const encodeCwd = (cwd) => cwd.replace(/[^A-Za-z0-9]/g, '-');
 
 export function detectAgent(path, head = readHead(path)) {
   if (/"type":"session_meta"|"type":"response_item"/.test(head)) return 'codex';
+  if (/^\{"role":"(user|assistant)","message"/m.test(head) || /agent-transcripts/.test(path)) return 'cursor';
+  if (/"projectHash"|"\$rewindTo"|"type":"gemini"/.test(head)) return 'gemini';
   return 'claude';
 }
 
@@ -29,6 +34,15 @@ export function listSessions({ cwd = process.cwd(), all = false } = {}) {
   for (const path of walk(codexRoot(), (f) => f.startsWith('rollout-') && f.endsWith('.jsonl'))) {
     if (!all && codexCwd(path) !== cwd) continue;
     out.push(entry('codex', path));
+  }
+  // Cursor encodes the project path like Claude Code, minus the leading slash.
+  const cursorDir = all ? cursorRoot() : join(cursorRoot(), cwd.replace(/^[\\/]+/, '').replace(/[^A-Za-z0-9]/g, '-'));
+  for (const path of walk(cursorDir, (f, p) => f.endsWith('.jsonl') && /agent-transcripts/.test(p))) out.push(entry('cursor', path));
+  // Gemini CLI keys project folders by a hash of the project root.
+  const hash = createHash('sha256').update(cwd).digest('hex');
+  for (const path of walk(geminiRoot(), (f, p) => /^session-.*\.jsonl?$/.test(f) && /[\\/]chats[\\/]/.test(p))) {
+    if (!all && !path.includes(hash) && !readHead(path).includes(JSON.stringify(cwd).slice(1, -1))) continue;
+    out.push(entry('gemini', path));
   }
   return out.filter((s) => s.size > 0).sort((a, b) => b.mtime - a.mtime);
 }
@@ -81,7 +95,7 @@ function* walk(dir, match) {
     let st;
     try { st = statSync(p); } catch { continue; }
     if (st.isDirectory()) yield* walk(p, match);
-    else if (match(name)) yield p;
+    else if (match(name, p)) yield p;
   }
 }
 

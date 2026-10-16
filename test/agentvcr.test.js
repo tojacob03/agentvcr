@@ -160,3 +160,66 @@ test('viewer: renders without embedded data', async () => {
   assert.ok(html.includes('id="agentvcr-data">null</script>'));
   assert.ok(html.includes('function loadShared()'));
 });
+
+test('cursor: prompts, tool calls and aborted turns', async () => {
+  const { parseCursor, cursorTimestamp } = await import('../src/cursor.js');
+  const raw = jsonl(
+    { role: 'user', message: { content: [{ type: 'text', text: '<timestamp>Thursday, Sep 17, 2026, 7:30 PM (UTC+2)</timestamp>\n<user_query>\nfix the header\n</user_query>' }] } },
+    { role: 'assistant', message: { content: [
+      { type: 'text', text: 'Looking at it.' },
+      { type: 'tool_use', name: 'GetDynamicTools', input: { namespace: 'cursor' } },
+      { type: 'tool_use', name: 'Shell', input: { command: 'npm run lint' } },
+      { type: 'tool_use', name: 'StrReplace', input: { path: '/a/Header.tsx', old_string: 'x', new_string: 'y\nz' } },
+      { type: 'tool_use', name: 'CallDynamicTool', input: { namespace: 'cursor', toolName: 'TodoWrite', arguments: { todos: [{ content: 'one', status: 'completed' }] } } },
+    ] } },
+    { type: 'turn_ended', status: 'error', error: 'User aborted request' },
+  );
+  const s = parseCursor(raw);
+  assert.equal(s.agent, 'Cursor');
+  assert.equal(s.title, 'fix the header');
+  assert.equal(s.startedAt, '2026-09-17T17:30:00.000Z');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'text', 'shell', 'edit', 'plan', 'note']);
+  assert.equal(s.events[3].detail.added, 2);
+  assert.equal(cursorTimestamp('<timestamp>Monday, Jan 5, 2026, 12:05 AM (UTC-5)</timestamp>'), '2026-01-05T05:05:00.000Z');
+});
+
+test('gemini: jsonl records with patches and rewinds', async () => {
+  const { parseGemini } = await import('../src/gemini.js');
+  const raw = jsonl(
+    { sessionId: 's1', projectHash: 'h', startTime: T(0) },
+    { id: 'u1', timestamp: T(0), type: 'user', content: [{ text: 'first try' }] },
+    { $rewindTo: 'u1' },
+    { id: 'u2', timestamp: T(1), type: 'user', content: 'add a health check' },
+    { id: 'g1', timestamp: T(2), type: 'gemini', model: 'gemini-3-pro', content: 'On it.', toolCalls: [
+      { id: 't1', name: 'run_shell_command', args: { command: 'npm test' }, status: 'error', timestamp: T(3), resultDisplay: '1 failing' },
+      { id: 't2', name: 'replace', args: { file_path: 'src/app.ts', old_string: 'a', new_string: 'b' }, status: 'success', timestamp: T(4) },
+    ] },
+    { $patch: { id: 'g1', toolCalls: [{ id: 't2', result: [{ functionResponse: { name: 'replace', response: { output: 'ok' } } }] }] } },
+  );
+  const s = parseGemini(raw);
+  assert.equal(s.agent, 'Gemini CLI');
+  assert.equal(s.model, 'gemini-3-pro');
+  assert.equal(s.title, 'add a health check');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'text', 'shell', 'edit']);
+  assert.equal(s.events[2].error, true);
+  assert.equal(s.events[2].output, '1 failing');
+  assert.equal(s.events[3].output, 'ok');
+});
+
+test('gemini: legacy single json file', async () => {
+  const { parseGemini } = await import('../src/gemini.js');
+  const s = parseGemini(JSON.stringify({ sessionId: 's', projectHash: 'h', summary: 'Health check endpoint', messages: [
+    { id: 'a', timestamp: T(0), type: 'user', content: 'hi' },
+    { id: 'b', timestamp: T(1), type: 'gemini', content: 'hello', toolCalls: [{ id: 'x', name: 'write_todos', args: { todos: [{ description: 'one', status: 'pending' }] }, status: 'success', timestamp: T(1) }] },
+  ] }, null, 2));
+  assert.equal(s.title, 'Health check endpoint');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'text', 'plan']);
+});
+
+test('detect: picks the right parser from the first lines', async () => {
+  const { detectAgent } = await import('../src/sources.js');
+  assert.equal(detectAgent('/x.jsonl', '{"type":"session_meta","payload":{}}'), 'codex');
+  assert.equal(detectAgent('/x.jsonl', '{"role":"user","message":{"content":[]}}'), 'cursor');
+  assert.equal(detectAgent('/x.jsonl', '{"sessionId":"s","projectHash":"h"}'), 'gemini');
+  assert.equal(detectAgent('/x.jsonl', '{"type":"user","message":{"role":"user","content":"hi"}}'), 'claude');
+});
