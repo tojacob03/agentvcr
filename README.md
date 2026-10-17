@@ -35,7 +35,7 @@ npx agentvcr-cli <file|id>    # a transcript file or a session id
 npx agentvcr-cli --list --all # every session on this machine, all agents
 ```
 
-It writes `agentvcr-<title>.html` and opens it in your browser.
+It writes `agentvcr-<title>.html` and opens it in your browser. Pass `-o session.md` for a Markdown transcript instead, with each tool call folded into a `<details>` block, ready to paste into a pull request or docs page.
 
 | Option | |
 |---|---|

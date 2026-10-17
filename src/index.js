@@ -2,8 +2,9 @@ import { readFileSync } from 'node:fs';
 import { homedir, userInfo } from 'node:os';
 import { parseTranscript } from './parse.js';
 import { renderHtml, renderViewer, toPlayerData } from './render.js';
+import { renderMarkdown } from './markdown.js';
 
-export { renderHtml, renderViewer, toPlayerData, parseTranscript };
+export { renderHtml, renderViewer, renderMarkdown, toPlayerData, parseTranscript };
 
 export function loadSession(path, opts = {}) {
   let user = '';

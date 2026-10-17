@@ -3,7 +3,7 @@ import { writeFileSync, existsSync, readFileSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline/promises';
-import { loadSession, renderHtml } from '../src/index.js';
+import { loadSession, renderHtml, renderMarkdown } from '../src/index.js';
 import { listSessions, findById, readHead, readTail } from '../src/sources.js';
 import { share } from '../src/share.js';
 
@@ -18,7 +18,8 @@ Usage
 Options
   -s, --share        upload the redacted replay as a secret gist and print a link
                      (uses the GitHub CLI, or GITHUB_TOKEN with the gist scope)
-  -o, --out <file>   where to write the HTML (default: ./agentvcr-<title>.html)
+  -o, --out <file>   where to write it (default: ./agentvcr-<title>.html);
+                     a .md file gets a Markdown transcript for PRs and docs
   -l, --list         list sessions and exit
   -a, --all          look at sessions from every project, not just this one
       --title <t>    set the replay title
@@ -107,6 +108,11 @@ function slug(s) {
   return s.toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').slice(0, 48).replace(/-+$/, '') || 'session';
 }
 
+// .md output is a Markdown transcript; anything else is the HTML replay.
+function render(session, link = '') {
+  return opts.out && /\.(md|markdown)$/i.test(opts.out) ? renderMarkdown(session, { link }) : renderHtml(session);
+}
+
 function openFile(file) {
   const cmd = process.platform === 'darwin' ? ['open', [file]] : process.platform === 'win32' ? ['cmd', ['/c', 'start', '', file]] : ['xdg-open', [file]];
   try { spawn(cmd[0], cmd[1], { stdio: 'ignore', detached: true }).on('error', () => {}).unref(); } catch { /* no browser, fine */ }
@@ -143,7 +149,7 @@ async function main() {
 
   if (opts.share) {
     const { url, gist, embed } = await share(session);
-    if (opts.out) writeFileSync(resolve(opts.out), renderHtml(session));
+    if (opts.out) writeFileSync(resolve(opts.out), render(session, url));
     if (opts.json) { console.log(JSON.stringify(result({ url, gist, embed, file: opts.out ? resolve(opts.out) : null }))); return; }
     console.log(`\n✓ ${url}`);
     summary();
@@ -154,13 +160,13 @@ async function main() {
   }
 
   const out = resolve(opts.out || `agentvcr-${slug(session.title)}.html`);
-  const html = renderHtml(session);
+  const html = render(session);
   writeFileSync(out, html);
   if (opts.json) { console.log(JSON.stringify(result({ file: out, url: null }))); return; }
   console.log(`\n✓ ${out} ${dim(`(${Math.round(Buffer.byteLength(html) / 1024)} KB)`)}`);
   summary();
   console.log(dim('  Skim it before sharing, or run with --share to get a link.'));
-  if (opts.open) openFile(out);
+  if (opts.open && !/\.(md|markdown)$/i.test(out)) openFile(out);
 }
 
 main().catch((e) => fail(e.stack || String(e)));

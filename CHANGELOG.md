@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Markdown export: `-o session.md` writes a transcript with each tool call folded into a `<details>` block, ready for pull requests, issues and docs.
+
 ## 0.3.1
 
 - Skipping to the end, reading the whole transcript or opening a deep link late in a long session no longer blocks the page: 11 ms instead of 4.9 s for a session with 5,000 tool calls.

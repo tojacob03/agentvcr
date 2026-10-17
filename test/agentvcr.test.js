@@ -314,3 +314,17 @@ test('redact: provider tokens and webhook URLs', () => {
     assert.ok(out.endsWith(' end'));
   }
 });
+
+test('markdown: transcript with folded tool calls and a safe fence', async () => {
+  const { renderMarkdown } = await import('../src/markdown.js');
+  const s = parseClaude(claudeRaw);
+  s.events[2].output = 'has ``` inside';
+  const md = renderMarkdown(s, { link: 'https://x.test/v/?g=a/b' });
+  assert.ok(md.startsWith('# Fix the flaky test\n'));
+  assert.ok(md.includes('> make the test pass'));
+  assert.ok(md.includes('[▶ Watch the replay](https://x.test/v/?g=a/b)'));
+  assert.ok(md.includes('<summary>Ran <code>npm test</code> ❌</summary>'));
+  assert.ok(md.includes('````console'), 'fence longer than the backticks inside');
+  assert.ok(md.includes('<summary>Edited <code>src/a.js</code> (+2 −1)</summary>'));
+  assert.ok(md.includes('```diff\n a\n-b\n+B'));
+});
