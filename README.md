@@ -125,7 +125,7 @@ Keys: `space` play/pause, `←` `→` previous/next step, `1`–`4` speed, `Home
 
 Everything runs locally unless you pass `--share`. Before anything is written, agentvcr masks:
 
-- API keys and tokens (Anthropic, OpenAI, GitHub, GitLab, Slack, AWS, Google, Stripe, npm), JWTs, bearer tokens and private keys
+- API keys and tokens (Anthropic, OpenAI, OpenRouter, Groq, Hugging Face, Replicate, GitHub, GitLab, Slack, AWS, Google, Stripe, Supabase, SendGrid, Mapbox, npm), JWTs, bearer tokens, private keys, and Slack and Discord webhook URLs
 - `KEY=value` pairs whose name looks like a secret (`password`, `api_key`, `token`, …)
 - credentials inside URLs, email addresses, your home directory and your username
 

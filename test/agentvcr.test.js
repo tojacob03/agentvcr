@@ -294,3 +294,23 @@ test('claude-sdk: execution file from claude-code-action', async () => {
   assert.deepEqual(session.events.map((e) => e.kind || e.type), ['text', 'shell']);
   assert.equal(session.events[1].output, 'ok');
 });
+
+test('redact: provider tokens and webhook URLs', () => {
+  const r = makeRedactor();
+  const samples = [
+    'hf_' + 'a'.repeat(34),
+    'sk-or-v1-' + 'f'.repeat(64),
+    'gsk_' + 'B'.repeat(52),
+    'r8_' + 'c'.repeat(37),
+    'sbp_' + 'd'.repeat(40),
+    'SG.' + 'e'.repeat(22) + '.' + 'f'.repeat(43),
+    'pk.eyJ' + 'g'.repeat(30) + '.' + 'h'.repeat(20),
+    'https://discord.com/api/webhooks/123456789/' + 'i'.repeat(60),
+    'https://hooks.slack.com/services/T000/B000/' + 'j'.repeat(24),
+  ];
+  for (const s of samples) {
+    const out = r(`value: ${s} end`);
+    assert.ok(!out.includes(s), `should mask ${s.slice(0, 12)}`);
+    assert.ok(out.endsWith(' end'));
+  }
+});
