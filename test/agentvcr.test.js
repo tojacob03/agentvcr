@@ -345,3 +345,14 @@ test('action comment: inline transcript, cut to fit a GitHub comment', async () 
   assert.ok(cut.trimEnd().endsWith('*The transcript is cut here; the full replay is linked above.*'));
   assert.ok(cut.split('<details>').length === cut.split('</details>').length, 'no half-open block');
 });
+
+test('video: a clear message when Chrome or ffmpeg is missing', async () => {
+  const { recordVideo } = await import('../src/video.js');
+  const saved = { c: process.env.CHROME_PATH, f: process.env.FFMPEG_PATH };
+  process.env.FFMPEG_PATH = '/nonexistent/ffmpeg';
+  try {
+    await assert.rejects(recordVideo('<html></html>', '/tmp/x.gif'), /needs .*ffmpeg \(or set FFMPEG_PATH\)/);
+  } finally {
+    if (saved.f === undefined) delete process.env.FFMPEG_PATH; else process.env.FFMPEG_PATH = saved.f;
+  }
+});

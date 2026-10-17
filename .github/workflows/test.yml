@@ -45,3 +45,7 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/smoke.mjs
+      - name: Record a clip
+        run: |
+          node bin/agentvcr.js examples/demo-session.jsonl -o clip.gif
+          test "$(wc -c < clip.gif)" -gt 100000

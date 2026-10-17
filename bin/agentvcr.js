@@ -6,6 +6,7 @@ import { createInterface } from 'node:readline/promises';
 import { loadSession, renderHtml, renderMarkdown } from '../src/index.js';
 import { listSessions, findById, readHead, readTail } from '../src/sources.js';
 import { share } from '../src/share.js';
+import { recordVideo } from '../src/video.js';
 
 const HELP = `agentvcr: turn a coding agent session into a replay you can share.
 
@@ -19,7 +20,8 @@ Options
   -s, --share        upload the redacted replay as a secret gist and print a link
                      (uses the GitHub CLI, or GITHUB_TOKEN with the gist scope)
   -o, --out <file>   where to write it (default: ./agentvcr-<title>.html);
-                     a .md file gets a Markdown transcript for PRs and docs
+                     .md writes a Markdown transcript for PRs and docs,
+                     .mp4 or .gif records a clip (needs Chrome and ffmpeg)
   -l, --list         list sessions and exit
   -a, --all          look at sessions from every project, not just this one
       --title <t>    set the replay title
@@ -160,6 +162,19 @@ async function main() {
   }
 
   const out = resolve(opts.out || `agentvcr-${slug(session.title)}.html`);
+  if (/\.(mp4|gif)$/i.test(out)) {
+    if (!opts.json) process.stderr.write(dim('Recording'));
+    let seconds;
+    try {
+      ({ seconds } = await recordVideo(renderHtml(session), out, { onProgress: () => { if (!opts.json) process.stderr.write(dim('.')); } }));
+    } catch (e) {
+      fail(`\n${e.message}`);
+    }
+    if (opts.json) { console.log(JSON.stringify(result({ file: out, url: null, seconds }))); return; }
+    console.log(`\n✓ ${out} ${dim(`(${seconds.toFixed(1)} s)`)}`);
+    summary();
+    return;
+  }
   const html = render(session);
   writeFileSync(out, html);
   if (opts.json) { console.log(JSON.stringify(result({ file: out, url: null }))); return; }

@@ -35,12 +35,12 @@ npx agentvcr-cli <file|id>    # a transcript file or a session id
 npx agentvcr-cli --list --all # every session on this machine, all agents
 ```
 
-It writes `agentvcr-<title>.html` and opens it in your browser. Pass `-o session.md` for a Markdown transcript instead, with each tool call folded into a `<details>` block, ready to paste into a pull request or docs page.
+It writes `agentvcr-<title>.html` and opens it in your browser. Pass `-o session.md` for a Markdown transcript instead, with each tool call folded into a `<details>` block, ready to paste into a pull request or docs page. Pass `-o clip.mp4` or `-o clip.gif` for a short clip to post: it plays the replay at 4× in your installed Chrome and encodes it with ffmpeg, no extra packages.
 
 | Option | |
 |---|---|
 | `-s, --share` | upload the masked replay as a secret gist and print a link |
-| `-o, --out <file>` | output path |
+| `-o, --out <file>` | output path; `.md` writes a Markdown transcript, `.mp4` or `.gif` records a clip with your installed Chrome and ffmpeg |
 | `-a, --all` | include sessions from every project |
 | `--title <text>` | set the replay title |
 | `--thinking` | include reasoning summaries when the transcript has them |
