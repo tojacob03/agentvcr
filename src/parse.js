@@ -4,6 +4,7 @@ import { parseCursor } from './cursor.js';
 import { parseGemini } from './gemini.js';
 import { parseOpenCode } from './opencode.js';
 import { parseCline } from './cline.js';
+import { parseQwen } from './qwen.js';
 import { detectAgent } from './detect.js';
 import { makeRedactor, deepMap } from './redact.js';
 
@@ -17,6 +18,7 @@ export function parseTranscript(raw, { path = '', redact = true, home = '', user
     gemini: () => parseGemini(raw, { thinking }),
     opencode: () => parseOpenCode(raw),
     cline: () => parseCline(raw, { path, cwd, thinking }),
+    qwen: () => parseQwen(raw, { thinking }),
     claude: () => parseClaude(raw, { thinking, sidechains }),
     'claude-sdk': () => parseClaudeSdk(raw, { thinking, sidechains }),
   };

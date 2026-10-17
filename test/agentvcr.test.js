@@ -476,3 +476,40 @@ test('cline: SDK tool inputs in the shapes Cline\'s own tests use', async () => 
   assert.deepEqual(s.events.slice(1).map((e) => e.title ?? e.text), ['ls -la /tmp', 'ls -la', 'retry(', 'retry(, backoff', 'src/a.ts', 'https://example.com/docs', '/src/config.ts', 'All done!']);
   assert.equal(s.events[5].detail.added, 1);
 });
+
+test('qwen: the active branch after a rewind, tool results and exact file diffs', async () => {
+  const { parseQwen } = await import('../src/qwen.js');
+  const { detectAgent } = await import('../src/detect.js');
+  const base = { sessionId: 's', cwd: '/home/ada/app', version: '0.9.0', gitBranch: 'main' };
+  const rec = (uuid, parentUuid, s, type, extra) => ({ uuid, parentUuid, timestamp: T(s), type, ...base, ...extra });
+  const raw = jsonl(
+    rec('u1', null, 0, 'user', { message: { role: 'user', parts: [{ text: 'add a health check' }] } }),
+    rec('a1', 'u1', 2, 'assistant', { model: 'qwen3-coder-plus', usageMetadata: { promptTokenCount: 1000, candidatesTokenCount: 40 }, message: { role: 'model', parts: [{ text: 'Planning it.', thought: true }, { text: 'Writing the route.' }, { functionCall: { id: 'c1', name: 'write_file', args: { file_path: '/home/ada/app/src/health.ts', content: 'export const ok = true;\n' } } }] } }),
+    rec('a1', 'u1', 2, 'assistant', { message: { role: 'model', parts: [{ functionCall: { id: 'c2', name: 'run_shell_command', args: { command: 'npm test' } } }] } }),
+    rec('t1', 'a1', 3, 'tool_result', { message: { role: 'user', parts: [{ functionResponse: { id: 'c1', name: 'write_file', response: { output: 'ok' } } }] }, toolCallResult: { callId: 'c1', status: 'success', resultDisplay: { fileName: 'health.ts', fileDiff: '', originalContent: 'export const ok = false;\n', newContent: 'export const ok = true;\n' } } }),
+    rec('t2', 't1', 4, 'tool_result', { message: { role: 'user', parts: [{ functionResponse: { id: 'c2', name: 'run_shell_command', response: { output: '1 failing' } } }] }, toolCallResult: { callId: 'c2', status: 'error', resultDisplay: '1 failing' } }),
+    // Rewound: the user went back to u1 and asked something else.
+    rec('u2', 'u1', 5, 'user', { message: { role: 'user', parts: [{ text: 'never mind, use the existing /status route' }] } }),
+    rec('n1', 'u2', 6, 'user', { subtype: 'notification', message: { role: 'user', parts: [{ text: 'background task finished' }] } }),
+    rec('a2', 'n1', 7, 'assistant', { usageMetadata: { promptTokenCount: 1200, candidatesTokenCount: 10 }, message: { role: 'model', parts: [{ text: 'Done, /status already covers it.' }] } }),
+    { uuid: 'x1', parentUuid: 'a2', sessionId: 's', timestamp: T(8), type: 'system', subtype: 'custom_title', systemPayload: { customTitle: 'Health check' } },
+    { uuid: 'x2', parentUuid: null, sessionId: 's', timestamp: T(9), type: 'system', subtype: 'session_sources_snapshot' },
+  );
+  assert.equal(detectAgent('/x/s.jsonl', raw.slice(0, 2000)), 'qwen');
+  const s = parseQwen(raw);
+  assert.equal(s.agent, 'Qwen Code');
+  assert.equal(s.title, 'Health check');
+  assert.equal(s.branch, 'main');
+  assert.equal(s.model, '');
+  assert.deepEqual(s.events.map((e) => e.type === 'prompt' ? e.text : e.kind || e.type), ['add a health check', 'never mind, use the existing /status route', 'text']);
+  assert.deepEqual(s.stats.tokens, { in: 1200, out: 10 }, 'abandoned branch not counted');
+
+  // Without the rewind, the first branch is the conversation.
+  const kept = parseQwen(raw.split('\n').slice(0, 5).join('\n'), { thinking: true });
+  assert.deepEqual(kept.events.map((e) => e.kind || e.type), ['prompt', 'thinking', 'text', 'edit', 'shell']);
+  assert.equal(kept.model, 'qwen3-coder-plus');
+  assert.deepEqual(kept.events[3].detail.diff.map(([op]) => op), ['-', '+'], 'overwrite shows as an edit of one line');
+  assert.equal(kept.events[3].title, 'src/health.ts');
+  assert.equal(kept.events[4].error, true);
+  assert.equal(kept.events[4].output, '1 failing');
+});

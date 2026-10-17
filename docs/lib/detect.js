@@ -10,5 +10,7 @@ export function detectAgent(path, head) {
   // message list. (Claude Code lines also carry msg_ ids, so the ids alone are no sign.)
   if (/^\s*\{\s*"(info|session|messages)"\s*:/.test(head) || (/^\s*\[/.test(head) && /"id"\s*:\s*"msg_/.test(head))) return 'opencode';
   if (/"projectHash"|"\$rewindTo"|"type":"gemini"/.test(head)) return 'gemini';
+  // Qwen Code records look like Claude Code's, but their messages carry Gemini parts.
+  if (/"message":\{"role":"(user|model)","parts":\[/.test(head) || /[\\/]\.qwen[\\/]projects[\\/]/.test(path)) return 'qwen';
   return 'claude';
 }

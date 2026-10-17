@@ -79,6 +79,7 @@ function peekTitle(path) {
     || head.match(/<user_query>(?:\\n)?((?:[^"\\<]|\\.){4,200})/)?.[1]
     || head.match(/"type":"user","content":"((?:[^"\\]|\\.){4,200})/)?.[1]
     || head.match(/"say":"(?:task|text)","text":"((?:[^"\\]|\\.){4,200})/)?.[1]
+    || head.match(/"type":"user",[^\n]*?"message":\{"role":"user","parts":\[\{"text":"((?:[^"\\]|\\.){4,200})/)?.[1]
     || head.match(/<user_input mode=\\"\w+\\">((?:[^"\\<]|\\.){4,200})/)?.[1] || '';
   let t = pick;
   try { t = JSON.parse(`"${pick}"`); } catch { /* raw */ }

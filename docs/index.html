@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>agentvcr</title>
-<meta name="description" content="Replays for AI coding sessions. Turn a Claude Code, Codex, Cursor, Gemini CLI, Cline or OpenCode session into one HTML file anyone can watch, or a link.">
+<meta name="description" content="Replays for AI coding sessions. Turn a Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline or OpenCode session into one HTML file anyone can watch, or a link.">
 <meta property="og:title" content="agentvcr: replays for AI coding sessions">
 <meta property="og:description" content="Turn a Claude Code, Codex, Cursor or Gemini CLI session into one HTML file anyone can watch, or a link. npx agentvcr-cli">
 <meta property="og:image" content="https://tojacob03.github.io/agentvcr/social.png">
@@ -318,7 +318,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
       <p style="margin:0">One command turns a coding agent session into a replay you can send as a link or get on every pull request.</p>
     </div>
     <div class="tile blue act rise in-load" style="--i:4">
-      <p>Claude Code, Codex, Cursor, Gemini CLI, Cline and OpenCode. No account, no upload.</p>
+      <p>Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline and OpenCode. No account, no upload.</p>
       <button class="copybox" type="button" data-copy="npx agentvcr-cli"><code>npx agentvcr-cli</code><span>COPY</span></button>
     </div>
   </div>
@@ -415,6 +415,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
         <button role="tab" aria-selected="false" aria-controls="ag-codex" id="t-codex"><b>Codex</b><span>~/.codex</span></button>
         <button role="tab" aria-selected="false" aria-controls="ag-cursor" id="t-cursor"><b>Cursor</b><span>~/.cursor</span></button>
         <button role="tab" aria-selected="false" aria-controls="ag-gemini" id="t-gemini"><b>Gemini CLI</b><span>~/.gemini</span></button>
+        <button role="tab" aria-selected="false" aria-controls="ag-qwen" id="t-qwen"><b>Qwen Code</b><span>~/.qwen</span></button>
         <button role="tab" aria-selected="false" aria-controls="ag-cline" id="t-cline"><b>Cline</b><span>~/.cline</span></button>
         <button role="tab" aria-selected="false" aria-controls="ag-opencode" id="t-opencode"><b>OpenCode</b><span>opencode export</span></button>
       </div>
@@ -442,6 +443,12 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
           <div class="band"><b>Found in</b><p><code>~/.gemini/tmp/…/chats</code><small>Both the JSONL format and the older JSON files.</small></p></div>
           <div class="band"><b>On the tape</b><p>Prompts, answers, shell commands, edits, searches, todos<small>Rewinds and edits to earlier messages are applied the way the CLI loads them.</small></p></div>
           <div class="band"><b>Counter</b><p>Real working time from the timestamps<small>Thoughts appear with --thinking.</small></p></div>
+          <div class="band"><b>Shortcut</b><p><code>npx agentvcr-cli last</code><small>Run it in the project folder after the session.</small></p></div>
+        </div>
+        <div class="bands panel-agent" role="tabpanel" id="ag-qwen" aria-labelledby="t-qwen">
+          <div class="band"><b>Found in</b><p><code>~/.qwen/projects/…/chats</code><small>Matched to your project by its folder, like Claude Code.</small></p></div>
+          <div class="band"><b>On the tape</b><p>Prompts, answers, shell output, edits, searches, todos<small>Edits use the before and after Qwen Code records, so the diff is exact.</small></p></div>
+          <div class="band"><b>Counter</b><p>Real working time, plus tokens in and out<small>Rewound turns are left out, the way Qwen Code resumes a chat.</small></p></div>
           <div class="band"><b>Shortcut</b><p><code>npx agentvcr-cli last</code><small>Run it in the project folder after the session.</small></p></div>
         </div>
         <div class="bands panel-agent" role="tabpanel" id="ag-cline" aria-labelledby="t-cline">

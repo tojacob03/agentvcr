@@ -254,7 +254,9 @@ function parseSdkMessages(messages, { cwd, thinking }) {
       if (b.type === 'text' && b.text?.trim()) events.push({ type: 'text', text: b.text, ts });
       else if (b.type === 'thinking' && thinking && b.thinking?.trim()) events.push({ type: 'thinking', text: b.thinking, ts });
       else if (b.type === 'tool_use') {
-        const ev = sdkTool(b.name, b.input || {}, meta.cwd, ts);
+        // Some tools pass their input as a JSON string, a bare string or a list.
+        const input = typeof b.input === 'string' ? json(b.input) ?? b.input : b.input || {};
+        const ev = sdkTool(b.name, input, meta.cwd, ts);
         if (!ev) continue;
         if (ev.type === 'tool') tools.set(b.id, ev);
         events.push(ev);
@@ -294,7 +296,8 @@ function sdkTool(name, input, cwd, ts) {
       return toolEvent('Grep', { pattern: 'definitions', path: p }, cwd, ts);
     case 'search_codebase':
     case 'search_files': {
-      const q = Array.isArray(input.queries) ? input.queries.join(', ') : input.queries || input.regex || '';
+      const q = typeof input === 'string' ? input : Array.isArray(input) ? input.join(', ')
+        : Array.isArray(input.queries) ? input.queries.join(', ') : input.queries || input.regex || '';
       return toolEvent('Grep', { pattern: q, path: p }, cwd, ts);
     }
     case 'editor':
@@ -326,9 +329,11 @@ function sdkTool(name, input, cwd, ts) {
 
 function commandText(input) {
   const one = (c) => (typeof c === 'string' ? c : [c?.command, ...(c?.args || [])].filter(Boolean).join(' '));
+  if (typeof input === 'string') return input;
+  if (Array.isArray(input)) return input.map(one).join(' && ');
   if (Array.isArray(input.commands)) return input.commands.map(one).join(' && ');
   if (input.commands) return one(input.commands);
-  return one(input.command ?? input);
+  return one(input);
 }
 
 // What the person typed, without the wrappers Cline adds around it.
