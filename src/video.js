@@ -98,7 +98,11 @@ export async function recordVideo(html, out, { fps = 20, maxSeconds = 60, onProg
     }
     return { frames, seconds: frames / fps };
   } finally {
+    // Chrome keeps writing its profile until it has exited; wait, then tidy up.
+    // A leftover temp folder must never fail a finished recording.
+    const exited = new Promise((r) => proc.once('exit', r));
     proc.kill();
-    rmSync(dir, { recursive: true, force: true });
+    await Promise.race([exited, sleep(3000)]);
+    try { rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch { /* temp dir */ }
   }
 }
