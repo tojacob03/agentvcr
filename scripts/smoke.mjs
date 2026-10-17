@@ -139,6 +139,19 @@ try {
     return null;
   })()`);
   check('dropped Cline task plays', cline?.events === 3, JSON.stringify(cline));
+  const aider = await evaluate(`(async () => {
+    const md = '# aider chat started at 2026-10-17 13:05:22\\n\\n#### stream the export  \\n\\nUsing a generator.\\n\\nsrc/export.py\\n\\\`\\\`\\\`python\\n<<<<<<< SEARCH\\nreturn out\\n=======\\nyield row\\n>>>>>>> REPLACE\\n\\\`\\\`\\\`\\n\\n> Applied edit to src/export.py  \\n';
+    const dt = new DataTransfer();
+    dt.items.add(new File([md], '.aider.chat.history.md'));
+    document.getElementById('screen').dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+    for (let i = 0; i < 50; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      const d = document.querySelector('#screen iframe')?.contentDocument;
+      if (d && /Aider session/.test(d.body.textContent)) return { events: d.querySelectorAll('.ev').length, who: d.querySelector('#poster p').textContent };
+    }
+    return null;
+  })()`);
+  check('dropped Aider history plays, with the right article', aider?.events === 3 && aider.who.startsWith('An Aider session'), JSON.stringify(aider));
   check('landing redaction demo', /NOTHING LEAKS/.test(await evaluate("document.getElementById('tally').textContent")));
   check('landing has no script errors', errors.length === 0, errors[0]);
   ws.close();

@@ -350,7 +350,7 @@ function userInput(text) {
 
 // An edit as Cline records it: SEARCH/REPLACE blocks, an apply_patch, a unified
 // diff (Roo Code), or the whole new file when the model rewrote it.
-function editEvent(path, text, cwd, ts) {
+export function editEvent(path, text, cwd, ts) {
   const base = { type: 'tool', name: 'Edit', ts, end: null, output: '', error: false };
   const s = String(text || '');
   if (/^\*\*\* (Begin Patch|Update File|Add File|Delete File)/m.test(s)) return patch(base, s, cwd);

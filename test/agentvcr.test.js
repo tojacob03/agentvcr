@@ -548,3 +548,86 @@ test('claude: --subagents also reads subagent transcripts kept in <session>/suba
   assert.deepEqual(kinds({}), ['prompt', 'task', 'text']);
   assert.deepEqual(kinds({ sidechains: true }), ['prompt', 'task', 'read', 'text']);
 });
+
+test('aider: the last run of .aider.chat.history.md, edits, commands and tokens', async () => {
+  const { parseAider } = await import('../src/aider.js');
+  const { detectAgent } = await import('../src/detect.js');
+  const raw = [
+    '', '# aider chat started at 2026-10-16 09:00:00', '', '> Aider v0.86.1  ', '', '#### an older run  ', '', 'Old reply.', '',
+    '', '# aider chat started at 2026-10-17 13:05:22', '',
+    '> Aider v0.86.1  ',
+    '> Main model: anthropic/claude-sonnet-5-5 with diff edit format, infinite output  ',
+    '> Git repo: .git with 42 files  ',
+    '',
+    '#### /add src/rates.py  ',
+    '> Added src/rates.py to the chat  ',
+    '',
+    '#### cache the rates  ',
+    '#### for an hour  ',
+    '',
+    'I will wrap the fetch in a TTL cache.',
+    '',
+    'src/rates.py',
+    '```python',
+    '<<<<<<< SEARCH',
+    '    return fetch_rates()',
+    '=======',
+    '    return cache.get("rates", 3600, fetch_rates)',
+    '>>>>>>> REPLACE',
+    '```',
+    '',
+    'src/cache.py',
+    '```python',
+    '<<<<<<< SEARCH',
+    '=======',
+    'def get(key, ttl, load):',
+    '    return load()',
+    '>>>>>>> REPLACE',
+    '```',
+    '',
+    'src/missing.py',
+    '```python',
+    '<<<<<<< SEARCH',
+    'nope',
+    '=======',
+    'yes',
+    '>>>>>>> REPLACE',
+    '```',
+    '',
+    '> Tokens: 4.2k sent, 1.1k cache hit, 312 received. Cost: $0.01 message, $0.03 session.  ',
+    '> Applied edit to src/rates.py  ',
+    '> Applied edit to src/cache.py  ',
+    '> # 1 SEARCH/REPLACE block failed to match!  ',
+    '> Commit 1a2b3c4d feat: cache exchange rates for an hour  ',
+    '',
+    '```diff',
+    '--- a/src/app.py',
+    '+++ b/src/app.py',
+    '@@ -1,1 +1,1 @@',
+    '-DEBUG = True',
+    '+DEBUG = False',
+    '```',
+    '',
+    '> Run shell command? (Y)es/(N)o/(D)on\'t ask again [Yes]: y  ',
+    '> Running pytest -q  ',
+    '> Add command output to the chat? (Y)es/(N)o/(D)on\'t ask again [Yes]: y  ',
+    '',
+  ].join('\n');
+  assert.equal(detectAgent('/home/ada/shop/.aider.chat.history.md', raw), 'aider');
+  assert.equal(detectAgent('dropped.md', raw.slice(0, 2000)), 'aider');
+  const s = parseAider(raw, { path: '/home/ada/shop/.aider.chat.history.md' });
+  assert.equal(s.agent, 'Aider');
+  assert.equal(s.cwd, '/home/ada/shop');
+  assert.equal(s.version, '0.86.1');
+  assert.equal(s.model, 'anthropic/claude-sonnet-5-5');
+  assert.equal(s.title, 'cache the rates');
+  assert.equal(s.startedAt, new Date('2026-10-17T13:05:22').toISOString());
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'prompt', 'text', 'edit', 'edit', 'edit', 'note', 'edit', 'shell']);
+  assert.equal(s.events[1].text, 'cache the rates\nfor an hour');
+  assert.deepEqual(s.events.filter((e) => e.kind === 'edit').map((e) => [e.title, e.error]), [['src/rates.py', false], ['src/cache.py', false], ['src/missing.py', true], ['src/app.py', false]]);
+  assert.equal(s.events[4].detail.added, 2);
+  assert.equal(s.events[6].text, 'Committed 1a2b3c4: feat: cache exchange rates for an hour');
+  assert.deepEqual([s.events[7].title, s.events[7].detail.diff.map(([op]) => op)], ['src/app.py', ['-', '+']], 'udiff edits name the file in +++');
+  assert.equal(s.events[8].title, 'pytest -q');
+  assert.deepEqual(s.stats.tokens, { in: 5300, out: 312 });
+});

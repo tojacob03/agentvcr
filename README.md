@@ -2,7 +2,7 @@
 
 [![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) [![npm](https://img.shields.io/npm/v/agentvcr-cli)](https://www.npmjs.com/package/agentvcr-cli) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**Replays for AI coding sessions, where review happens.** One command turns a Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline or OpenCode session into a replay you can send as a link, embed, paste into a pull request as Markdown, or have commented on every PR an agent opens in CI. Secrets are masked on your machine. No account, no server, no dependencies.
+**Replays for AI coding sessions, where review happens.** One command turns a Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline, Aider or OpenCode session into a replay you can send as a link, embed, paste into a pull request as Markdown, or have commented on every PR an agent opens in CI. Secrets are masked on your machine. No account, no server, no dependencies.
 
 ```bash
 npx agentvcr-cli               # pick a session from this project and open the replay
@@ -75,10 +75,11 @@ Prefer a file? A replay is one HTML file with no external requests. Attach it to
 | Gemini CLI | `~/.gemini/tmp/*/chats/` | prompts, answers, shell, edits, searches, todos; rewinds and patches applied the way the CLI loads them |
 | Qwen Code | `~/.qwen/projects/*/chats/` | prompts, answers, shell output, edits with exact before/after diffs, searches, todos, tokens; rewound branches left out, as Qwen Code does |
 | Cline, and Roo Code and Kilo Code tasks in Cline's format | `~/.cline/data/sessions/`; older tasks in the editor's `globalStorage/<extension>/tasks/` | prompts, answers, commands with output, edits as diffs, searches, MCP calls, token usage; real working time |
+| Aider | `.aider.chat.history.md` in the project | the last run in the file: prompts, answers, edits as diffs (search/replace and udiff), commands, commits, tokens; aider only records when a run started, so the counter counts steps |
 | OpenCode | a database; run `opencode export <id> > session.json`, then `npx agentvcr-cli session.json` | prompts, answers, tool calls with output, shell commands, token usage |
 | Kilo Code CLI | built on OpenCode: `kilo export <id> > session.json` works the same way (it shows as an OpenCode session) | as OpenCode |
 
-Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME`, `GEMINI_CLI_HOME`, `QWEN_HOME` or `CLINE_DIR` if yours live elsewhere. Aider and others: [PRs welcome](#how-it-works).
+Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME`, `GEMINI_CLI_HOME`, `QWEN_HOME` or `CLINE_DIR` if yours live elsewhere. GitHub Copilot CLI and others: [PRs welcome](#how-it-works).
 
 ## Claude Code plugin
 

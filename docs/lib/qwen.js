@@ -81,7 +81,8 @@ export function parseQwen(raw, { thinking = false } = {}) {
       for (const p of parts) {
         const fr = p.functionResponse;
         if (!fr) continue;
-        const ev = tools.get(fr.id || result.callId);
+        // Calls without ids pair with the oldest open call of the same tool.
+        const ev = tools.get(fr.id || result.callId) || [...tools.values()].find((t) => t.end === null && t.name === (MAP[fr.name] ? MAP[fr.name]({})[0] : fr.name));
         if (!ev) continue;
         const display = result.resultDisplay;
         const out = typeof display === 'string' ? display : responseText(fr.response);

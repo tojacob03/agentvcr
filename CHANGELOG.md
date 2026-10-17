@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Aider support, read from aider's own source: the last run in `.aider.chat.history.md`, with edits as diffs (search/replace blocks and udiff), blocks that failed to apply marked, commands, commits and token usage. The website accepts the file too.
+- The summary says "An Aider session" and "An OpenCode session" instead of "A …".
 - `--subagents` reads the subagent transcripts newer Claude Code keeps in `<session>/subagents/` and merges them in by time; a subagent's task no longer shows as if you had typed it.
 
 ## 0.6.0

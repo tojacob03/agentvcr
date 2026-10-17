@@ -73,6 +73,8 @@ function ago(ms) {
 function peekTitle(path) {
   const head = readHead(path, 262144);
   const tail = readTail(path);
+  // Aider appends every run to one file; the replay is the last run.
+  if (path.endsWith('.aider.chat.history.md')) return (tail.split(/^# aider chat started at .*$/m).pop().match(/^#### (?!\/)(.{4,64})/m)?.[1] || basename(path)).trim();
   const last = (re) => [...tail.matchAll(re)].pop()?.[1] || [...head.matchAll(re)].pop()?.[1];
   const pick = last(/"customTitle":"((?:[^"\\]|\\.)*)"/g) || last(/"lastPrompt":"((?:[^"\\]|\\.){4,200})/g) || head.match(/"type":"user","message":\{"role":"user","content":"((?:[^"\\]|\\.){4,200})/)?.[1]
     || head.match(/"role":"user","content":\[\{"type":"input_text","text":"(?!<|# AGENTS)((?:[^"\\]|\\.){4,200})/)?.[1]

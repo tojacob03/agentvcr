@@ -55,6 +55,9 @@ export function listSessions({ cwd = process.cwd(), all = false } = {}) {
     if (!all && !path.includes(hash) && !readHead(path).includes(JSON.stringify(cwd).slice(1, -1))) continue;
     out.push(entry('gemini', path));
   }
+  // Aider keeps its history in the project folder itself.
+  const aider = join(cwd, '.aider.chat.history.md');
+  if (existsSync(aider)) out.push(entry('aider', aider));
   // Qwen Code encodes the project path like Claude Code.
   const qwenDirs = all ? safeReaddir(qwenRoot()).map((d) => join(qwenRoot(), d, 'chats')) : [join(qwenRoot(), encodeCwd(cwd), 'chats')];
   for (const dir of qwenDirs) {

@@ -418,7 +418,7 @@ function boot(S) {
     files.set(path, f);
   });
   const date = S.startedAt ? new Date(S.startedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-  let who = `A ${esc(S.agent)} session`;
+  let who = `${/^[aeiou]/i.test(S.agent) ? 'An' : 'A'} ${esc(S.agent)} session`;
   if (S.project) who += ` in <b>${esc(S.project)}</b>`;
   if (S.branch && !['HEAD', 'main', 'master'].includes(S.branch)) who += ` on ${esc(S.branch)}`;
   if (date) who += `, ${date}`;
