@@ -15,16 +15,18 @@ Links:
 
 ## Show HN
 
-**Title:** Show HN: Agentvcr – replays and share links for Claude Code, Codex, Cursor sessions
+**Title:** Show HN: Agentvcr – replays and share links for Claude Code, Codex, Cursor and OpenCode sessions
 
 **Text:**
 Coding agents work for an hour at a time, and all that's left afterwards is a diff. I wanted a way to show how a change came about: which commands ran, what failed, where the agent changed course.
 
-agentvcr reads the session files the agents already write (Claude Code, Codex, Cursor, Gemini CLI) and turns one into a single HTML file: playback with a counter of real working time, the session as a waveform you can scrub (prompts, edits and failures marked), diffs, terminal output, and links to exact moments.
+agentvcr reads the session files the agents already write (Claude Code, Codex, Cursor, Gemini CLI, OpenCode exports) and turns one into a single HTML file: playback with a counter of real working time, the session as a waveform you can scrub (prompts, edits and failures marked), diffs, terminal output, and links to exact moments.
 
 `npx agentvcr last --share` uploads the replay as a secret gist on your own GitHub account and prints a link to a static player on GitHub Pages. There is no server of mine in the loop; deleting the gist takes it down. Secrets, emails and your home path are masked locally before anything is written.
 
 You can also drop a transcript on the website and it plays right there, parsed in the browser: https://tojacob03.github.io/agentvcr/
+
+There is also a GitHub Action that comments a replay on every pull request an agent opens in CI, and `&embed` for putting a replay in a blog post.
 
 Zero dependencies, about 30 KB. Masking is regex based, and I would love to hear what it misses.
 
@@ -47,6 +49,8 @@ Example: https://tojacob03.github.io/agentvcr/demo/
 4/ Secrets never leave your machine: API keys, tokens, passwords in URLs, emails and your home path are masked before anything is written. The site lets you switch each rule off to see what it catches.
 
 5/ Or skip the CLI: drop a session file on the site and it plays in your browser, nothing uploaded. https://tojacob03.github.io/agentvcr/
+
+6/ Agents in CI? `uses: tojacob03/agentvcr@v0` puts every run on tape and comments the replay on the PR.
 
 Open source, MIT: github.com/tojacob03/agentvcr
 
