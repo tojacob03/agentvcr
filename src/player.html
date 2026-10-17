@@ -107,6 +107,11 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 .blocks i.a { background: var(--screen-add); }
 .blocks i.d { background: var(--screen-del); }
 .stat-more { color: var(--screen-dim); font: 13.5px/1 var(--mono); padding: 10px 0; }
+.chapters { list-style: none; margin: 30px 0 0; padding: 0; max-width: 760px; }
+.chapters button { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; align-items: baseline; width: 100%; padding: 6px 0; background: none; border: 0; color: #fff; text-align: left; cursor: pointer; }
+.chapters .ctc { font: 22px/1 var(--osd); color: var(--screen-dim); }
+.chapters .ctx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+.chapters button:hover .ctx { text-decoration: underline; text-underline-offset: 3px; }
 .start { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
 .key { display: inline-flex; align-items: center; gap: 10px; border-radius: 2px; padding: 9px 18px 8px; cursor: pointer; font: 26px/1 var(--osd); letter-spacing: 0.04em; border: 2px solid #fff; background: none; color: #fff; }
 .key.solid { background: #fff; color: var(--screen); }
@@ -384,6 +389,7 @@ function boot(S) {
   };
   const minutes = (ms) => { const m = Math.round(ms / 60000); return m < 1 ? 'under a minute' : m === 1 ? '1 minute' : m < 90 ? `${m} minutes` : `${Math.floor(m / 60)} h ${m % 60} min`; };
   const num = (n) => Number(n || 0).toLocaleString('en-US');
+  const compact = (n) => n >= 1e9 ? (n / 1e9).toFixed(1).replace(/\.0$/, '') + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'k' : String(n);
   const plural = (n, one, many) => `${num(n)} ${n === 1 ? one : many}`;
 
   // ---------- Poster on the blue screen ----------
@@ -406,7 +412,8 @@ function boot(S) {
   if (date) who += `, ${date}`;
   if (S.model) who += `, with ${esc(S.model)}`;
   const work = `${totalMs ? `<b>${minutes(totalMs)}</b> of work, ` : ''}${plural(st.prompts, 'prompt', 'prompts')} and ${plural(st.tools, 'tool call', 'tool calls')}. ` +
-    (st.files ? `${plural(st.files, 'file', 'files')} changed, <span class="plus">+${num(st.added)}</span> <span class="minus">−${num(st.removed)}</span>.` : 'No files changed.');
+    (st.files ? `${plural(st.files, 'file', 'files')} changed, <span class="plus">+${num(st.added)}</span> <span class="minus">−${num(st.removed)}</span>.` : 'No files changed.') +
+    (st.tokens && (st.tokens.in || st.tokens.out) ? ` ${compact(st.tokens.in)} tokens in, ${compact(st.tokens.out)} out.` : '');
   const poster = $('poster');
   poster.innerHTML = (totalMs ? `<div class="counter"><small>SP</small>${tc(totalMs)}</div>` : '') +
     `<h1>${esc(S.title)}</h1><p class="lede">${who}.</p><p class="lede">${work}</p>`;
@@ -435,6 +442,21 @@ function boot(S) {
     }
     poster.append(ul);
     if (list.length > 8) poster.append(h('div', 'stat-more', `and ${list.length - 8} more`));
+  }
+  // Chapters: every prompt, so a long session can be entered where it matters.
+  const prompts = S.events.map((e, i) => [e, i]).filter(([e]) => e.type === 'prompt');
+  if (prompts.length > 1) {
+    const ol = h('ol', 'chapters');
+    for (const [e, i] of prompts) {
+      const b = h('button');
+      b.type = 'button';
+      b.append(h('span', 'ctc', totalMs ? tc(activeAt[i]) : String(i).padStart(3, '0')), h('span', 'ctx', e.text.split('\n')[0]));
+      b.addEventListener('click', () => jumpTo(i));
+      const li = h('li');
+      li.append(b);
+      ol.append(li);
+    }
+    poster.append(ol);
   }
   const start = h('div', 'start');
   const go = h('button', 'key solid');

@@ -46,6 +46,7 @@ export function parseGemini(raw, { thinking = false } = {}) {
   }
 
   const events = [];
+  const tokens = { in: 0, out: 0 };
   for (const m of messages.values()) {
     const ts = m.timestamp || null;
     const text = partsText(m.displayContent ?? m.content);
@@ -54,6 +55,7 @@ export function parseGemini(raw, { thinking = false } = {}) {
       if (clean) events.push({ type: 'prompt', text: clean, ts });
     } else if (m.type === 'gemini') {
       if (m.model && !meta.model) meta.model = m.model;
+      if (m.tokens) { tokens.in += m.tokens.input || 0; tokens.out += m.tokens.output || 0; }
       if (thinking) for (const t of m.thoughts || []) events.push({ type: 'thinking', text: [t.subject, t.description].filter(Boolean).join(': '), ts: t.timestamp || ts });
       if (text.trim()) events.push({ type: 'text', text, ts });
       for (const tc of m.toolCalls || []) events.push(geminiTool(tc, meta.cwd));
@@ -64,7 +66,7 @@ export function parseGemini(raw, { thinking = false } = {}) {
 
   meta.title = firstLine(summary || events.find((e) => e.type === 'prompt')?.text || 'Untitled session', 80);
   const stamps = events.map((e) => e.ts).filter(Boolean);
-  return { ...meta, startedAt: stamps[0] || null, endedAt: stamps.at(-1) || null, events, stats: computeStats(events) };
+  return { ...meta, startedAt: stamps[0] || null, endedAt: stamps.at(-1) || null, events, stats: { ...computeStats(events), tokens } };
 }
 
 function applyPatch(messages, p) {

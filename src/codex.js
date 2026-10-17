@@ -7,6 +7,7 @@ import { toolEvent } from './claude.js';
 export function parseCodex(raw, { thinking = false } = {}) {
   const events = [];
   const calls = new Map();
+  const tokens = { in: 0, out: 0 };
   const meta = { agent: 'Codex', title: '', cwd: '', branch: '', model: '', version: '' };
 
   for (const line of raw.split('\n')) {
@@ -24,6 +25,13 @@ export function parseCodex(raw, { thinking = false } = {}) {
     }
     if (d.type === 'turn_context') {
       if (p.model && !meta.model) meta.model = p.model;
+      continue;
+    }
+    // token_count events carry running totals; the last one is the session's.
+    if (d.type === 'event_msg' && p.type === 'token_count' && p.info?.total_token_usage) {
+      const t = p.info.total_token_usage;
+      tokens.in = t.input_tokens || 0;
+      tokens.out = t.output_tokens || 0;
       continue;
     }
     if (d.type === 'compacted') { events.push({ type: 'note', text: 'Context compacted', ts }); continue; }
@@ -68,7 +76,7 @@ export function parseCodex(raw, { thinking = false } = {}) {
 
   meta.title = firstLine(events.find((e) => e.type === 'prompt')?.text || 'Untitled session', 80);
   const stamps = events.map((e) => e.ts).filter(Boolean);
-  return { ...meta, startedAt: stamps[0] || null, endedAt: stamps.at(-1) || null, events, stats: computeStats(events) };
+  return { ...meta, startedAt: stamps[0] || null, endedAt: stamps.at(-1) || null, events, stats: { ...computeStats(events), tokens } };
 }
 
 function codexTool(p, cwd, ts) {

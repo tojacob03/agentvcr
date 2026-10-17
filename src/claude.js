@@ -6,6 +6,8 @@ import { truncate, lineDiff, editDetail, firstLine, shortPath, computeStats, cle
 export function parseClaude(raw, { sidechains = false, thinking = false } = {}) {
   const events = [];
   const tools = new Map();
+  // Every content block line repeats its message's usage, so count each message id once.
+  const usage = new Map();
   const meta = { agent: 'Claude Code', title: '', cwd: '', branch: '', model: '', version: '' };
 
   for (const line of raw.split('\n')) {
@@ -25,6 +27,7 @@ export function parseClaude(raw, { sidechains = false, thinking = false } = {}) 
     const content = d.message?.content;
 
     if (d.type === 'assistant') {
+      if (d.message?.usage && d.message.id) usage.set(d.message.id, d.message.usage);
       const model = d.message?.model;
       if (model && !model.startsWith('<') && !meta.model) meta.model = model;
       for (const b of Array.isArray(content) ? content : []) {
@@ -62,7 +65,12 @@ export function parseClaude(raw, { sidechains = false, thinking = false } = {}) 
 
   if (!meta.title) meta.title = firstLine(events.find((e) => e.type === 'prompt')?.text || 'Untitled session', 80);
   const stamps = events.map((e) => e.ts).filter(Boolean);
-  return { ...meta, startedAt: stamps[0] || null, endedAt: stamps.at(-1) || null, events, stats: computeStats(events) };
+  const tokens = { in: 0, out: 0 };
+  for (const u of usage.values()) {
+    tokens.in += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+    tokens.out += u.output_tokens || 0;
+  }
+  return { ...meta, startedAt: stamps[0] || null, endedAt: stamps.at(-1) || null, events, stats: { ...computeStats(events), tokens } };
 }
 
 function resultText(content, kind) {

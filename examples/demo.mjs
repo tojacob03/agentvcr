@@ -17,12 +17,14 @@ const base = () => ({ cwd: CWD, gitBranch: 'fix/webhook-idempotency', version: '
 function you(sec, text) {
   rows.push({ ...base(), type: 'user', timestamp: at(sec), message: { role: 'user', content: text } });
 }
+let context = 18000;
+const usage = (out) => { context += 900 + out * 2; return { input_tokens: 4, cache_read_input_tokens: context, cache_creation_input_tokens: 600, output_tokens: out }; };
 function say(sec, text) {
-  rows.push({ ...base(), type: 'assistant', timestamp: at(sec), message: { model: 'claude-opus-5-5', role: 'assistant', content: [{ type: 'text', text }] } });
+  rows.push({ ...base(), type: 'assistant', timestamp: at(sec), message: { id: `msg_${++n}`, model: 'claude-opus-5-5', role: 'assistant', content: [{ type: 'text', text }], usage: usage(Math.round(text.length / 3.5)) } });
 }
 function tool(sec, name, input, output, { took = 2, error = false } = {}) {
   const id = `toolu_${++n}`;
-  rows.push({ ...base(), type: 'assistant', timestamp: at(sec), message: { model: 'claude-opus-5-5', role: 'assistant', content: [{ type: 'tool_use', id, name, input }] } });
+  rows.push({ ...base(), type: 'assistant', timestamp: at(sec), message: { id: `msg_${id}`, model: 'claude-opus-5-5', role: 'assistant', content: [{ type: 'tool_use', id, name, input }], usage: usage(Math.round(JSON.stringify(input).length / 3.5) + 40) } });
   rows.push({ ...base(), type: 'user', timestamp: at(took), message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: id, content: output, is_error: error }] } });
 }
 const plan = (sec, statuses) => tool(sec, 'TodoWrite', {

@@ -223,3 +223,13 @@ test('detect: picks the right parser from the first lines', async () => {
   assert.equal(detectAgent('/x.jsonl', '{"sessionId":"s","projectHash":"h"}'), 'gemini');
   assert.equal(detectAgent('/x.jsonl', '{"type":"user","message":{"role":"user","content":"hi"}}'), 'claude');
 });
+
+test('claude: token usage counts each message once', () => {
+  const u = { input_tokens: 5, cache_read_input_tokens: 1000, cache_creation_input_tokens: 100, output_tokens: 50 };
+  const s = parseClaude(jsonl(
+    { type: 'assistant', timestamp: T(0), message: { id: 'm1', usage: u, content: [{ type: 'text', text: 'a' }] } },
+    { type: 'assistant', timestamp: T(0), message: { id: 'm1', usage: u, content: [{ type: 'tool_use', id: 't', name: 'Bash', input: { command: 'ls' } }] } },
+    { type: 'assistant', timestamp: T(1), message: { id: 'm2', usage: { ...u, output_tokens: 10 }, content: [{ type: 'text', text: 'b' }] } },
+  ));
+  assert.deepEqual(s.stats.tokens, { in: 2210, out: 60 });
+});
