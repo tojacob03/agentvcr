@@ -12,7 +12,8 @@
   ],
   "scripts": {
     "test": "node --test",
-    "site": "node examples/demo.mjs"
+    "site": "node examples/demo.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "engines": {
     "node": ">=18"

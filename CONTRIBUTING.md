@@ -51,7 +51,7 @@ Secrets are masked in [`src/redact.js`](src/redact.js). A new pattern needs a te
 
 ## The player
 
-[`src/player.html`](src/player.html) is the whole player: one file, inline CSS and JS, no build. Keep it that way. Check changes at phone width and in light and dark mode, and with a long session (`npm test` won't catch layout problems).
+[`src/player.html`](src/player.html) is the whole player: one file, inline CSS and JS, no build. Keep it that way. `npm run smoke` opens a replay, the share viewer and the landing page in headless Chrome and checks that they boot, play, skip and link correctly (CI runs it too). It doesn't judge layout, so also check changes at phone width, in light and dark mode, and with a long session.
 
 ## Pull requests
 

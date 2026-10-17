@@ -36,3 +36,12 @@ jobs:
           node scripts/comment.mjs /dev/stdin "${{ steps.vcr.outputs.artifact-url }}" "${{ steps.vcr.outputs.transcript }}" <<< '{"title":"t","events":1,"tools":1,"files":0,"added":0,"removed":0,"activeMs":0,"redactions":0}' > comment.md
           grep -q '<summary>Transcript</summary>' comment.md
           test "$(wc -c < comment.md)" -lt 65536
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/smoke.mjs
