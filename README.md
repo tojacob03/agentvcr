@@ -57,6 +57,12 @@ npx agentvcr last --share
 
 `--share` uploads the already masked replay as a **secret gist** on your GitHub account and prints a link to the player on this project's site, which loads the gist and plays it. There is no agentvcr server: GitHub stores it, Pages plays it, and deleting the gist takes the replay down. It uses the [GitHub CLI](https://cli.github.com) if you are logged in (`gh auth login`), or a `GITHUB_TOKEN` with the `gist` scope. `--share` cannot be combined with `--no-redact`.
 
+Embed it in a blog post or docs page by adding `&embed` to the link; the CLI prints a ready `<iframe>` snippet:
+
+```html
+<iframe src="https://tojacob03.github.io/agentvcr/v/?g=you/3f2a…&embed" width="100%" height="640" style="border:0"></iframe>
+```
+
 Prefer a file? A replay is one HTML file with no external requests. Attach it to an issue, drop it on any static host, or send it.
 
 ## Supported agents

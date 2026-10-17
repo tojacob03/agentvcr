@@ -21,7 +21,12 @@ export function viewerUrl(owner, id, base = VIEWER) {
 export async function share(session) {
   const body = JSON.stringify(gistBody(session));
   const gist = process.env.GITHUB_TOKEN ? await viaToken(body, process.env.GITHUB_TOKEN) : viaGh(body);
-  return { url: viewerUrl(gist.owner.login, gist.id), gist: gist.html_url };
+  const url = viewerUrl(gist.owner.login, gist.id);
+  return { url, gist: gist.html_url, embed: `<iframe src="${url}&embed" width="100%" height="640" style="border:0" title="${escAttr(session.title)}"></iframe>` };
+}
+
+function escAttr(s) {
+  return String(s).replace(/[&"<>]/g, (c) => ({ '&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;' }[c]));
 }
 
 function viaGh(body) {

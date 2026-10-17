@@ -217,6 +217,13 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 .end b { color: #fff; }
 .end .key { font-size: 22px; padding: 7px 14px 6px; }
 .foot { color: var(--faint); font-size: 13px; padding: 60px 0 0; }
+/* ?embed: a compact poster for an iframe in a blog post or docs page */
+.embed .poster { padding: 22px 0 26px; }
+.embed .counter { font-size: 40px; margin-bottom: 12px; }
+.embed h1 { font-size: clamp(24px, 4vw, 36px); margin-bottom: 10px; }
+.embed .stat-files, .embed .chapters, .embed .lede + .lede { display: none; }
+.embed .start { margin-top: 18px; }
+.embed .foot { padding-top: 32px; }
 .foot a { color: var(--dim); }
 .follow { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 11; display: none; background: var(--screen); color: #fff; border: 0; font: 22px/1 var(--osd); letter-spacing: 0.04em; padding: 8px 14px 6px; cursor: pointer; box-shadow: 4px 4px 0 rgba(0, 0, 40, 0.35); }
 
@@ -300,6 +307,7 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 <script type="application/json" id="agentvcr-data">null</script>
 <script>
 (() => {
+if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add('embed');
 function boot(S) {
   const $ = (id) => document.getElementById(id);
   const h = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; };

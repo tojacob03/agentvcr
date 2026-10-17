@@ -142,12 +142,13 @@ async function main() {
   };
 
   if (opts.share) {
-    const { url, gist } = await share(session);
+    const { url, gist, embed } = await share(session);
     if (opts.out) writeFileSync(resolve(opts.out), renderHtml(session));
-    if (opts.json) { console.log(JSON.stringify(result({ url, gist, file: opts.out ? resolve(opts.out) : null }))); return; }
+    if (opts.json) { console.log(JSON.stringify(result({ url, gist, embed, file: opts.out ? resolve(opts.out) : null }))); return; }
     console.log(`\n✓ ${url}`);
     summary();
     console.log(dim(`  Secret gist: ${gist} (delete it there to take the replay down)`));
+    console.log(dim(`  Embed: ${embed}`));
     if (opts.open) openFile(url);
     return;
   }

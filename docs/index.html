@@ -421,6 +421,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
           <div class="band"><b>On the tape</b><p>Prompts, answers, every tool call with its output, diffs, plans<small>Subagent turns too, with --subagents.</small></p></div>
           <div class="band"><b>Counter</b><p>Real working time from the timestamps<small>Breaks over five minutes count as away, not as work.</small></p></div>
           <div class="band"><b>Shortcut</b><p><code>/plugin marketplace add tojacob03/agentvcr</code><small>Then /agentvcr:replay inside any session, or /agentvcr:replay share for a link.</small></p></div>
+          <div class="band"><b>In CI</b><p><code>uses: tojacob03/agentvcr@v0</code><small>After claude-code-action: the run goes on tape and the pull request gets a comment with the replay.</small></p></div>
         </div>
         <div class="bands panel-agent" role="tabpanel" id="ag-codex" aria-labelledby="t-codex">
           <div class="band"><b>Found in</b><p><code>~/.codex/sessions</code><small>Matched to your project by the working folder each rollout records.</small></p></div>
@@ -455,7 +456,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
       <div class="flank-l"><img src="img/cassette.webp" width="1600" height="896" alt="A VHS cassette with a blank label and a recording time scale" loading="lazy"></div>
       <div class="blue main">
         <h2>Press record</h2>
-        <p>Run it in any project folder. Add <code>--share</code> for a link, or open the replay and send the file.</p>
+        <p>Run it in any project folder. Add <code>--share</code> for a link, add <code>&amp;embed</code> to put it in a blog post, or let the GitHub Action comment it on every agent pull request.</p>
         <div class="row">
           <button class="copybox" type="button" data-copy="npx agentvcr"><code>npx agentvcr</code><span>COPY</span></button>
           <a class="btn on-blue" href="https://github.com/tojacob03/agentvcr">STAR ON GITHUB</a>
