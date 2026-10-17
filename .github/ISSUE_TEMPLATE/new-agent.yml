@@ -1,0 +1,22 @@
+name: Support another agent
+description: Ask for (or offer to write) a parser for a coding agent agentvcr can't read yet
+labels: [new agent]
+body:
+  - type: input
+    id: agent
+    attributes:
+      label: Agent
+      placeholder: Aider, GitHub Copilot CLI, Windsurf, Amp, …
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where does it store sessions, and in what format?
+      description: A path and, if you can, a link to the agent's source that writes them.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Help
+      options:
+        - label: I'd like to write the parser (CONTRIBUTING.md explains how)

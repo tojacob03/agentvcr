@@ -1,0 +1,34 @@
+name: Bug report
+description: Something in a replay or the CLI is wrong
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A secret that was not masked? Please report it privately instead: https://github.com/tojacob03/agentvcr/security/advisories/new
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options: [Claude Code, Codex, Cursor, Gemini CLI, OpenCode, Claude Code SDK / GitHub Action, Other]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: agentvcr version
+      description: Output of `npx agentvcr-cli --version`
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: A few transcript lines that show it
+      description: Optional, but it makes a fix much faster. Remove anything private first.
+      render: json

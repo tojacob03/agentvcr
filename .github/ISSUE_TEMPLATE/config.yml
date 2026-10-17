@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/tojacob03/agentvcr/discussions
+    about: Ask how something works or share a replay you made.
+  - name: Report an unmasked secret
+    url: https://github.com/tojacob03/agentvcr/security/advisories/new
+    about: Privately, please, never in a public issue.
