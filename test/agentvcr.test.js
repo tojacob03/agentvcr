@@ -631,3 +631,44 @@ test('aider: the last run of .aider.chat.history.md, edits, commands and tokens'
   assert.equal(s.events[8].title, 'pytest -q');
   assert.deepEqual(s.stats.tokens, { in: 5300, out: 312 });
 });
+
+test('redact: exact values of local secrets, whatever their format', async () => {
+  const { secretValues } = await import('../src/redact.js');
+  const secrets = secretValues([
+    ['DB_PASSWORD', 'Sonne-Hund-42!'], ['STRIPE_SECRET', 'odd"quoted\\value'], ['OPENAI_API_KEY', 'short'],
+    ['GIT_AUTHOR_NAME', 'Ada Lovelace Example'], ['SSH_AUTH_SOCK', '/tmp/agent.sock/Listeners'], ['KEYBOARD_LAYOUT', 'German-ABCDEF'], ['DEBUG', 'true'],
+  ]);
+  assert.deepEqual(secrets.map((s) => s.name), ['DB_PASSWORD', 'STRIPE_SECRET'], 'only secret names, long values, no paths');
+  const r = makeRedactor({ secrets });
+  assert.equal(r('psql -p Sonne-Hund-42! && echo Sonne-Hund-42!'), 'psql -p [env:DB_PASSWORD] && echo [env:DB_PASSWORD]');
+  assert.equal(r('{"key":"odd\\"quoted\\\\value"}'), '{"key":"[env:STRIPE_SECRET]"}', 'JSON-escaped form too');
+  assert.equal(r.count, 3);
+  assert.equal(makeRedactor({ secrets, skip: ['env'] })('Sonne-Hund-42!'), 'Sonne-Hund-42!');
+});
+
+test('loadSession: masks values from the environment and a .env in the folder it runs in', async () => {
+  const { mkdtempSync, writeFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { tmpdir } = await import('node:os');
+  const { loadSession, localSecrets } = await import('../src/index.js');
+  const dir = mkdtempSync(join(tmpdir(), 'agentvcr-env-'));
+  writeFileSync(join(dir, '.env'), '# local\nexport WEBHOOK_SECRET="whsec~unusual~42"\nPORT=3000\n');
+  assert.deepEqual(localSecrets({ DEPLOY_TOKEN: 'tok.unusual.9000', HOME: '/home/ada' }, dir).map((s) => s.name).sort(), ['DEPLOY_TOKEN', 'WEBHOOK_SECRET']);
+  const file = join(dir, 's.jsonl');
+  writeFileSync(file, jsonl(
+    { type: 'user', timestamp: T(0), cwd: dir, message: { role: 'user', content: 'show the config' } },
+    { type: 'assistant', timestamp: T(1), message: { content: [{ type: 'tool_use', id: 'c', name: 'Bash', input: { command: 'cat .env' } }] } },
+    { type: 'user', timestamp: T(2), message: { content: [{ type: 'tool_result', tool_use_id: 'c', content: 'WEBHOOK_SECRET=whsec~unusual~42\nPORT=3000' }] } },
+  ));
+  const cwd = process.cwd();
+  process.chdir(dir);
+  try {
+    const { session, redactions } = loadSession(file);
+    assert.equal(session.events[1].output, 'WEBHOOK_SECRET=[env:WEBHOOK_SECRET]\nPORT=3000');
+    assert.ok(redactions >= 1);
+    assert.ok(!JSON.stringify(session).includes('whsec~unusual~42'));
+    assert.ok(JSON.stringify(loadSession(file, { redact: false }).session).includes('whsec~unusual~42'), '--no-redact keeps it');
+  } finally {
+    process.chdir(cwd);
+  }
+});

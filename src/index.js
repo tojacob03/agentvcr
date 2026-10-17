@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir, userInfo } from 'node:os';
 import { parseTranscript } from './parse.js';
+import { secretValues } from './redact.js';
 import { renderHtml, renderViewer, toPlayerData } from './render.js';
 import { renderMarkdown } from './markdown.js';
 
@@ -17,7 +18,23 @@ export function loadSession(path, opts = {}) {
   }
   let raw = readFileSync(path, 'utf8');
   if (opts.sidechains && path.endsWith('.jsonl')) raw = withSubagents(path, raw);
-  return parseTranscript(raw, { ...opts, path, home: homedir(), user, cwd });
+  const secrets = opts.redact === false ? [] : localSecrets();
+  return parseTranscript(raw, { ...opts, path, home: homedir(), user, cwd, secrets });
+}
+
+// Secret values from the environment and from .env files in the folder agentvcr
+// runs in. They are only used to mask; nothing here is written or sent anywhere.
+export function localSecrets(env = process.env, dir = process.cwd()) {
+  const pairs = Object.entries(env);
+  for (const f of ['.env', '.env.local']) {
+    let text = '';
+    try { text = readFileSync(join(dir, f), 'utf8'); } catch { continue; }
+    for (const line of text.split(/\r?\n/)) {
+      const m = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_.-]*)\s*=\s*(.*?)\s*$/);
+      if (m) pairs.push([m[1], m[2].replace(/^(['"])(.*)\1$/, '$2')]);
+    }
+  }
+  return secretValues(pairs);
 }
 
 // Newer Claude Code keeps subagent turns in <session>/subagents/*.jsonl instead

@@ -1,7 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.7.1
 
+- Masking catches secrets in any format: the exact values of secret-looking environment variables (`KEY`, `TOKEN`, `SECRET`, `PASSWORD`, …) and of a `.env` / `.env.local` in the folder you run agentvcr from are masked as `[env:NAME]` before the patterns run. Values under eight characters and paths are skipped. Suggested in a comment on the launch post ([#6](https://github.com/tojacob03/agentvcr/issues/6)).
 - Security: the share viewer plays gists anyone can write, and counts from the replay data went into the page unchecked, so a crafted gist could run script on the viewer's site. The player now turns every count into a number before drawing; a smoke test plays such a replay. Replays the CLI writes were not affected, since it computes those counts itself.
 
 ## 0.7.0

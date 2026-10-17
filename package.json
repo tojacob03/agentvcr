@@ -1,6 +1,6 @@
 {
   "name": "agentvcr-cli",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Replays for AI coding sessions. Turn Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline, Aider and OpenCode sessions into one HTML file you can watch, share as a link, or embed.",
   "type": "module",
   "bin": {

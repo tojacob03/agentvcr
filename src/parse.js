@@ -11,7 +11,7 @@ import { makeRedactor, deepMap } from './redact.js';
 
 // Parse any supported transcript and optionally mask it. No Node APIs, so the
 // same code runs in the CLI and on the website.
-export function parseTranscript(raw, { path = '', redact = true, home = '', user = '', thinking = false, sidechains = false, title, cwd = '' } = {}) {
+export function parseTranscript(raw, { path = '', redact = true, home = '', user = '', secrets = [], thinking = false, sidechains = false, title, cwd = '' } = {}) {
   const agent = detectAgent(path, raw.slice(0, 65536));
   const parsers = {
     codex: () => parseCodex(raw, { thinking }),
@@ -28,7 +28,7 @@ export function parseTranscript(raw, { path = '', redact = true, home = '', user
   if (title) session.title = title;
   let redactions = 0;
   if (redact) {
-    const r = makeRedactor({ home, user });
+    const r = makeRedactor({ home, user, secrets });
     session = deepMap(session, r);
     redactions = r.count;
   }

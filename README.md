@@ -132,8 +132,9 @@ Everything runs locally unless you pass `--share`. Before anything is written, a
 - API keys and tokens (Anthropic, OpenAI, OpenRouter, Groq, Hugging Face, Replicate, GitHub, GitLab, Slack, AWS, Google, Stripe, Supabase, SendGrid, Mapbox, npm), JWTs, bearer tokens, private keys, and Slack and Discord webhook URLs
 - `KEY=value` pairs whose name looks like a secret (`password`, `api_key`, `token`, …)
 - credentials inside URLs, email addresses, your home directory and your username
+- the exact values of your secret environment variables (names with `KEY`, `TOKEN`, `SECRET`, `PASSWORD`, …) and of those in a `.env` or `.env.local` in the folder you run it from, whatever their format; they show as `[env:NAME]`
 
-The CLI tells you how many things it masked, and the [website](https://tojacob03.github.io/agentvcr/#privacy) lets you switch each rule off to see what it catches. Masking is pattern based, so **skim the replay before you share it**.
+The CLI tells you how many things it masked, and the [website](https://tojacob03.github.io/agentvcr/#privacy) lets you switch each rule off to see what it catches. Patterns and your own environment catch a lot, but not a secret that is in neither, so **skim the replay before you share it**.
 
 ## How it works
 

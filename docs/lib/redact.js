@@ -34,14 +34,40 @@ export const PATTERNS = [
   [/\b(?![A-Za-z0-9._%+-]*noreply)[A-Za-z0-9._%+-]+@(?![A-Za-z0-9.-]*noreply)[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, '[email]', 'emails'],
 ];
 
+// Variables that hold secrets have a KEY, TOKEN, SECRET, PASSWORD ... part in
+// their name: OPENAI_API_KEY counts, GIT_AUTHOR_NAME and KEYBOARD_LAYOUT don't.
+const SECRET_NAME = /(?:^|[_.-])(?:KEY|APIKEY|TOKEN|SECRET|PASSWORD|PASSWD|PASSPHRASE|PASS|CREDENTIALS?|AUTH|PRIVATE|PAT)(?:$|[_.-])/i;
+
+// The exact values worth masking from [name, value] pairs (the environment, a
+// .env file). Short values and paths are left out so `true` or /usr/bin never match.
+export function secretValues(pairs) {
+  const out = new Map();
+  for (const [name, value] of pairs) {
+    if (!SECRET_NAME.test(name) || typeof value !== 'string') continue;
+    const v = value.trim();
+    if (v.length >= 8 && !/^[~/]/.test(v)) out.set(v, name);
+  }
+  return [...out].map(([value, name]) => ({ name, value }));
+}
+
 // home and user come from the caller (Node passes os.homedir(); the browser
-// guesses them from the transcript's own paths).
-export function makeRedactor({ home = '', user = '', skip = [] } = {}) {
+// guesses them from the transcript's own paths). secrets are exact values from
+// secretValues(), masked first, whatever their format.
+export function makeRedactor({ home = '', user = '', skip = [], secrets = [] } = {}) {
   const homeRe = home && home.length > 1 ? new RegExp(escapeRe(home), 'g') : null;
   const userRe = user && user.length > 2 ? new RegExp(`\\b${escapeRe(user)}\\b`, 'g') : null;
+  // Longest first, so a value that contains another is masked whole; also the
+  // JSON-escaped form, for values quoted inside tool input.
+  const exact = skip.includes('env') ? [] : secrets
+    .flatMap(({ name, value }) => [...new Set([value, JSON.stringify(value).slice(1, -1)])].map((v) => [v, `[env:${name}]`]))
+    .sort((a, b) => b[0].length - a[0].length);
   const redact = function (text) {
     if (typeof text !== 'string' || !text) return text;
     let t = text;
+    for (const [v, rep] of exact) {
+      const parts = t.split(v);
+      if (parts.length > 1) { redact.count += parts.length - 1; t = parts.join(rep); }
+    }
     for (const [re, rep, group] of PATTERNS) {
       if (skip.includes(group)) continue;
       t = t.replace(re, (...m) => {
