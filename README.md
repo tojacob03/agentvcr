@@ -144,6 +144,10 @@ npm run site   # rebuild the demo, the share viewer and the browser modules in d
 
 Adding an agent means writing one parser that returns the shared format. [`src/cursor.js`](src/cursor.js) is a short example to start from.
 
+## Contributing
+
+Parsers for more agents are the most wanted contribution; [CONTRIBUTING.md](CONTRIBUTING.md) documents the shared session format and the steps. Good places to start: [good first issues](https://github.com/tojacob03/agentvcr/labels/good%20first%20issue) and [new agents](https://github.com/tojacob03/agentvcr/labels/new%20agent). Made a replay worth watching? [Share it in Discussions](https://github.com/tojacob03/agentvcr/discussions/5).
+
 ## License
 
 MIT. Replays embed a subset of the [VT323](https://fonts.google.com/specimen/VT323) font, licensed under the SIL Open Font License 1.1 (see [`licenses/VT323-OFL.txt`](licenses/VT323-OFL.txt)).

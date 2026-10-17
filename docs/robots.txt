@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tojacob03.github.io/agentvcr/sitemap.xml
