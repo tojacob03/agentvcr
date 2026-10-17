@@ -3,7 +3,7 @@
 //
 //   npm run site
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, copyFileSync } from 'node:fs';
 import { loadSession, renderHtml, renderViewer } from '../src/index.js';
 
 const CWD = '/home/dev/tinyshop';
@@ -272,4 +272,12 @@ const write = (rel, html) => {
 };
 write('demo/index.html', social(renderHtml(session), `${site}demo/`));
 write('v/index.html', social(renderViewer(), `${site}v/`));
+
+// The parsers are plain modules with no Node APIs, so the landing page can
+// play a dropped transcript without uploading it.
+for (const f of ['session', 'claude', 'codex', 'cursor', 'gemini', 'redact', 'detect', 'parse']) {
+  const to = new URL(`../docs/lib/${f}.js`, import.meta.url);
+  mkdirSync(new URL('.', to), { recursive: true });
+  copyFileSync(new URL(`../src/${f}.js`, import.meta.url), to);
+}
 console.log(`docs/demo: ${session.events.length} events, ${session.stats.tools} tool calls, ${session.stats.files} files changed; docs/v: share viewer`);

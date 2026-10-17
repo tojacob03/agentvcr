@@ -143,3 +143,10 @@ export function cleanPrompt(text) {
   t = t.replace(/<\/?command-(message|name|args)>/g, '');
   return t.trim();
 }
+
+// What the player needs. The full working directory stays on the machine;
+// only its last segment is shown as the project name.
+export function toPlayerData(session) {
+  const { cwd, ...rest } = session;
+  return { ...rest, project: cwd ? cwd.split(/[\\/]/).filter(Boolean).pop() || '' : '' };
+}

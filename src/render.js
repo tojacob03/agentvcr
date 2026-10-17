@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
-import { basename } from 'node:path';
+import { toPlayerData } from './session.js';
+
+export { toPlayerData };
 
 const TEMPLATE = new URL('./player.html', import.meta.url);
 
@@ -7,13 +9,6 @@ const escHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<'
 
 // JSON inside <script> must not be able to close the tag or open a comment.
 const escJson = (v) => JSON.stringify(v).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
-
-// What the player needs. The full working directory stays on the machine;
-// only its last segment is shown as the project name.
-export function toPlayerData(session) {
-  const { cwd, ...rest } = session;
-  return { ...rest, project: cwd ? basename(cwd) : '' };
-}
 
 export function renderHtml(session) {
   const data = toPlayerData(session);

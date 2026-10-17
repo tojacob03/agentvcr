@@ -4,6 +4,7 @@ import { readdirSync, statSync, openSync, readSync, closeSync, existsSync } from
 import { join, basename } from 'node:path';
 import { homedir } from 'node:os';
 import { createHash } from 'node:crypto';
+import { detectAgent } from './detect.js';
 
 export const claudeRoot = () => join(process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude'), 'projects');
 export const codexRoot = () => join(process.env.CODEX_HOME || join(homedir(), '.codex'), 'sessions');
@@ -13,12 +14,7 @@ export const geminiRoot = () => join(process.env.GEMINI_CLI_HOME || join(homedir
 // Claude Code stores each project under its cwd with every non-alphanumeric char as "-".
 export const encodeCwd = (cwd) => cwd.replace(/[^A-Za-z0-9]/g, '-');
 
-export function detectAgent(path, head = readHead(path)) {
-  if (/"type":"session_meta"|"type":"response_item"/.test(head)) return 'codex';
-  if (/^\{"role":"(user|assistant)","message"/m.test(head) || /agent-transcripts/.test(path)) return 'cursor';
-  if (/"projectHash"|"\$rewindTo"|"type":"gemini"/.test(head)) return 'gemini';
-  return 'claude';
-}
+export { detectAgent };
 
 export function listSessions({ cwd = process.cwd(), all = false } = {}) {
   const out = [];

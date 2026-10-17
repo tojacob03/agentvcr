@@ -1,3 +1,5 @@
 node_modules/
 agentvcr-*.html
 *.tgz
+.taste-skill/
+assets/
