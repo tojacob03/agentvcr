@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.7.0
 
 - Aider support, read from aider's own source: the last run in `.aider.chat.history.md`, with edits as diffs (search/replace blocks and udiff), blocks that failed to apply marked, commands, commits and token usage. The website accepts the file too.
 - The summary says "An Aider session" and "An OpenCode session" instead of "A …".
