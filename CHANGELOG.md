@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Security: the share viewer plays gists anyone can write, and counts from the replay data went into the page unchecked, so a crafted gist could run script on the viewer's site. The player now turns every count into a number before drawing; a smoke test plays such a replay. Replays the CLI writes were not affected, since it computes those counts itself.
+
 ## 0.7.0
 
 - Aider support, read from aider's own source: the last run in `.aider.chat.history.md`, with edits as diffs (search/replace blocks and udiff), blocks that failed to apply marked, commands, commits and token usage. The website accepts the file too.

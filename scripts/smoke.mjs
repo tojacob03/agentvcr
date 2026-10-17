@@ -26,11 +26,18 @@ for (let i = 0; i < 5; i++) {
   runRows.push({ type: 'user', timestamp: `2026-01-01T10:00:0${i + 1}Z`, message: { content: [{ type: 'tool_result', tool_use_id: `r${i}`, content: '{}' }] } });
 }
 const runReplay = renderHtml(parseTranscript(runRows.map((r) => JSON.stringify(r)).join('\n')).session);
+// A crafted replay, as anyone could put in a gist: markup where numbers belong.
+const evil = '<img src=x onerror="window.__xss=1">';
+const evilSession = parseTranscript(runRows.slice(0, 1).map((r) => JSON.stringify(r)).join('\n')).session;
+evilSession.events.push({ type: 'tool', kind: 'edit', name: 'Edit', title: 'a.js', ts: null, end: null, output: '', error: false, detail: { path: 'a.js', diff: [['+', 'x']], added: evil, removed: evil } });
+evilSession.stats = { ...evilSession.stats, added: evil, files: evil, tools: evil, tokens: { in: evil, out: evil } };
+const evilReplay = renderHtml(evilSession);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.mp4': 'video/mp4', '.woff2': 'font/woff2', '.json': 'application/json', '.jsonl': 'text/plain' };
 const server = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (path === '/replay.html') { res.writeHead(200, { 'content-type': 'text/html' }); return res.end(replay); }
   if (path === '/runs.html') { res.writeHead(200, { 'content-type': 'text/html' }); return res.end(runReplay); }
+  if (path === '/evil.html') { res.writeHead(200, { 'content-type': 'text/html' }); return res.end(evilReplay); }
   if (path === '/session.jsonl') { res.writeHead(200); return res.end(readFileSync(join(root, 'examples/demo-session.jsonl'))); }
   const file = join(root, 'docs', path.endsWith('/') ? path + 'index.html' : path);
   if (!file.startsWith(join(root, 'docs')) || !existsSync(file)) { res.writeHead(404); return res.end(); }
@@ -97,6 +104,12 @@ try {
   await open(`${base}/runs.html#3`, "document.getElementById('clock').textContent.length > 0");
   check('a deep link into a run opens it', await evaluate("document.querySelector('.run').classList.contains('open') && !document.getElementById('e3').hidden"));
   check('runs have no script errors', errors.length === 0, errors[0]);
+
+  // 1c. Markup smuggled into numeric fields is never rendered as HTML.
+  await open(`${base}/evil.html`, "!!document.querySelector('#poster h1')");
+  await evaluate("document.getElementById('all').click()");
+  await sleep(300);
+  check('numbers from a crafted replay stay numbers', await evaluate("!window.__xss && !document.querySelector('img')"));
 
   // 2. The share viewer without a gist says so.
   check('viewer boots', await open(`${base}/v/`, "/NO SIGNAL/.test(document.querySelector('#poster').textContent)"));

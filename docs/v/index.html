@@ -313,6 +313,13 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 (() => {
 if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add('embed');
 function boot(S) {
+  // A shared replay can come from anyone's gist. Counts end up in markup, so
+  // make sure every one of them is a number before anything is drawn.
+  const n0 = (v) => (Number.isFinite(+v) ? +v : 0);
+  if (!Array.isArray(S.events)) S.events = [];
+  for (const e of S.events) if (e && e.detail && typeof e.detail === 'object') { e.detail.added = n0(e.detail.added); e.detail.removed = n0(e.detail.removed); }
+  const raw = S.stats && typeof S.stats === 'object' ? S.stats : {};
+  S.stats = Object.fromEntries(Object.entries(raw).map(([k, v]) => [k, k === 'tokens' ? { in: n0(v && v.in), out: n0(v && v.out) } : n0(v)]));
   const $ = (id) => document.getElementById(id);
   const h = (tag, cls, text) => { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
