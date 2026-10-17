@@ -9,7 +9,8 @@ import { detectAgent } from './detect.js';
 export const claudeRoot = () => join(process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude'), 'projects');
 export const codexRoot = () => join(process.env.CODEX_HOME || join(homedir(), '.codex'), 'sessions');
 export const cursorRoot = () => join(homedir(), '.cursor', 'projects');
-export const geminiRoot = () => join(process.env.GEMINI_CLI_HOME || join(homedir(), '.gemini'), 'tmp');
+// Gemini CLI treats GEMINI_CLI_HOME as the home directory, with .gemini inside it.
+export const geminiRoot = () => join(process.env.GEMINI_CLI_HOME || homedir(), '.gemini', 'tmp');
 
 // Claude Code stores each project under its cwd with every non-alphanumeric char as "-".
 export const encodeCwd = (cwd) => cwd.replace(/[^A-Za-z0-9]/g, '-');

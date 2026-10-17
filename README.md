@@ -1,16 +1,21 @@
 # agentvcr
 
-[![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) [![npm](https://img.shields.io/npm/v/agentvcr)](https://www.npmjs.com/package/agentvcr) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**Replays for AI coding sessions.** One command turns a Claude Code or Codex session into a single HTML file you can watch, scrub and share. Secrets are masked on your machine. No account, no upload, no dependencies.
+**Replays for AI coding sessions.** One command turns a Claude Code, Codex, Cursor or Gemini CLI session into a single HTML file anyone can watch, or into a link. Secrets are masked on your machine. No account, no server, no dependencies.
 
 ```bash
-npx agentvcr
+npx agentvcr               # pick a session from this project and open the replay
+npx agentvcr last --share  # or get a link to it
 ```
 
-[![A replay playing back: commands type out, diffs and terminal output unfold, and the scrubber marks every prompt, edit and error](docs/demo.gif)](https://tojacob03.github.io/agentvcr/)
+Not on npm yet? `npx github:tojacob03/agentvcr` runs the same version straight from GitHub.
 
-**[▶ Watch the example replay](https://tojacob03.github.io/agentvcr/)**: Claude Code tracks down why a shop fulfills orders twice, reproduces it in a failing test, fixes it, and recovers from a type error on the way. The session is made up for the demo (see [`examples/demo.mjs`](examples/demo.mjs)); the replay is exactly what agentvcr produces.
+[![A replay playing back: commands type out, diffs and terminal output unfold, and the deck counts real working time](docs/demo.gif)](https://tojacob03.github.io/agentvcr/demo/)
+
+**[▶ Watch the example replay](https://tojacob03.github.io/agentvcr/demo/)**: Claude Code tracks down why a shop fulfills orders twice, reproduces it in a failing test, fixes it, and recovers from a type error on the way. The session is made up for the demo ([`examples/demo.mjs`](examples/demo.mjs)); the replay is exactly what agentvcr produces.
+
+**[Try it on your own session](https://tojacob03.github.io/agentvcr/)**: drop a transcript on the TV on the website. It is parsed and played in your browser; nothing is uploaded.
 
 ## Why
 
@@ -26,14 +31,15 @@ An agent can work for an hour and leave behind nothing but a diff. Screenshots s
 ```bash
 npx agentvcr              # pick a session from the current project
 npx agentvcr last         # the most recent one
-npx agentvcr <file|id>    # a .jsonl transcript or a session id
-npx agentvcr --list --all # every session on this machine
+npx agentvcr <file|id>    # a transcript file or a session id
+npx agentvcr --list --all # every session on this machine, all agents
 ```
 
 It writes `agentvcr-<title>.html` and opens it in your browser.
 
 | Option | |
 |---|---|
+| `-s, --share` | upload the masked replay as a secret gist and print a link |
 | `-o, --out <file>` | output path |
 | `-a, --all` | include sessions from every project |
 | `--title <text>` | set the replay title |
@@ -41,6 +47,37 @@ It writes `agentvcr-<title>.html` and opens it in your browser.
 | `--subagents` | include subagent turns (Claude Code) |
 | `--no-redact` | keep secrets, emails and your home path |
 | `--no-open` | don't open a browser |
+
+## Share a link
+
+```bash
+npx agentvcr last --share
+# ✓ https://tojacob03.github.io/agentvcr/v/?g=you/3f2a…
+```
+
+`--share` uploads the already masked replay as a **secret gist** on your GitHub account and prints a link to the player on this project's site, which loads the gist and plays it. There is no agentvcr server: GitHub stores it, Pages plays it, and deleting the gist takes the replay down. It uses the [GitHub CLI](https://cli.github.com) if you are logged in (`gh auth login`), or a `GITHUB_TOKEN` with the `gist` scope. `--share` cannot be combined with `--no-redact`.
+
+Prefer a file? A replay is one HTML file with no external requests. Attach it to an issue, drop it on any static host, or send it.
+
+## Supported agents
+
+| Agent | Where sessions live | On the tape |
+|---|---|---|
+| Claude Code | `~/.claude/projects/` | prompts, answers, tool calls with output, diffs, plans; real working time |
+| Codex CLI and app | `~/.codex/sessions/` | prompts, answers, shell output, `apply_patch` diffs, plans; real working time |
+| Cursor | `~/.cursor/projects/*/agent-transcripts/` | prompts, answers, commands, edits, plans; Cursor keeps no tool output or step times, so the counter counts steps |
+| Gemini CLI | `~/.gemini/tmp/*/chats/` | prompts, answers, shell, edits, searches, todos; rewinds and patches applied the way the CLI loads them |
+
+Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME` or `GEMINI_CLI_HOME` if yours live elsewhere. OpenCode, Aider and others: [PRs welcome](#how-it-works).
+
+## Claude Code plugin
+
+```text
+/plugin marketplace add tojacob03/agentvcr
+/plugin install agentvcr@agentvcr
+```
+
+Then `/agentvcr:replay` turns the session you are in into a replay, and `/agentvcr:replay share` gives you a link.
 
 ## What's in a replay
 
@@ -55,39 +92,26 @@ Keys: `space` play/pause, `←` `→` previous/next step, `1`–`4` speed, `Home
 
 ## Privacy
 
-Everything runs locally. Before anything is written, agentvcr masks:
+Everything runs locally unless you pass `--share`. Before anything is written, agentvcr masks:
 
 - API keys and tokens (Anthropic, OpenAI, GitHub, GitLab, Slack, AWS, Google, Stripe, npm), JWTs, bearer tokens and private keys
 - `KEY=value` pairs whose name looks like a secret (`password`, `api_key`, `token`, …)
 - credentials inside URLs, email addresses, your home directory and your username
 
-The CLI tells you how many secrets it masked. Masking is pattern based, so **skim the replay before you share it**.
-
-## Sharing
-
-A replay is one HTML file with no external requests. Attach it to an issue, drop it on GitHub Pages, Netlify or S3, or send the file itself.
-
-## Supported agents
-
-| Agent | Where sessions live | Status |
-|---|---|---|
-| Claude Code | `~/.claude/projects/` | ✓ |
-| Codex CLI / Codex app | `~/.codex/sessions/` | ✓ |
-| Gemini CLI, Cursor, OpenCode | | planned, PRs welcome |
-
-Set `CLAUDE_CONFIG_DIR` or `CODEX_HOME` if yours live elsewhere.
+The CLI tells you how many things it masked, and the [website](https://tojacob03.github.io/agentvcr/#privacy) lets you switch each rule off to see what it catches. Masking is pattern based, so **skim the replay before you share it**.
 
 ## How it works
 
-Every agent writes its session as JSON lines. agentvcr reads them into one shared format (prompts, answers, tool calls with their results), masks secrets, and embeds the result in a small player. The whole package is about 20 KB, and Node 18 or newer is all you need.
+Every agent writes its session as JSON lines. agentvcr reads them into one shared format (prompts, answers, tool calls with their results), masks secrets, and embeds the result in a small player. Parsing and masking are plain modules without Node APIs, so the same code runs in the CLI and on the website. The package is about 30 KB, and Node 18 or newer is all you need.
 
 ```bash
 git clone https://github.com/tojacob03/agentvcr && cd agentvcr
 npm test
 node bin/agentvcr.js --help
+npm run site   # rebuild the demo, the share viewer and the browser modules in docs/
 ```
 
-Adding an agent means writing one parser that returns the shared format. See `src/claude.js` and `src/codex.js`.
+Adding an agent means writing one parser that returns the shared format. [`src/cursor.js`](src/cursor.js) is a short example to start from.
 
 ## License
 
