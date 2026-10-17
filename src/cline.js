@@ -40,10 +40,12 @@ function parseUiMessages(list, { cwd, thinking }) {
   let lastMcp = null;
   let lastWeb = null;
   let lastEdit = null;
+  let prompted = false;
 
   const prompt = (m) => {
     const images = m.images?.length || 0;
     const text = (m.text || '').trim();
+    prompted = true;
     if (text || images) events.push({ type: 'prompt', text: text + (images ? `${text ? '\n' : ''}[${images} image${images > 1 ? 's' : ''}]` : ''), ts: iso(m.ts) });
   };
   const say = (text, ts) => { if (text?.trim()) events.push({ type: 'text', text: text.trim(), ts }); };
@@ -62,7 +64,7 @@ function parseUiMessages(list, { cwd, thinking }) {
         break;
       case 'text':
         // Roo Code opens a task with say:"text" instead of say:"task".
-        if (!events.some((e) => e.type === 'prompt')) prompt(m);
+        if (!prompted) prompt(m);
         else say(m.text, ts);
         break;
       case 'reasoning':

@@ -513,3 +513,15 @@ test('qwen: the active branch after a rewind, tool results and exact file diffs'
   assert.equal(kept.events[4].error, true);
   assert.equal(kept.events[4].output, '1 failing');
 });
+
+test('qwen: tool results without ids pair with the open call of the same tool', async () => {
+  const { parseQwen } = await import('../src/qwen.js');
+  const b = { sessionId: 's', cwd: '/w', version: '1' };
+  const s = parseQwen(jsonl(
+    { uuid: 'u', parentUuid: null, timestamp: T(0), type: 'user', ...b, message: { role: 'user', parts: [{ text: 'list files' }] } },
+    { uuid: 'a', parentUuid: 'u', timestamp: T(1), type: 'assistant', ...b, message: { role: 'model', parts: [{ functionCall: { name: 'run_shell_command', args: { command: 'ls' } } }] } },
+    { uuid: 't', parentUuid: 'a', timestamp: T(2), type: 'tool_result', ...b, message: { role: 'user', parts: [{ functionResponse: { name: 'run_shell_command', response: { output: 'a.txt' } } }] } },
+  ));
+  assert.equal(s.events[1].output, 'a.txt');
+  assert.equal(s.events[1].end, T(2));
+});

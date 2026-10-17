@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.6.0
 
 - Qwen Code support, read from its source: `~/.qwen/projects/*/chats/*.jsonl`, following the `parentUuid` chain from the last record so rewound turns stay out, as Qwen Code does when it resumes. Edits and writes use the before/after content Qwen Code records, so diffs are exact.
 - Cline support, read from Cline's own source: SDK sessions in `~/.cline/data/sessions` (working directory from the manifest next to them) and tasks from before the SDK (`ui_messages.json`), which is also the format of Roo Code and older Kilo Code tasks. Commands with output, edits as diffs (search/replace blocks, patches, unified diffs), searches, MCP calls and token usage. `agentvcr last` finds them per project, and the website plays a dropped file.
+- Kilo Code's CLI is built on OpenCode: `kilo export <id> > session.json` plays as an OpenCode session.
 
 ## 0.5.0
 
