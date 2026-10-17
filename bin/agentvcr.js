@@ -13,7 +13,7 @@ const HELP = `agentvcr: turn a coding agent session into a replay you can share.
 Usage
   agentvcr                 pick a session from this project
   agentvcr last            the most recent session in this project
-  agentvcr <file|id>       a .jsonl transcript or a session id
+  agentvcr <file|id>       a transcript file (.jsonl, .json, .md) or a session id
   agentvcr last --share    upload it as a secret gist and get a link
 
 Options

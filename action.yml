@@ -9,8 +9,8 @@ inputs:
   path:
     description: >
       What to replay: the execution_file output of anthropics/claude-code-action,
-      a transcript file, or empty for the newest Claude Code, Codex, Cursor,
-      Gemini CLI or Cline session on the runner.
+      a transcript file, or empty for the newest session of any supported agent
+      on the runner.
     required: false
     default: ''
   title:
