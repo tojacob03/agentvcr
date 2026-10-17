@@ -1,4 +1,4 @@
-import { parseClaude } from './claude.js';
+import { parseClaude, parseClaudeSdk } from './claude.js';
 import { parseCodex } from './codex.js';
 import { parseCursor } from './cursor.js';
 import { parseGemini } from './gemini.js';
@@ -16,6 +16,7 @@ export function parseTranscript(raw, { path = '', redact = true, home = '', user
     gemini: () => parseGemini(raw, { thinking }),
     opencode: () => parseOpenCode(raw),
     claude: () => parseClaude(raw, { thinking, sidechains }),
+    'claude-sdk': () => parseClaudeSdk(raw, { thinking, sidechains }),
   };
   let session = parsers[agent]();
   if (title) session.title = title;

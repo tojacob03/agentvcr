@@ -17,3 +17,19 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: npm test
       - run: node bin/agentvcr.js --help
+
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: vcr
+        uses: ./
+        with:
+          path: examples/demo-session.jsonl
+          comment: 'false'
+      - name: Check the action's outputs
+        run: |
+          test -s "${{ steps.vcr.outputs.file }}"
+          grep -q 'Webhook retries fulfilled orders twice' "${{ steps.vcr.outputs.file }}"
+          test -n "${{ steps.vcr.outputs.artifact-url }}"
+          echo "artifact: ${{ steps.vcr.outputs.artifact-url }}"

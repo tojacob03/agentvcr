@@ -276,3 +276,21 @@ test('detect: Claude lines with msg_ ids are still Claude', async () => {
   const line = JSON.stringify({ parentUuid: null, type: 'assistant', message: { id: 'msg_011Cg4', model: 'claude-opus-5-5', content: [] } });
   assert.equal(detectAgent('/x.jsonl', line), 'claude');
 });
+
+test('claude-sdk: execution file from claude-code-action', async () => {
+  const { parseTranscript } = await import('../src/parse.js');
+  const raw = JSON.stringify([
+    { type: 'system', subtype: 'init', session_id: 's1', cwd: '/home/runner/work/app/app', model: 'claude-opus-5-5' },
+    { type: 'assistant', session_id: 's1', message: { id: 'msg_1', content: [{ type: 'text', text: 'I will fix the failing build.' }], usage: { input_tokens: 10, output_tokens: 5 } } },
+    { type: 'assistant', session_id: 's1', message: { id: 'msg_2', content: [{ type: 'tool_use', id: 't1', name: 'Bash', input: { command: 'npm run build' } }] } },
+    { type: 'user', session_id: 's1', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 't1', content: 'ok' }] } },
+    { type: 'assistant', session_id: 's1', parent_tool_use_id: 'task1', message: { id: 'msg_3', content: [{ type: 'text', text: 'subagent' }] } },
+    { type: 'result', subtype: 'success', is_error: false, session_id: 's1' },
+  ], null, 2);
+  const { session } = parseTranscript(raw, { path: 'claude-execution-output.json' });
+  assert.equal(session.agent, 'Claude Code');
+  assert.equal(session.model, 'claude-opus-5-5');
+  assert.equal(session.title, 'I will fix the failing build.');
+  assert.deepEqual(session.events.map((e) => e.kind || e.type), ['text', 'shell']);
+  assert.equal(session.events[1].output, 'ok');
+});

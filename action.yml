@@ -1,0 +1,90 @@
+name: agentvcr replay
+description: Turn the coding agent session from this job into a replay, upload it, and link it on the pull request.
+author: Till Oscar Jacob
+branding:
+  icon: play-circle
+  color: blue
+
+inputs:
+  path:
+    description: >
+      What to replay: the execution_file output of anthropics/claude-code-action,
+      a transcript file, or empty for the newest Claude Code, Codex, Cursor or
+      Gemini CLI session on the runner.
+    required: false
+    default: ''
+  title:
+    description: Title for the replay. Defaults to the session's own title.
+    required: false
+    default: ''
+  share-token:
+    description: >
+      A token with the gist scope (a classic personal access token stored as a
+      secret). With it, the replay is uploaded as a secret gist and the comment
+      links straight to it. Without it, the replay is attached to the run as an
+      artifact.
+    required: false
+    default: ''
+  comment:
+    description: Comment on the pull request with the replay ('true' or 'false').
+    required: false
+    default: 'true'
+  github-token:
+    description: Token used to comment on the pull request.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  file:
+    description: Path to the replay HTML file.
+    value: ${{ steps.replay.outputs.file }}
+  url:
+    description: Link to the shared replay (only with share-token).
+    value: ${{ steps.replay.outputs.url }}
+  artifact-url:
+    description: Link to the uploaded artifact.
+    value: ${{ steps.artifact.outputs.artifact-url }}
+
+runs:
+  using: composite
+  steps:
+    - id: replay
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_TITLE: ${{ inputs.title }}
+        SHARE_TOKEN: ${{ inputs.share-token }}
+      run: |
+        set -euo pipefail
+        args=()
+        if [ -n "$INPUT_PATH" ]; then args+=("$INPUT_PATH"); else args+=(last --all); fi
+        if [ -n "$INPUT_TITLE" ]; then args+=(--title "$INPUT_TITLE"); fi
+        out="$RUNNER_TEMP/agentvcr-replay.html"
+        json="$RUNNER_TEMP/agentvcr-result.json"
+        if [ -n "$SHARE_TOKEN" ]; then
+          GITHUB_TOKEN="$SHARE_TOKEN" node "$GITHUB_ACTION_PATH/bin/agentvcr.js" "${args[@]}" --share --json -o "$out" > "$json"
+        else
+          node "$GITHUB_ACTION_PATH/bin/agentvcr.js" "${args[@]}" --json -o "$out" > "$json"
+        fi
+        echo "file=$out" >> "$GITHUB_OUTPUT"
+        echo "json=$json" >> "$GITHUB_OUTPUT"
+        echo "url=$(node -e 'process.stdout.write(require(process.argv[1]).url || "")' "$json")" >> "$GITHUB_OUTPUT"
+
+    - id: artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: agentvcr-replay
+        path: ${{ steps.replay.outputs.file }}
+        retention-days: 30
+
+    - if: inputs.comment == 'true' && (github.event.pull_request.number || github.event.issue.pull_request)
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        PR: ${{ github.event.pull_request.number || github.event.issue.number }}
+        RESULT: ${{ steps.replay.outputs.json }}
+        ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
+      run: |
+        set -euo pipefail
+        node "$GITHUB_ACTION_PATH/scripts/comment.mjs" "$RESULT" "$ARTIFACT_URL" > "$RUNNER_TEMP/agentvcr-comment.md"
+        gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/agentvcr-comment.md"

@@ -26,6 +26,7 @@ Options
       --subagents    include subagent turns (Claude Code)
       --no-redact    keep secrets, emails and your home path (careful)
       --no-open      do not open the replay in a browser
+      --json         print the result as JSON (for scripts and CI)
   -h, --help         show this help
   -v, --version      show the version`;
 
@@ -45,6 +46,7 @@ for (let i = 0; i < args.length; i++) {
   else if (a === '--subagents') opts.sidechains = true;
   else if (a === '--no-redact') opts.redact = false;
   else if (a === '--no-open') opts.open = false;
+  else if (a === '--json') { opts.json = true; opts.open = false; }
   else if (a.startsWith('-')) fail(`Unknown option ${a}. Run agentvcr --help.`);
   else target = a;
 }
@@ -127,7 +129,13 @@ async function main() {
   if (opts.share && !opts.redact) fail('--share always masks secrets; it cannot be combined with --no-redact.');
   const { session, redactions } = loadSession(path, opts);
   if (!session.events.length) fail('That session has no events to replay.');
+  const result = (extra) => ({
+    title: session.title, agent: session.agent, events: session.events.length, tools: session.stats.tools,
+    files: session.stats.files, added: session.stats.added, removed: session.stats.removed,
+    activeMs: session.stats.activeMs, tokens: session.stats.tokens || null, redactions, ...extra,
+  });
   const summary = () => {
+    if (opts.json) return;
     console.log(dim(`  ${session.events.length} events, ${session.stats.tools} tool calls, ${session.stats.files} files changed`));
     if (opts.redact) console.log(dim(`  ${redactions} secret${redactions === 1 ? '' : 's'} masked, home path replaced with ~.`));
     else console.log(red('  Redaction is off. Do not share this file without reading it.'));
@@ -135,10 +143,11 @@ async function main() {
 
   if (opts.share) {
     const { url, gist } = await share(session);
+    if (opts.out) writeFileSync(resolve(opts.out), renderHtml(session));
+    if (opts.json) { console.log(JSON.stringify(result({ url, gist, file: opts.out ? resolve(opts.out) : null }))); return; }
     console.log(`\n✓ ${url}`);
     summary();
     console.log(dim(`  Secret gist: ${gist} (delete it there to take the replay down)`));
-    if (opts.out) writeFileSync(resolve(opts.out), renderHtml(session));
     if (opts.open) openFile(url);
     return;
   }
@@ -146,6 +155,7 @@ async function main() {
   const out = resolve(opts.out || `agentvcr-${slug(session.title)}.html`);
   const html = renderHtml(session);
   writeFileSync(out, html);
+  if (opts.json) { console.log(JSON.stringify(result({ file: out, url: null }))); return; }
   console.log(`\n✓ ${out} ${dim(`(${Math.round(Buffer.byteLength(html) / 1024)} KB)`)}`);
   summary();
   console.log(dim('  Skim it before sharing, or run with --share to get a link.'));

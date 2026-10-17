@@ -3,6 +3,28 @@
 
 import { truncate, lineDiff, editDetail, firstLine, shortPath, computeStats, cleanPrompt } from './session.js';
 
+// Claude Code SDK output (claude -p --output-format json/stream-json, and the
+// execution file of anthropics/claude-code-action): the same messages without
+// per-message timestamps, as a JSON array. Rewrite it as transcript lines.
+export function parseClaudeSdk(raw, opts) {
+  let list = [];
+  try { list = JSON.parse(raw); } catch { list = []; }
+  const init = list.find((m) => m.type === 'system' && m.subtype === 'init') || {};
+  const lines = list
+    .filter((m) => (m.type === 'assistant' || m.type === 'user') && m.message && !m.parent_tool_use_id)
+    .map((m) => JSON.stringify({ type: m.type, message: m.message, cwd: init.cwd, timestamp: null }));
+  const session = parseClaude(lines.join('\n'), opts);
+  if (!session.model && init.model) session.model = init.model;
+  // The prompt is the run's input, not one of its messages; title it by its first answer.
+  if (!session.events.some((e) => e.type === 'prompt')) {
+    const first = session.events.find((e) => e.type === 'text');
+    if (first) session.title = firstLine(first.text, 80);
+  }
+  const result = list.find((m) => m.type === 'result');
+  if (result?.is_error) session.events.push({ type: 'note', text: `Run ended with an error (${result.subtype || 'error'})`, ts: null });
+  return session;
+}
+
 export function parseClaude(raw, { sidechains = false, thinking = false } = {}) {
   const events = [];
   const tools = new Map();
