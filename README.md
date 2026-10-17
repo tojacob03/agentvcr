@@ -2,7 +2,7 @@
 
 [![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) [![npm](https://img.shields.io/npm/v/agentvcr-cli)](https://www.npmjs.com/package/agentvcr-cli) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**Replays for AI coding sessions.** One command turns a Claude Code, Codex, Cursor, Gemini CLI or OpenCode session into a single HTML file anyone can watch, or into a link. Secrets are masked on your machine. No account, no server, no dependencies.
+**Replays for AI coding sessions, where review happens.** One command turns a Claude Code, Codex, Cursor, Gemini CLI or OpenCode session into a replay you can send as a link, embed, paste into a pull request as Markdown, or have commented on every PR an agent opens in CI. Secrets are masked on your machine. No account, no server, no dependencies.
 
 ```bash
 npx agentvcr-cli               # pick a session from this project and open the replay
