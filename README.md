@@ -133,7 +133,9 @@ The CLI tells you how many things it masked, and the [website](https://tojacob03
 
 ## How it works
 
-Every agent writes its session as JSON lines. agentvcr reads them into one shared format (prompts, answers, tool calls with their results), masks secrets, and embeds the result in a small player. Parsing and masking are plain modules without Node APIs, so the same code runs in the CLI and on the website. The package is about 30 KB, and Node 18 or newer is all you need.
+Every agent writes its session as JSON lines. agentvcr reads them into one shared format (prompts, answers, tool calls with their results), masks secrets, and embeds the result in a small player. Parsing and masking are plain modules without Node APIs, so the same code runs in the CLI and on the website. The package is under 50 KB, and Node 18 or newer is all you need.
+
+[How agentvcr works](https://tojacob03.github.io/agentvcr/how-it-works/) goes into each format's quirks, the masking rules, sharing without a server and how the player stays fast on sessions with 5,000 tool calls.
 
 ```bash
 git clone https://github.com/tojacob03/agentvcr && cd agentvcr

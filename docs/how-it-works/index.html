@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How agentvcr works</title>
+<meta name="description" content="Five transcript formats and their quirks, masking secrets without masking everything, sharing without a server, and a player that stays fast on 5,000-step sessions.">
+<meta property="og:title" content="How agentvcr works">
+<meta property="og:description" content="Five transcript formats, local secret masking, sharing without a server, and a player that stays fast on 5,000-step sessions.">
+<meta property="og:image" content="https://tojacob03.github.io/agentvcr/social.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://tojacob03.github.io/agentvcr/how-it-works/">
+<style>
+@font-face { font-family: "VT323"; src: url(../img/vt323.woff2) format("woff2"); font-display: swap; }
+:root {
+  --ground: #0b0b0e; --tile: #17171c; --ink: #ececf1; --soft: #a9a9b6; --screen: #1b2ae6; --vfd: #6ff0d2; --rec: #ff3b30;
+  --sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --osd: "VT323", "Helvetica Neue", Helvetica, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 18px/1.62 var(--sans); }
+a { color: var(--ink); text-underline-offset: 3px; }
+.top { background: var(--screen); padding: 20px 24px; }
+.top a { font: 26px/1 var(--osd); text-decoration: none; display: inline-flex; gap: 10px; align-items: center; }
+.top a i { width: 10px; height: 10px; border-radius: 50%; background: var(--rec); }
+main { max-width: 70ch; margin: 0 auto; padding: 72px 24px 120px; }
+h1 { font-size: clamp(40px, 6vw, 68px); line-height: 1; letter-spacing: -0.035em; margin: 0 0 24px; }
+.lede { font-size: 21px; color: var(--soft); margin: 0 0 56px; }
+h2 { font-size: 30px; letter-spacing: -0.02em; line-height: 1.15; margin: 72px 0 14px; }
+h2 span { font: 30px/1 var(--osd); color: var(--vfd); margin-right: 12px; font-weight: 400; }
+p, li { margin: 0 0 16px; }
+ul { padding-left: 22px; }
+code { font: 0.95em/1 var(--osd); letter-spacing: 0.02em; background: var(--tile); padding: 1px 6px; }
+pre { background: var(--tile); padding: 16px 18px; overflow-x: auto; font: 18px/1.4 var(--osd); }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 16px; margin: 0 0 20px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px 10px 0; border-bottom: 1px solid #2a2a33; }
+th { color: var(--soft); font-weight: 500; }
+.big { font: 64px/1 var(--osd); color: var(--vfd); display: block; margin: 8px 0 4px; }
+.foot { color: var(--soft); font-size: 15px; margin-top: 80px; }
+@media (max-width: 640px) {
+  body { font-size: 17px; }
+  main { padding: 48px 16px 96px; }
+  table, tbody, tr, td { display: block; }
+  tr:first-child { display: none; }
+  tr { border-bottom: 1px solid #2a2a33; padding: 14px 0; }
+  td { border: 0; padding: 0 0 6px; }
+  td:first-child { font-weight: 600; font-size: 18px; }
+  code { overflow-wrap: anywhere; }
+}
+</style>
+</head>
+<body>
+<header class="top"><a href="../"><i></i>agentvcr</a></header>
+<main>
+<h1>How agentvcr works</h1>
+<p class="lede">agentvcr turns a coding agent's session into a replay you can watch, send as a link or get on a pull request. Most of the work is in three places: reading five transcript formats that each have their quirks, masking secrets without masking everything, and keeping one HTML file fast on sessions with thousands of steps.</p>
+
+<h2><span>01</span>Five formats, one shape</h2>
+<p>Every agent already writes its session to disk, as JSON lines, a JSON document or a database. agentvcr reads them into one shared shape (prompts, answers and tool calls with their results) and the player only knows that shape. The parsers are plain modules without Node APIs, so the same code runs in the CLI and on the website, where a dropped file is parsed in the browser.</p>
+<table>
+<tr><th>Agent</th><th>Where</th><th>The quirk</th></tr>
+<tr><td>Claude Code</td><td><code>~/.claude/projects</code></td><td>One line per content block, and every line repeats its message's token usage. Counted naively, a 300-message session reports its tokens about three times over, so usage is counted once per message id.</td></tr>
+<tr><td>Codex</td><td><code>~/.codex/sessions</code></td><td>The same content arrives twice, as <code>response_item</code> and as <code>event_msg</code>. Only the first is read. Shell output can be wrapped in JSON with an exit code inside.</td></tr>
+<tr><td>Cursor</td><td><code>~/.cursor/projects/…/agent-transcripts</code></td><td>Tool calls without their results and no per-step times. The replay counts steps instead of minutes, and the start time comes from a timestamp tag in the first prompt.</td></tr>
+<tr><td>Gemini CLI</td><td><code>~/.gemini/tmp/…/chats</code></td><td>Append-only JSONL with edits to the past: <code>$rewindTo</code> drops messages, <code>$patch</code> fills in tool results later, <code>$set</code> can replace the whole list. They are applied in order, the way the CLI loads a chat.</td></tr>
+<tr><td>OpenCode</td><td>a database</td><td>Read from <code>opencode export</code>, in both the current format (typed messages with tool state) and the older one with message parts.</td></tr>
+</table>
+<p>Detecting the format from the first 64 KB has one trap worth naming: Claude Code lines contain message ids like <code>msg_01…</code>, which is also what OpenCode ids look like. Matching on ids misfiled every Claude session, so OpenCode is recognised by how its document opens instead, and a test pins that down.</p>
+
+<h2><span>02</span>Masking without masking everything</h2>
+<p>Replays are made to be shared, so secrets are masked before anything is written: 25 patterns for provider keys and tokens (Anthropic, OpenAI, GitHub, AWS, Stripe, Hugging Face and others), JWTs, bearer tokens, private keys, credentials in URLs, webhook URLs, email addresses, and the home folder and username.</p>
+<p>The hard part is the generic rule for <code>KEY=value</code> pairs whose name sounds secret. Run naively over real sessions, it masked <code>max_tokens: 5000</code>, <code>token: string</code> and <code>apikey: $SUPABASE_KEY</code>. Now the value has to mix letters and digits and must not start with <code>$</code>, and each of those look-alikes is a test that must stay unmasked. On the largest sessions it was tested on, what remains masked is keys, tokens and email addresses.</p>
+<p>Patterns are grouped (keys, tokens, URLs, variables, emails, home), which lets <a href="../#privacy">the website</a> switch each group off to show what it catches. It is still pattern matching, so the CLI reports how many things it masked and asks you to skim a replay before sharing it.</p>
+
+<h2><span>03</span>Sharing without a server</h2>
+<p><code>--share</code> uploads the already masked replay data as a <em>secret</em> gist on your GitHub account and prints a link to a static viewer on GitHub Pages. The viewer fetches <code>gist.githubusercontent.com/&lt;owner&gt;/&lt;id&gt;/raw/agentvcr.json</code>: the raw CDN allows cross-origin reads and, unlike the gist API, has no 60-requests-per-hour limit per visitor. Nothing of agentvcr's runs in between, and deleting the gist takes the replay down. The full working directory never leaves your machine; only its last folder name is kept as the project name.</p>
+
+<h2><span>04</span>One file that stays fast</h2>
+<p>A replay is a single HTML file: the player, its CSS and JS, the session as JSON, and the pixel font for the counter, subset to ASCII and embedded at 3.4&nbsp;KB. Transcript text can contain <code>&lt;/script&gt;</code>, so every <code>&lt;</code> in the embedded JSON is escaped; a test feeds it exactly that.</p>
+<p>Playback reveals events along a compressed timeline, so an hour of work plays in under a minute while the counter shows real working time (breaks over five minutes count as away). Skipping to the end of a long session first took seconds. Each long output was measured right after it was shown, which forced a layout per step:</p>
+<span class="big">4,929 ms → 11 ms</span>
+<p>for a session with 5,000 tool calls. Outputs are now measured when they come near the viewport, and total layout time for that session dropped from 4.1&nbsp;s to 0.2&nbsp;s.</p>
+
+<h2><span>05</span>Clips on a controlled clock</h2>
+<p><code>-o clip.mp4</code> and <code>-o clip.gif</code> record a replay with the Chrome and ffmpeg already on your machine. Recording in real time drops frames whenever a screenshot is slow, so the page's clock is replaced: <code>performance.now</code> and <code>requestAnimationFrame</code> only advance when the recorder says so, one frame at a time, with a screenshot after each. The clip is equally smooth on any machine. GIFs go through ffmpeg's palette pass, which keeps the blue screen free of banding at a fraction of the size.</p>
+
+<h2><span>06</span>How it is checked</h2>
+<ul>
+<li>Unit tests for every parser, the masking rules and their look-alikes, the Markdown export and the pull request comment, on Linux, macOS and Windows with Node 18, 20 and 22.</li>
+<li>A browser smoke test drives headless Chrome over the DevTools protocol: a replay boots, plays, skips to the end and stops exactly at deep links; a session dropped on the website plays with the home folder masked; no script errors. Breaking a deep link on purpose so it stops one step late makes it fail, as it should.</li>
+<li>The GitHub Action runs against itself in CI, and a clip is recorded there too.</li>
+<li>Before releases, every session on the development machine (160 of them, from three agents) is parsed and rendered: no failures, the largest replay is 2.3&nbsp;MB and takes 0.4&nbsp;s.</li>
+</ul>
+
+<p class="foot">agentvcr is open source under the MIT licence: <a href="https://github.com/tojacob03/agentvcr">github.com/tojacob03/agentvcr</a>. Try it with <code>npx agentvcr-cli</code>, or <a href="../demo/">watch the example replay</a>.</p>
+</main>
+</body>
+</html>

@@ -43,7 +43,7 @@ You can also drop a transcript on the website and it plays right there, parsed i
 
 There is also a GitHub Action that comments a replay on every pull request an agent opens in CI, and `&embed` for putting a replay in a blog post.
 
-Zero dependencies, about 30 KB. Masking is regex based, and I would love to hear what it misses.
+Zero dependencies, under 50 KB. Masking is regex based, and I would love to hear what it misses.
 
 ## X / Bluesky thread
 
