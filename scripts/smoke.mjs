@@ -121,6 +121,24 @@ try {
   })()`);
   check('dropped session plays', played?.events === 33, JSON.stringify(played));
   check('dropped session masks the home folder', played && !played.homeLeaked);
+  const cline = await evaluate(`(async () => {
+    const t = 1767225600000;
+    const msgs = [
+      { ts: t, type: 'say', say: 'task', text: 'add retries to the webhook' },
+      { ts: t + 4000, type: 'ask', ask: 'tool', text: JSON.stringify({ tool: 'editedExistingFile', path: 'src/webhook.ts', diff: '------- SEARCH\\\\nsend(e)\\\\n=======\\\\nretry(() => send(e))\\\\n+++++++ REPLACE' }) },
+      { ts: t + 9000, type: 'say', say: 'completion_result', text: 'Done.' },
+    ];
+    const dt = new DataTransfer();
+    dt.items.add(new File([JSON.stringify(msgs)], 'ui_messages.json'));
+    document.getElementById('screen').dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+    for (let i = 0; i < 50; i++) {
+      await new Promise((r) => setTimeout(r, 100));
+      const d = document.querySelector('#screen iframe')?.contentDocument;
+      if (d && /A Cline session/.test(d.body.textContent)) return { events: d.querySelectorAll('.ev').length, diff: !!d.querySelector('.ev .diff, .ev table, .ev .add, .ev ins') };
+    }
+    return null;
+  })()`);
+  check('dropped Cline task plays', cline?.events === 3, JSON.stringify(cline));
   check('landing redaction demo', /NOTHING LEAKS/.test(await evaluate("document.getElementById('tally').textContent")));
   check('landing has no script errors', errors.length === 0, errors[0]);
   ws.close();

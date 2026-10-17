@@ -356,3 +356,123 @@ test('video: a clear message when Chrome or ffmpeg is missing', async () => {
     if (saved.f === undefined) delete process.env.FFMPEG_PATH; else process.env.FFMPEG_PATH = saved.f;
   }
 });
+
+test('cline: ui_messages.json with tools, commands, MCP and follow-ups', async () => {
+  const { parseCline } = await import('../src/cline.js');
+  const { detectAgent } = await import('../src/detect.js');
+  const t = (s) => 1767225600000 + s * 1000;
+  const raw = JSON.stringify([
+    { ts: t(0), type: 'say', say: 'task', text: 'add retries to the webhook', images: [] },
+    { ts: t(1), type: 'say', say: 'api_req_started', text: JSON.stringify({ request: '<task>\nadd retries\n</task>\n\n<environment_details>\n# Current Working Directory (/home/ada/shop) Files\nsrc/\n</environment_details>', tokensIn: 100, tokensOut: 20, cacheReads: 900, cacheWrites: 0 }) },
+    { ts: t(2), type: 'say', say: 'reasoning', text: 'The handler sends once.' },
+    { ts: t(3), type: 'say', say: 'text', text: 'Looking at the handler first.', modelInfo: { providerId: 'anthropic', modelId: 'claude-sonnet-5-5', mode: 'act' } },
+    { ts: t(4), type: 'say', say: 'tool', text: JSON.stringify({ tool: 'readFile', path: 'src/webhook.ts', content: '/home/ada/shop/src/webhook.ts' }) },
+    { ts: t(5), type: 'ask', ask: 'tool', text: JSON.stringify({ tool: 'editedExistingFile', path: 'src/webhook.ts', diff: '------- SEARCH\nawait send(e)\n=======\nawait retry(() => send(e))\n+++++++ REPLACE' }) },
+    { ts: t(6), type: 'ask', ask: 'command', text: 'npm testREQ_APP' },
+    { ts: t(7), type: 'ask', ask: 'command_output', text: '> test' },
+    { ts: t(8), type: 'ask', ask: 'command_output', text: '2 passing' },
+    { ts: t(9), type: 'say', say: 'tool', text: JSON.stringify({ tool: 'searchFiles', regex: 'retry\\(', path: 'src', content: 'src/webhook.ts\n│ await retry(' }) },
+    { ts: t(10), type: 'say', say: 'use_mcp_server', text: JSON.stringify({ serverName: 'github', type: 'use_mcp_tool', toolName: 'create_issue', arguments: '{"title":"Flaky webhook"}' }) },
+    { ts: t(11), type: 'say', say: 'mcp_server_response', text: 'created #12' },
+    { ts: t(12), type: 'say', say: 'checkpoint_created' },
+    { ts: t(13), type: 'say', say: 'user_feedback', text: 'also log each retry' },
+    { ts: t(14), type: 'say', say: 'completion_result', text: 'Retries added.HAS_CHANGES' },
+    { ts: t(15), type: 'ask', ask: 'completion_result', text: '' },
+  ]);
+  assert.equal(detectAgent('/x/saoudrizwan.claude-dev/tasks/1/ui_messages.json', raw), 'cline');
+  assert.equal(detectAgent('dropped.json', raw.slice(0, 2000)), 'cline');
+  const s = parseCline(raw, { path: '/x/saoudrizwan.claude-dev/tasks/1/ui_messages.json' });
+  assert.equal(s.agent, 'Cline');
+  assert.equal(s.cwd, '/home/ada/shop');
+  assert.equal(s.model, 'claude-sonnet-5-5');
+  assert.equal(s.title, 'add retries to the webhook');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'text', 'read', 'edit', 'shell', 'search', 'mcp', 'prompt', 'text']);
+  assert.equal(s.events[3].detail.added, 1);
+  assert.equal(s.events[3].detail.removed, 1);
+  assert.equal(s.events[4].title, 'npm test');
+  assert.equal(s.events[4].output, '> test\n2 passing');
+  assert.ok(s.events[5].output.includes('retry('));
+  assert.equal(s.events[6].output, 'created #12');
+  assert.equal(s.events.at(-1).text, 'Retries added.');
+  assert.deepEqual(s.stats.tokens, { in: 1000, out: 20 });
+  assert.equal(s.startedAt, new Date(t(0)).toISOString());
+  assert.ok(!JSON.stringify(s).includes('"raw"'));
+  assert.equal(parseCline(raw, { thinking: true }).events.filter((e) => e.type === 'thinking').length, 1);
+});
+
+test('cline: Roo Code opens with say:text and edits with :start_line: blocks', async () => {
+  const { parseCline, searchReplace } = await import('../src/cline.js');
+  const raw = JSON.stringify([
+    { ts: 1767225600000, type: 'say', say: 'text', text: 'rename getUser to fetchUser' },
+    { ts: 1767225601000, type: 'ask', ask: 'tool', text: JSON.stringify({ tool: 'appliedDiff', path: 'src/user.ts', diff: '<<<<<<< SEARCH\n:start_line:5\n-------\nexport function getUser() {\n=======\nexport function fetchUser() {\n>>>>>>> REPLACE' }) },
+    { ts: 1767225602000, type: 'say', say: 'text', text: 'Renamed.' },
+  ]);
+  const s = parseCline(raw, { path: '/x/rooveterinaryinc.roo-cline/tasks/9/ui_messages.json' });
+  assert.equal(s.agent, 'Roo Code');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'edit', 'text']);
+  assert.deepEqual(s.events[1].detail.diff.map(([op]) => op), ['-', '+']);
+  assert.equal(parseCline(raw, { path: 'ui_messages.json' }).agent, 'Roo Code', 'Roo-only tools give it away');
+  assert.deepEqual(searchReplace('------- SEARCH\na\n=======\nb\n+++++++ REPLACE\n------- SEARCH\nc\n=======\n+++++++ REPLACE'), [{ old_string: 'a', new_string: 'b' }, { old_string: 'c', new_string: '' }]);
+});
+
+test('cline: SDK messages file, with the working directory from its manifest', async () => {
+  const { mkdtempSync, writeFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { tmpdir } = await import('node:os');
+  const { loadSession } = await import('../src/index.js');
+  const { detectAgent } = await import('../src/detect.js');
+  const ms = (s) => Date.parse(T(s));
+  const doc = { version: 1, updated_at: T(9), agent: 'lead', sessionId: 's1', messages: [
+    { role: 'user', ts: ms(0), content: [{ type: 'text', text: '<mode_notice>The user switched from plan mode to act mode before sending this message.</mode_notice><user_input mode="act">fix the flaky login test</user_input>' }] },
+    { role: 'assistant', ts: ms(1), modelInfo: { id: 'claude-sonnet-5-5', provider: 'anthropic' }, metrics: { inputTokens: 50, outputTokens: 30, cacheReadTokens: 950 }, content: [
+      { type: 'thinking', thinking: 'Probably a race.' },
+      { type: 'text', text: 'Reading the test.' },
+      { type: 'tool_use', id: 't1', name: 'read_files', input: { files: [{ path: '/home/ada/app/test/login.test.ts' }, { path: '/home/ada/app/src/login.ts' }] } },
+      { type: 'tool_use', id: 't2', name: 'run_commands', input: { commands: ['npm test'] } },
+    ] },
+    { role: 'user', ts: ms(2), content: [
+      { type: 'tool_result', tool_use_id: 't1', name: 'read_files', content: 'it("logs in")' },
+      { type: 'tool_result', tool_use_id: 't2', name: 'run_commands', content: '1 failing', is_error: true },
+    ] },
+    { role: 'assistant', ts: ms(3), content: [
+      { type: 'tool_use', id: 't3', name: 'editor', input: { path: '/home/ada/app/src/login.ts', old_text: 'a', new_text: 'a\nb' } },
+      { type: 'tool_use', id: 't4', name: 'github__create_pull_request', input: { title: 'Fix the race' } },
+      { type: 'tool_use', id: 't5', name: 'submit_and_exit', input: { summary: 'Fixed the race in login.' } },
+    ] },
+  ] };
+  const raw = JSON.stringify(doc, null, 2);
+  assert.equal(detectAgent('dropped.json', raw.slice(0, 2000)), 'cline');
+  const dir = mkdtempSync(join(tmpdir(), 'agentvcr-cline-'));
+  writeFileSync(join(dir, 's1.messages.json'), raw);
+  writeFileSync(join(dir, 's1.json'), JSON.stringify({ version: 1, session_id: 's1', cwd: '/home/ada/app', model: 'claude-sonnet-5-5' }));
+  const { session: s } = loadSession(join(dir, 's1.messages.json'), { redact: false });
+  assert.equal(s.agent, 'Cline');
+  assert.equal(s.title, 'fix the flaky login test');
+  assert.equal(s.model, 'claude-sonnet-5-5');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'text', 'read', 'shell', 'edit', 'mcp', 'text']);
+  assert.equal(s.events[2].title, 'test/login.test.ts +1 more');
+  assert.equal(s.events[3].error, true);
+  assert.equal(s.events[3].output, '1 failing');
+  assert.equal(s.events[4].title, 'src/login.ts');
+  assert.equal(s.events[5].title, 'github · create_pull_request');
+  assert.equal(s.events[6].text, 'Fixed the race in login.');
+  assert.deepEqual(s.stats.tokens, { in: 1000, out: 30 });
+});
+
+test('cline: SDK tool inputs in the shapes Cline\'s own tests use', async () => {
+  const { parseCline } = await import('../src/cline.js');
+  const use = (id, name, input) => ({ role: 'assistant', ts: 1767225600000, content: [{ type: 'tool_use', id, name, input }] });
+  const s = parseCline(JSON.stringify({ version: 1, updated_at: 'x', messages: [
+    { role: 'user', ts: 1767225600000, content: 'hi' },
+    use('a', 'run_commands', { commands: [{ command: 'ls', args: ['-la', '/tmp'] }] }),
+    use('b', 'execute_command', { command: 'ls', args: ['-la'] }),
+    use('c', 'search_codebase', 'retry('),
+    use('d', 'search_codebase', ['retry(', 'backoff']),
+    use('e', 'apply_patch', { input: '*** Begin Patch\n*** Update File: src/a.ts\n@@\n-a\n+b\n*** End Patch' }),
+    use('f', 'fetch_web_content', { requests: [{ url: 'https://example.com/docs', prompt: 'summarize' }] }),
+    use('g', 'read_files', '{"files":[{"path":"/src/config.ts","start_line":1,"end_line":20}]}'),
+    use('h', 'attempt_completion', { result: 'All done!' }),
+  ] }));
+  assert.deepEqual(s.events.slice(1).map((e) => e.title ?? e.text), ['ls -la /tmp', 'ls -la', 'retry(', 'retry(, backoff', 'src/a.ts', 'https://example.com/docs', '/src/config.ts', 'All done!']);
+  assert.equal(s.events[5].detail.added, 1);
+});

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Cline support, read from Cline's own source: SDK sessions in `~/.cline/data/sessions` (working directory from the manifest next to them) and tasks from before the SDK (`ui_messages.json`), which is also the format of Roo Code and older Kilo Code tasks. Commands with output, edits as diffs (search/replace blocks, patches, unified diffs), searches, MCP calls and token usage. `agentvcr last` finds them per project, and the website plays a dropped file.
+
 ## 0.5.0
 
 - Clips: `-o clip.mp4` or `-o clip.gif` records the replay with your installed Chrome and ffmpeg (frame by frame on a controlled clock, so it is smooth on any machine).

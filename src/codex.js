@@ -107,7 +107,7 @@ function shell(base, command) {
   return { ...base, kind: 'shell', title: firstLine(text, 120), detail: { command: text, description: '' } };
 }
 
-function patch(base, input, cwd) {
+export function patch(base, input, cwd) {
   const diff = [];
   const paths = [];
   for (const line of String(input).split('\n')) {

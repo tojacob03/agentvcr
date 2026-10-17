@@ -77,7 +77,9 @@ function peekTitle(path) {
   const pick = last(/"customTitle":"((?:[^"\\]|\\.)*)"/g) || last(/"lastPrompt":"((?:[^"\\]|\\.){4,200})/g) || head.match(/"type":"user","message":\{"role":"user","content":"((?:[^"\\]|\\.){4,200})/)?.[1]
     || head.match(/"role":"user","content":\[\{"type":"input_text","text":"(?!<|# AGENTS)((?:[^"\\]|\\.){4,200})/)?.[1]
     || head.match(/<user_query>(?:\\n)?((?:[^"\\<]|\\.){4,200})/)?.[1]
-    || head.match(/"type":"user","content":"((?:[^"\\]|\\.){4,200})/)?.[1] || '';
+    || head.match(/"type":"user","content":"((?:[^"\\]|\\.){4,200})/)?.[1]
+    || head.match(/"say":"(?:task|text)","text":"((?:[^"\\]|\\.){4,200})/)?.[1]
+    || head.match(/<user_input mode=\\"\w+\\">((?:[^"\\<]|\\.){4,200})/)?.[1] || '';
   let t = pick;
   try { t = JSON.parse(`"${pick}"`); } catch { /* raw */ }
   t = t.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -90,7 +92,7 @@ async function choose() {
     sessions = listSessions({ all: true });
     if (sessions.length) console.log(dim('No sessions for this folder, showing all projects.\n'));
   }
-  if (!sessions.length) fail('No Claude Code or Codex sessions found. Pass a .jsonl file path instead.');
+  if (!sessions.length) fail('No agent sessions found. Pass a transcript file path instead.');
   const shown = sessions.slice(0, opts.list ? 30 : 12);
   shown.forEach((s, i) => {
     const agent = s.agent.padEnd(6);

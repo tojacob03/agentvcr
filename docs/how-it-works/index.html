@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How agentvcr works</title>
-<meta name="description" content="Five transcript formats and their quirks, masking secrets without masking everything, sharing without a server, and a player that stays fast on 5,000-step sessions.">
+<meta name="description" content="Six agents' transcript formats and their quirks, masking secrets without masking everything, sharing without a server, and a player that stays fast on 5,000-step sessions.">
 <meta property="og:title" content="How agentvcr works">
-<meta property="og:description" content="Five transcript formats, local secret masking, sharing without a server, and a player that stays fast on 5,000-step sessions.">
+<meta property="og:description" content="Six agents' transcript formats, local secret masking, sharing without a server, and a player that stays fast on 5,000-step sessions.">
 <meta property="og:image" content="https://tojacob03.github.io/agentvcr/social.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://tojacob03.github.io/agentvcr/how-it-works/">
@@ -55,9 +55,9 @@ th { color: var(--soft); font-weight: 500; }
 <header class="top"><a href="../"><i></i>agentvcr</a></header>
 <main>
 <h1>How agentvcr works</h1>
-<p class="lede">agentvcr turns a coding agent's session into a replay you can watch, send as a link or get on a pull request. Most of the work is in three places: reading five transcript formats that each have their quirks, masking secrets without masking everything, and keeping one HTML file fast on sessions with thousands of steps.</p>
+<p class="lede">agentvcr turns a coding agent's session into a replay you can watch, send as a link or get on a pull request. Most of the work is in three places: reading the transcripts of six agents, each with its quirks, masking secrets without masking everything, and keeping one HTML file fast on sessions with thousands of steps.</p>
 
-<h2><span>01</span>Five formats, one shape</h2>
+<h2><span>01</span>Six agents, one shape</h2>
 <p>Every agent already writes its session to disk, as JSON lines, a JSON document or a database. agentvcr reads them into one shared shape (prompts, answers and tool calls with their results) and the player only knows that shape. The parsers are plain modules without Node APIs, so the same code runs in the CLI and on the website, where a dropped file is parsed in the browser.</p>
 <table>
 <tr><th>Agent</th><th>Where</th><th>The quirk</th></tr>
@@ -65,6 +65,7 @@ th { color: var(--soft); font-weight: 500; }
 <tr><td>Codex</td><td><code>~/.codex/sessions</code></td><td>The same content arrives twice, as <code>response_item</code> and as <code>event_msg</code>. Only the first is read. Shell output can be wrapped in JSON with an exit code inside.</td></tr>
 <tr><td>Cursor</td><td><code>~/.cursor/projects/…/agent-transcripts</code></td><td>Tool calls without their results and no per-step times. The replay counts steps instead of minutes, and the start time comes from a timestamp tag in the first prompt.</td></tr>
 <tr><td>Gemini CLI</td><td><code>~/.gemini/tmp/…/chats</code></td><td>Append-only JSONL with edits to the past: <code>$rewindTo</code> drops messages, <code>$patch</code> fills in tool results later, <code>$set</code> can replace the whole list. They are applied in order, the way the CLI loads a chat.</td></tr>
+<tr><td>Cline</td><td><code>~/.cline/data/sessions</code></td><td>Two formats. Tasks from before Cline's SDK are a list of UI messages with each tool call as JSON inside the message text, and commands that wait for approval end in a marker that has to come off. SDK sessions are plain content blocks, but the working directory sits in a manifest next to them. Roo Code and Kilo Code tasks use the older format.</td></tr>
 <tr><td>OpenCode</td><td>a database</td><td>Read from <code>opencode export</code>, in both the current format (typed messages with tool state) and the older one with message parts.</td></tr>
 </table>
 <p>Detecting the format from the first 64 KB has one trap worth naming: Claude Code lines contain message ids like <code>msg_01…</code>, which is also what OpenCode ids look like. Matching on ids misfiled every Claude session, so OpenCode is recognised by how its document opens instead, and a test pins that down.</p>
