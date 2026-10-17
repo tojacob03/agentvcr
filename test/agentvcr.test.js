@@ -525,3 +525,26 @@ test('qwen: tool results without ids pair with the open call of the same tool', 
   assert.equal(s.events[1].output, 'a.txt');
   assert.equal(s.events[1].end, T(2));
 });
+
+test('claude: --subagents also reads subagent transcripts kept in <session>/subagents', async () => {
+  const { mkdtempSync, writeFileSync, mkdirSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { tmpdir } = await import('node:os');
+  const { loadSession } = await import('../src/index.js');
+  const dir = mkdtempSync(join(tmpdir(), 'agentvcr-sub-'));
+  writeFileSync(join(dir, 's1.jsonl'), jsonl(
+    { type: 'user', timestamp: T(0), cwd: '/w', message: { role: 'user', content: 'audit the deps' } },
+    { type: 'assistant', timestamp: T(1), message: { content: [{ type: 'tool_use', id: 'task1', name: 'Task', input: { description: 'Scan lockfile', prompt: 'look' } }] } },
+    { type: 'user', timestamp: T(6), message: { content: [{ type: 'tool_result', tool_use_id: 'task1', content: 'two outdated' }] } },
+    { type: 'assistant', timestamp: T(7), message: { content: [{ type: 'text', text: 'Two packages are outdated.' }] } },
+  ));
+  mkdirSync(join(dir, 's1', 'subagents'), { recursive: true });
+  writeFileSync(join(dir, 's1', 'subagents', 'agent-a1.jsonl'), jsonl(
+    { type: 'user', timestamp: T(2), isSidechain: true, agentId: 'a1', message: { role: 'user', content: 'look' } },
+    { type: 'assistant', timestamp: T(3), isSidechain: true, agentId: 'a1', message: { content: [{ type: 'tool_use', id: 'r1', name: 'Read', input: { file_path: '/w/package-lock.json' } }] } },
+    { type: 'user', timestamp: T(4), isSidechain: true, agentId: 'a1', message: { content: [{ type: 'tool_result', tool_use_id: 'r1', content: '{}' }] } },
+  ));
+  const kinds = (o) => loadSession(join(dir, 's1.jsonl'), { redact: false, ...o }).session.events.map((e) => e.kind || e.type);
+  assert.deepEqual(kinds({}), ['prompt', 'task', 'text']);
+  assert.deepEqual(kinds({ sidechains: true }), ['prompt', 'task', 'read', 'text']);
+});

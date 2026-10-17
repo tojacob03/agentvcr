@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `--subagents` reads the subagent transcripts newer Claude Code keeps in `<session>/subagents/` and merges them in by time; a subagent's task no longer shows as if you had typed it.
+
 ## 0.6.0
 
 - Qwen Code support, read from its source: `~/.qwen/projects/*/chats/*.jsonl`, following the `parentUuid` chain from the last record so rewound turns stay out, as Qwen Code does when it resumes. Edits and writes use the before/after content Qwen Code records, so diffs are exact.

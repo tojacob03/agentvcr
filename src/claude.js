@@ -80,6 +80,8 @@ export function parseClaude(raw, { sidechains = false, thinking = false } = {}) 
       } else if (b.type === 'text') prompt += (prompt ? '\n' : '') + b.text;
       else if (b.type === 'image') images++;
     }
+    // A subagent's user turn is its task from the main agent, already shown on the Task call.
+    if (d.isSidechain) continue;
     const text = cleanPrompt(prompt);
     if (/^\[Request interrupted/.test(text)) events.push({ type: 'note', text: 'Interrupted by user', ts });
     else if (text || images) events.push({ type: 'prompt', text: text + (images ? `${text ? '\n' : ''}[${images} image${images > 1 ? 's' : ''}]` : ''), ts });
