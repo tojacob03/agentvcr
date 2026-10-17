@@ -107,7 +107,7 @@ steps:
       share-token: ${{ secrets.AGENTVCR_GIST_TOKEN }}  # optional
 ```
 
-The action masks the run, attaches the replay to the workflow as an artifact and comments on the pull request with a summary and a link. With `share-token` (a token with the `gist` scope) the comment links straight to a shared replay. Leave `path` empty to replay the newest session of any supported agent on the runner. Outputs: `file`, `url`, `artifact-url`.
+The action masks the run, attaches the replay to the workflow as an artifact and comments on the pull request with a summary, a link and the transcript folded inline, so reviewers can read how the change came about without downloading anything. With `share-token` (a token with the `gist` scope) the comment links straight to a shared replay. Leave `path` empty to replay the newest session of any supported agent on the runner. Outputs: `file`, `url`, `artifact-url`.
 
 ## What's in a replay
 

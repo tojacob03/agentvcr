@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- The GitHub Action's pull request comment now includes the transcript, folded, so reviewers see how the change came about without downloading anything. Long runs are cut to fit GitHub's comment limit.
 - Markdown export: `-o session.md` writes a transcript with each tool call folded into a `<details>` block, ready for pull requests, issues and docs.
 
 ## 0.3.1

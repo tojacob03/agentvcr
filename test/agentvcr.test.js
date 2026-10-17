@@ -328,3 +328,20 @@ test('markdown: transcript with folded tool calls and a safe fence', async () =>
   assert.ok(md.includes('<summary>Edited <code>src/a.js</code> (+2 −1)</summary>'));
   assert.ok(md.includes('```diff\n a\n-b\n+B'));
 });
+
+test('action comment: inline transcript, cut to fit a GitHub comment', async () => {
+  const { buildComment, transcriptBody } = await import('../scripts/comment.mjs');
+  const { renderMarkdown } = await import('../src/markdown.js');
+  const md = renderMarkdown(parseClaude(claudeRaw));
+  const r = { title: 'Fix it', events: 5, tools: 2, files: 1, added: 2, removed: 1, activeMs: 120000, redactions: 0, url: null };
+  const c = buildComment(r, 'https://x.test/artifact/1', md);
+  assert.ok(c.includes('[▶ Download the replay](https://x.test/artifact/1)'));
+  assert.ok(c.includes('<summary>Transcript</summary>'));
+  assert.ok(c.includes('> make the test pass'));
+  assert.ok(!c.includes('# Fix the flaky test'), 'title block of the export is dropped');
+  const long = '---\n' + Array.from({ length: 400 }, (_, i) => `<details><summary>Ran <code>step ${i}</code></summary>\n\n${'x'.repeat(300)}\n\n</details>`).join('\n\n') + '\n---\nfooter';
+  const cut = transcriptBody(long, 20000);
+  assert.ok(cut.length < 20200);
+  assert.ok(cut.trimEnd().endsWith('*The transcript is cut here; the full replay is linked above.*'));
+  assert.ok(cut.split('<details>').length === cut.split('</details>').length, 'no half-open block');
+});

@@ -44,6 +44,9 @@ outputs:
   artifact-url:
     description: Link to the uploaded artifact.
     value: ${{ steps.artifact.outputs.artifact-url }}
+  transcript:
+    description: Path to the Markdown transcript of the run.
+    value: ${{ steps.replay.outputs.transcript }}
 
 runs:
   using: composite
@@ -66,8 +69,11 @@ runs:
         else
           node "$GITHUB_ACTION_PATH/bin/agentvcr.js" "${args[@]}" --json -o "$out" > "$json"
         fi
+        md="$RUNNER_TEMP/agentvcr-transcript.md"
+        node "$GITHUB_ACTION_PATH/bin/agentvcr.js" "${args[@]}" -o "$md" --json > /dev/null
         echo "file=$out" >> "$GITHUB_OUTPUT"
         echo "json=$json" >> "$GITHUB_OUTPUT"
+        echo "transcript=$md" >> "$GITHUB_OUTPUT"
         echo "url=$(node -e 'process.stdout.write(require(process.argv[1]).url || "")' "$json")" >> "$GITHUB_OUTPUT"
 
     - id: artifact
@@ -84,7 +90,8 @@ runs:
         PR: ${{ github.event.pull_request.number || github.event.issue.number }}
         RESULT: ${{ steps.replay.outputs.json }}
         ARTIFACT_URL: ${{ steps.artifact.outputs.artifact-url }}
+        TRANSCRIPT: ${{ steps.replay.outputs.transcript }}
       run: |
         set -euo pipefail
-        node "$GITHUB_ACTION_PATH/scripts/comment.mjs" "$RESULT" "$ARTIFACT_URL" > "$RUNNER_TEMP/agentvcr-comment.md"
+        node "$GITHUB_ACTION_PATH/scripts/comment.mjs" "$RESULT" "$ARTIFACT_URL" "$TRANSCRIPT" > "$RUNNER_TEMP/agentvcr-comment.md"
         gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/agentvcr-comment.md"
