@@ -1,0 +1,10 @@
+{
+  "name": "agentvcr",
+  "version": "0.2.0",
+  "description": "Turn the current Claude Code session into a replay you can watch and share.",
+  "author": { "name": "Till Oscar Jacob", "url": "https://github.com/tojacob03" },
+  "homepage": "https://tojacob03.github.io/agentvcr/",
+  "repository": "https://github.com/tojacob03/agentvcr",
+  "license": "MIT",
+  "keywords": ["replay", "share", "transcript", "session"]
+}

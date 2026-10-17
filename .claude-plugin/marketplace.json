@@ -1,0 +1,12 @@
+{
+  "name": "agentvcr",
+  "owner": { "name": "Till Oscar Jacob", "url": "https://github.com/tojacob03" },
+  "metadata": { "description": "Replays for AI coding sessions." },
+  "plugins": [
+    {
+      "name": "agentvcr",
+      "source": "./plugin",
+      "description": "Turn the current Claude Code session into a replay you can watch and share: /agentvcr:replay"
+    }
+  ]
+}
