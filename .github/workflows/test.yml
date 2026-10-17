@@ -47,5 +47,6 @@ jobs:
       - run: node scripts/smoke.mjs
       - name: Record a clip
         run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
           node bin/agentvcr.js examples/demo-session.jsonl -o clip.gif
           test "$(wc -c < clip.gif)" -gt 100000
