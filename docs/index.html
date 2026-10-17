@@ -6,7 +6,7 @@
 <title>agentvcr</title>
 <meta name="description" content="Replays for AI coding sessions. Turn a Claude Code, Codex, Cursor, Gemini CLI or OpenCode session into one HTML file anyone can watch, or a link.">
 <meta property="og:title" content="agentvcr: replays for AI coding sessions">
-<meta property="og:description" content="Turn a Claude Code, Codex, Cursor or Gemini CLI session into one HTML file anyone can watch, or a link. npx agentvcr">
+<meta property="og:description" content="Turn a Claude Code, Codex, Cursor or Gemini CLI session into one HTML file anyone can watch, or a link. npx agentvcr-cli">
 <meta property="og:image" content="https://tojacob03.github.io/agentvcr/social.png">
 <meta property="og:url" content="https://tojacob03.github.io/agentvcr/">
 <meta name="twitter:card" content="summary_large_image">
@@ -317,7 +317,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
     </div>
     <div class="tile blue act rise in-load" style="--i:4">
       <p>Claude Code, Codex, Cursor, Gemini CLI and OpenCode. No account, no upload.</p>
-      <button class="copybox" type="button" data-copy="npx agentvcr"><code>npx agentvcr</code><span>COPY</span></button>
+      <button class="copybox" type="button" data-copy="npx agentvcr-cli"><code>npx agentvcr-cli</code><span>COPY</span></button>
     </div>
   </div>
 </div>
@@ -405,7 +405,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
   <section class="board" id="agents">
     <div class="agents-head rise">
       <h2><span>Works with the agent</span>you already use</h2>
-      <button class="btn" type="button" data-copy="npx agentvcr --list --all">LIST MY SESSIONS</button>
+      <button class="btn" type="button" data-copy="npx agentvcr-cli --list --all">LIST MY SESSIONS</button>
     </div>
     <div class="agents rise" style="--i:1">
       <div class="tabs" role="tablist" aria-label="Agents">
@@ -427,25 +427,25 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
           <div class="band"><b>Found in</b><p><code>~/.codex/sessions</code><small>Matched to your project by the working folder each rollout records.</small></p></div>
           <div class="band"><b>On the tape</b><p>Prompts, answers, shell commands with output, apply_patch diffs, plans<small>Reasoning summaries too, with --thinking.</small></p></div>
           <div class="band"><b>Counter</b><p>Real working time from the timestamps<small>Failed commands are marked by their exit code.</small></p></div>
-          <div class="band"><b>Shortcut</b><p><code>npx agentvcr last</code><small>Run it in the project folder right after the session.</small></p></div>
+          <div class="band"><b>Shortcut</b><p><code>npx agentvcr-cli last</code><small>Run it in the project folder right after the session.</small></p></div>
         </div>
         <div class="bands panel-agent" role="tabpanel" id="ag-cursor" aria-labelledby="t-cursor">
           <div class="band"><b>Found in</b><p><code>~/.cursor/projects/…/agent-transcripts</code><small>The agent transcripts Cursor writes for each chat.</small></p></div>
           <div class="band"><b>On the tape</b><p>Prompts, answers, commands, edits as diffs, plans<small>Cursor does not store tool output, so commands show without results.</small></p></div>
           <div class="band"><b>Counter</b><p>Steps instead of minutes<small>Cursor keeps no per-step times; the replay counts steps.</small></p></div>
-          <div class="band"><b>Shortcut</b><p><code>npx agentvcr --all</code><small>Lists sessions from every project and agent, newest first.</small></p></div>
+          <div class="band"><b>Shortcut</b><p><code>npx agentvcr-cli --all</code><small>Lists sessions from every project and agent, newest first.</small></p></div>
         </div>
         <div class="bands panel-agent" role="tabpanel" id="ag-gemini" aria-labelledby="t-gemini">
           <div class="band"><b>Found in</b><p><code>~/.gemini/tmp/…/chats</code><small>Both the JSONL format and the older JSON files.</small></p></div>
           <div class="band"><b>On the tape</b><p>Prompts, answers, shell commands, edits, searches, todos<small>Rewinds and edits to earlier messages are applied the way the CLI loads them.</small></p></div>
           <div class="band"><b>Counter</b><p>Real working time from the timestamps<small>Thoughts appear with --thinking.</small></p></div>
-          <div class="band"><b>Shortcut</b><p><code>npx agentvcr last</code><small>Run it in the project folder after the session.</small></p></div>
+          <div class="band"><b>Shortcut</b><p><code>npx agentvcr-cli last</code><small>Run it in the project folder after the session.</small></p></div>
         </div>
         <div class="bands panel-agent" role="tabpanel" id="ag-opencode" aria-labelledby="t-opencode">
           <div class="band"><b>Found in</b><p>OpenCode's own database<small>Export a session first: <code>opencode export &lt;id&gt; &gt; session.json</code></small></p></div>
           <div class="band"><b>On the tape</b><p>Prompts, answers, tool calls with output, shell commands, edits<small>Both the current export format and older ones with message parts.</small></p></div>
           <div class="band"><b>Counter</b><p>Real working time, plus tokens in and out<small>Interrupted turns and compactions show on the tape.</small></p></div>
-          <div class="band"><b>Shortcut</b><p><code>npx agentvcr session.json</code><small>Or drop the exported file on the screen at the top of this page.</small></p></div>
+          <div class="band"><b>Shortcut</b><p><code>npx agentvcr-cli session.json</code><small>Or drop the exported file on the screen at the top of this page.</small></p></div>
         </div>
       </div>
     </div>
@@ -458,7 +458,7 @@ footer { margin-top: clamp(120px, 14vw, 200px); padding: 0 var(--gap) var(--gap)
         <h2>Press record</h2>
         <p>Run it in any project folder. Add <code>--share</code> for a link, add <code>&amp;embed</code> to put it in a blog post, or let the GitHub Action comment it on every agent pull request.</p>
         <div class="row">
-          <button class="copybox" type="button" data-copy="npx agentvcr"><code>npx agentvcr</code><span>COPY</span></button>
+          <button class="copybox" type="button" data-copy="npx agentvcr-cli"><code>npx agentvcr-cli</code><span>COPY</span></button>
           <a class="btn on-blue" href="https://github.com/tojacob03/agentvcr">STAR ON GITHUB</a>
         </div>
       </div>

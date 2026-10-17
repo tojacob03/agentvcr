@@ -1,5 +1,5 @@
 {
-  "name": "agentvcr",
+  "name": "agentvcr-cli",
   "version": "0.3.0",
   "description": "Replays for AI coding sessions. Turn Claude Code, Codex, Cursor and Gemini CLI sessions into one HTML file you can watch and share.",
   "type": "module",

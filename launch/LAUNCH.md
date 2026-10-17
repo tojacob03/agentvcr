@@ -2,9 +2,9 @@
 
 ## Before you post
 
-1. `npm login`, then `npm publish` in the repo, so `npx agentvcr` works. Until then the README points to `npx github:tojacob03/agentvcr`. After publishing, add the npm badge back to the README and drop that line.
+1. ✓ Published on npm as `agentvcr-cli` (the name `agentvcr` was blocked as too similar to `agent-vcr`).
 2. Upload `docs/social.png` as the social preview: repo Settings → General → Social preview. GitHub has no API for this.
-3. Make one real share link from a session you are happy to show (`npx agentvcr last --share`) and use it in the posts next to the example.
+3. Make one real share link from a session you are happy to show (`npx agentvcr-cli last --share`) and use it in the posts next to the example.
 4. Post Tuesday to Thursday, 15:00 to 17:00 German time (US morning). Spend the first two hours answering every comment.
 
 Links:
@@ -22,7 +22,7 @@ Coding agents work for an hour at a time, and all that's left afterwards is a di
 
 agentvcr reads the session files the agents already write (Claude Code, Codex, Cursor, Gemini CLI, OpenCode exports) and turns one into a single HTML file: playback with a counter of real working time, the session as a waveform you can scrub (prompts, edits and failures marked), diffs, terminal output, and links to exact moments.
 
-`npx agentvcr last --share` uploads the replay as a secret gist on your own GitHub account and prints a link to a static player on GitHub Pages. There is no server of mine in the loop; deleting the gist takes it down. Secrets, emails and your home path are masked locally before anything is written.
+`npx agentvcr-cli last --share` uploads the replay as a secret gist on your own GitHub account and prints a link to a static player on GitHub Pages. There is no server of mine in the loop; deleting the gist takes it down. Secrets, emails and your home path are masked locally before anything is written.
 
 You can also drop a transcript on the website and it plays right there, parsed in the browser: https://tojacob03.github.io/agentvcr/
 
@@ -36,7 +36,7 @@ Zero dependencies, about 30 KB. Masking is regex based, and I would love to hear
 
 agentvcr turns a Claude Code, Codex, Cursor or Gemini CLI session into a replay you can watch, scrub and share.
 
-`npx agentvcr`
+`npx agentvcr-cli`
 
 [attach docs/demo.gif]
 
@@ -61,7 +61,7 @@ Open source, MIT: github.com/tojacob03/agentvcr
 **Text:**
 I kept wanting to show people how a feature came together with an agent, not just the final diff. Screenshots don't capture it and raw logs are unreadable.
 
-`npx agentvcr` picks a session from your current project and writes one self-contained HTML file: playback with speed buttons, a waveform of the session marking prompts, edits and errors, real diffs, terminal output, and links to moments. `--share` turns it into a link via a secret gist on your GitHub. Secrets get masked locally.
+`npx agentvcr-cli` picks a session from your current project and writes one self-contained HTML file: playback with speed buttons, a waveform of the session marking prompts, edits and errors, real diffs, terminal output, and links to moments. `--share` turns it into a link via a secret gist on your GitHub. Secrets get masked locally.
 
 There's also a Claude Code plugin: `/plugin marketplace add tojacob03/agentvcr`, then `/agentvcr:replay`.
 

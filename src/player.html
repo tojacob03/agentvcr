@@ -277,7 +277,7 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
   <div class="wrap">
     <div class="mast">
       <a class="brand" href="https://github.com/tojacob03/agentvcr" target="_blank" rel="noopener"><span class="rec"></span>agentvcr</a>
-      <button class="copy" id="copy" type="button" title="Copy the command"><span>Make one from your session</span><code>npx agentvcr</code></button>
+      <button class="copy" id="copy" type="button" title="Copy the command"><span>Make one from your session</span><code>npx agentvcr-cli</code></button>
     </div>
     <section class="poster" id="poster"></section>
   </div>
@@ -836,8 +836,8 @@ function boot(S) {
   $('follow').addEventListener('click', () => { follow = true; $('follow').style.display = 'none'; window.scrollTo(0, document.documentElement.scrollHeight); });
   $('copy').addEventListener('click', async () => {
     const code = $('copy').querySelector('code');
-    try { await navigator.clipboard.writeText('npx agentvcr'); code.textContent = 'Copied'; } catch { code.textContent = 'npx agentvcr'; }
-    setTimeout(() => { code.textContent = 'npx agentvcr'; }, 1500);
+    try { await navigator.clipboard.writeText('npx agentvcr-cli'); code.textContent = 'Copied'; } catch { code.textContent = 'npx agentvcr-cli'; }
+    setTimeout(() => { code.textContent = 'npx agentvcr-cli'; }, 1500);
   });
 
   // Scrolling up while playing stops auto-follow until the reader asks for it again.
@@ -876,7 +876,7 @@ function loadShared() {
   const show = (big, small) => { poster.innerHTML = `<div class="counter">${big}</div><p class="lede">${small}</p>`; };
   const g = new URLSearchParams(location.search).get('g') || '';
   if (!/^[\w-]+\/[0-9a-f]+$/i.test(g)) {
-    show('NO SIGNAL', 'This link has no replay in it. Make one from your own session with <code>npx agentvcr --share</code>.');
+    show('NO SIGNAL', 'This link has no replay in it. Make one from your own session with <code>npx agentvcr-cli --share</code>.');
     return;
   }
   show('LOADING', 'Fetching the replay.');

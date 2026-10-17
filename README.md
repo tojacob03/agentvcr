@@ -1,15 +1,15 @@
 # agentvcr
 
-[![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) [![npm](https://img.shields.io/npm/v/agentvcr-cli)](https://www.npmjs.com/package/agentvcr-cli) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 **Replays for AI coding sessions.** One command turns a Claude Code, Codex, Cursor, Gemini CLI or OpenCode session into a single HTML file anyone can watch, or into a link. Secrets are masked on your machine. No account, no server, no dependencies.
 
 ```bash
-npx agentvcr               # pick a session from this project and open the replay
-npx agentvcr last --share  # or get a link to it
+npx agentvcr-cli               # pick a session from this project and open the replay
+npx agentvcr-cli last --share  # or get a link to it
 ```
 
-Not on npm yet? `npx github:tojacob03/agentvcr` runs the same version straight from GitHub.
+Or install it once and use the shorter command: `npm i -g agentvcr-cli`, then `agentvcr`.
 
 [![A replay playing back: commands type out, diffs and terminal output unfold, and the deck counts real working time](docs/demo.gif)](https://tojacob03.github.io/agentvcr/demo/)
 
@@ -29,10 +29,10 @@ An agent can work for an hour and leave behind nothing but a diff. Screenshots s
 ## Usage
 
 ```bash
-npx agentvcr              # pick a session from the current project
-npx agentvcr last         # the most recent one
-npx agentvcr <file|id>    # a transcript file or a session id
-npx agentvcr --list --all # every session on this machine, all agents
+npx agentvcr-cli              # pick a session from the current project
+npx agentvcr-cli last         # the most recent one
+npx agentvcr-cli <file|id>    # a transcript file or a session id
+npx agentvcr-cli --list --all # every session on this machine, all agents
 ```
 
 It writes `agentvcr-<title>.html` and opens it in your browser.
@@ -51,7 +51,7 @@ It writes `agentvcr-<title>.html` and opens it in your browser.
 ## Share a link
 
 ```bash
-npx agentvcr last --share
+npx agentvcr-cli last --share
 # ✓ https://tojacob03.github.io/agentvcr/v/?g=you/3f2a…
 ```
 
@@ -73,7 +73,7 @@ Prefer a file? A replay is one HTML file with no external requests. Attach it to
 | Codex CLI and app | `~/.codex/sessions/` | prompts, answers, shell output, `apply_patch` diffs, plans; real working time |
 | Cursor | `~/.cursor/projects/*/agent-transcripts/` | prompts, answers, commands, edits, plans; Cursor keeps no tool output or step times, so the counter counts steps |
 | Gemini CLI | `~/.gemini/tmp/*/chats/` | prompts, answers, shell, edits, searches, todos; rewinds and patches applied the way the CLI loads them |
-| OpenCode | a database; run `opencode export <id> > session.json`, then `npx agentvcr session.json` | prompts, answers, tool calls with output, shell commands, token usage |
+| OpenCode | a database; run `opencode export <id> > session.json`, then `npx agentvcr-cli session.json` | prompts, answers, tool calls with output, shell commands, token usage |
 
 Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME` or `GEMINI_CLI_HOME` if yours live elsewhere. Aider and others: [PRs welcome](#how-it-works).
 
