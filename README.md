@@ -80,12 +80,36 @@ Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME` or `GEMINI_CLI_HOME` if yours live elsewhe
 
 Then `/agentvcr:replay` turns the session you are in into a replay, and `/agentvcr:replay share` gives you a link.
 
+## GitHub Action: a replay on every agent PR
+
+When an agent opens or updates pull requests in CI, put the run on tape:
+
+```yaml
+permissions:
+  contents: write
+  pull-requests: write
+
+steps:
+  - uses: anthropics/claude-code-action@v1
+    id: claude
+    with:
+      anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+  - uses: tojacob03/agentvcr@v0
+    if: always()
+    with:
+      path: ${{ steps.claude.outputs.execution_file }}
+      share-token: ${{ secrets.AGENTVCR_GIST_TOKEN }}  # optional
+```
+
+The action masks the run, attaches the replay to the workflow as an artifact and comments on the pull request with a summary and a link. With `share-token` (a token with the `gist` scope) the comment links straight to a shared replay. Leave `path` empty to replay the newest session of any supported agent on the runner. Outputs: `file`, `url`, `artifact-url`.
+
 ## What's in a replay
 
 - A summary up top: what happened in one sentence, and a diffstat of every file changed. Click a file to jump to its first edit.
 - Playback that types prompts and commands and streams answers, with 1×, 2×, 4× and 8× one click away and a counter that shows real working time
 - The whole session as a waveform under the player: prompts tall and white, edits green, failures red. Drag to scrub.
 - Real diffs for edits and patches, terminal output, plans and checklists, rendered Markdown
+- Chapters to jump to each prompt, and token usage when the agent records it
 - Links to exact moments: `replay.html#42`
 - One self-contained file that works offline, in dark and light mode, and on phones
 
