@@ -20,11 +20,12 @@ Positioning: claude-replay (es617/claude-replay, ~850 stars) already makes HTML 
 | Where | How | When | Status |
 |---|---|---|---|
 | Piebald-AI/awesome-gemini-cli | pull request | now | opened: Piebald-AI/awesome-gemini-cli#229 |
-| GitHub Marketplace (the Action) | edit release v0.3.1, tick "Publish this Action to the GitHub Marketplace" (needs 2FA and the developer agreement) | now | you |
+| GitHub Marketplace (the Action) | edit the latest release (v0.6.0), tick "Publish this Action to the GitHub Marketplace" (needs 2FA and the developer agreement) | now | you |
 | Anthropic's plugin directory | claude.ai/directory/manage → "Plugin bundle" (paid Claude plan); describe the gist upload clearly, the review checks data leaving the machine | now | you |
 | hesreallyhim/awesome-claude-code | the "recommend-resource" issue form on the website, filed by you, not an agent; projects must be 14 days old or have 100 stars | from 30 Oct 2026 | you |
 | RoggeOhta/awesome-codex-cli | issue or PR; the maintainer wants real users or clear unique value | once there are users | later |
-| awesome-opencode, awesome-ai-devtools, awesome-ai-coding-tools | pull requests; large backlogs, and the last two want tools that use AI themselves | low priority | later |
+| awesome-opencode/awesome-opencode | YAML entry in data/projects (PR) | now | opened: awesome-opencode/awesome-opencode#891 (last merges in July, large backlog) |
+| awesome-ai-devtools, awesome-ai-coding-tools | pull requests; large backlogs, and both want tools that use AI themselves | low priority | later |
 
 For awesome-claude-code, a description in their style (one line, describes rather than sells): *Turns Claude Code sessions into replays you can share as a link (secret gist, hosted player) or have commented on pull requests by a GitHub Action; also a plugin and Markdown export.*
 
@@ -35,7 +36,7 @@ For awesome-claude-code, a description in their style (one line, describes rathe
 **Text:**
 Coding agents work for an hour at a time, and all that's left afterwards is a diff. I wanted a way to show how a change came about: which commands ran, what failed, where the agent changed course.
 
-agentvcr reads the session files the agents already write (Claude Code, Codex, Cursor, Gemini CLI, OpenCode exports) and turns one into a single HTML file: playback with a counter of real working time, the session as a waveform you can scrub (prompts, edits and failures marked), diffs, terminal output, and links to exact moments.
+agentvcr reads the session files the agents already write (Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline, OpenCode exports) and turns one into a single HTML file: playback with a counter of real working time, the session as a waveform you can scrub (prompts, edits and failures marked), diffs, terminal output, and links to exact moments.
 
 `npx agentvcr-cli last --share` uploads the replay as a secret gist on your own GitHub account and prints a link to a static player on GitHub Pages. There is no server of mine in the loop; deleting the gist takes it down. Secrets, emails and your home path are masked locally before anything is written.
 
@@ -49,7 +50,7 @@ Zero dependencies, under 50 KB. Masking is regex based, and I would love to hear
 
 1/ Your coding agent worked for an hour. All that's left is a diff.
 
-agentvcr turns a Claude Code, Codex, Cursor or Gemini CLI session into a replay you can watch, scrub and share.
+agentvcr turns a Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline or OpenCode session into a replay you can watch, scrub and share.
 
 `npx agentvcr-cli`
 
@@ -71,7 +72,7 @@ Open source, MIT: github.com/tojacob03/agentvcr
 
 ## Reddit (r/ClaudeAI, r/ChatGPTCoding, r/cursor, r/commandline)
 
-**Title:** I made asciinema for coding agents: replays and share links for Claude Code, Codex, Cursor and Gemini CLI sessions
+**Title:** I made asciinema for coding agents: replays and share links for Claude Code, Codex, Cursor, Gemini CLI, Cline and more
 
 **Text:**
 I kept wanting to show people how a feature came together with an agent, not just the final diff. Screenshots don't capture it and raw logs are unreadable.
@@ -89,7 +90,7 @@ Feedback welcome, especially on what the masking misses and which agent to suppo
 
 Coding agents now work for an hour at a time, and what's left afterwards is a diff. The path there, which commands ran, what failed and where the agent changed course, disappears.
 
-I built agentvcr to keep it: one command turns a Claude Code, Codex, Cursor or Gemini CLI session into a replay you can watch and share as a link. Secrets are masked on your machine before anything is written, and there is no server in between.
+I built agentvcr to keep it: one command turns a Claude Code, Codex, Cursor, Gemini CLI, Qwen Code, Cline or OpenCode session into a replay you can watch and share as a link. Secrets are masked on your machine before anything is written, and there is no server in between.
 
 Example replay: https://tojacob03.github.io/agentvcr/demo/
 Open source: https://github.com/tojacob03/agentvcr
