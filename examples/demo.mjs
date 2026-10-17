@@ -277,7 +277,7 @@ write('v/index.html', social(renderViewer(), `${site}v/`));
 
 // The parsers are plain modules with no Node APIs, so the landing page can
 // play a dropped transcript without uploading it.
-for (const f of ['session', 'claude', 'codex', 'cursor', 'gemini', 'redact', 'detect', 'parse']) {
+for (const f of ['session', 'claude', 'codex', 'cursor', 'gemini', 'opencode', 'redact', 'detect', 'parse']) {
   const to = new URL(`../docs/lib/${f}.js`, import.meta.url);
   mkdirSync(new URL('.', to), { recursive: true });
   copyFileSync(new URL(`../src/${f}.js`, import.meta.url), to);

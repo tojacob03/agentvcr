@@ -233,3 +233,46 @@ test('claude: token usage counts each message once', () => {
   ));
   assert.deepEqual(s.stats.tokens, { in: 2210, out: 60 });
 });
+
+test('opencode: current export shape', async () => {
+  const { parseOpenCode } = await import('../src/opencode.js');
+  const raw = JSON.stringify({ info: { title: 'Add rate limiting', directory: '/home/ada/api' }, messages: [
+    { id: 'msg_1', type: 'user', text: 'add rate limiting to /login', time: { created: 1767225600000 } },
+    { id: 'msg_2', type: 'assistant', model: { modelID: 'claude-opus-5-5' }, tokens: { input: 100, output: 20, cache: { read: 900, write: 0 } }, time: { created: 1767225605000 }, content: [
+      { type: 'text', text: 'Adding a limiter.' },
+      { type: 'tool', id: 't1', name: 'edit', time: { created: 1767225606000, completed: 1767225607000 }, state: { status: 'completed', input: { filePath: '/home/ada/api/src/login.ts', oldString: 'a', newString: 'a\nb' }, content: [{ type: 'text', text: 'ok' }] } },
+      { type: 'tool', id: 't2', name: 'bash', time: { created: 1767225608000 }, state: { status: 'error', input: { command: 'npm test' }, error: { message: '2 failing' } } },
+    ] },
+    { id: 'msg_3', type: 'shell', command: 'git status', exit: 0, output: 'clean', time: { created: 1767225610000 } },
+  ] }, null, 2);
+  const { detectAgent } = await import('../src/detect.js');
+  assert.equal(detectAgent('session.json', raw.slice(0, 2000)), 'opencode');
+  const s = parseOpenCode(raw);
+  assert.equal(s.title, 'Add rate limiting');
+  assert.equal(s.model, 'claude-opus-5-5');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'text', 'edit', 'shell', 'shell']);
+  assert.equal(s.events[2].title, 'src/login.ts');
+  assert.equal(s.events[3].error, true);
+  assert.equal(s.events[3].output, '2 failing');
+  assert.deepEqual(s.stats.tokens, { in: 1000, out: 20 });
+});
+
+test('opencode: older info/parts export shape', async () => {
+  const { parseOpenCode } = await import('../src/opencode.js');
+  const s = parseOpenCode(JSON.stringify({ info: { id: 'ses_1', title: '' }, messages: [
+    { info: { id: 'msg_1', role: 'user', time: { created: 1767225600000 } }, parts: [{ type: 'text', text: 'rename foo' }] },
+    { info: { id: 'msg_2', role: 'assistant', modelID: 'gpt-6', time: { created: 1767225601000 } }, parts: [
+      { type: 'tool', tool: 'bash', state: { status: 'completed', input: { command: 'rg foo' }, output: 'src/a.ts:1', time: { start: 1767225602000, end: 1767225603000 } } },
+      { type: 'text', text: 'Done.' },
+    ] },
+  ] }));
+  assert.equal(s.title, 'rename foo');
+  assert.deepEqual(s.events.map((e) => e.kind || e.type), ['prompt', 'shell', 'text']);
+  assert.equal(s.events[1].output, 'src/a.ts:1');
+});
+
+test('detect: Claude lines with msg_ ids are still Claude', async () => {
+  const { detectAgent } = await import('../src/detect.js');
+  const line = JSON.stringify({ parentUuid: null, type: 'assistant', message: { id: 'msg_011Cg4', model: 'claude-opus-5-5', content: [] } });
+  assert.equal(detectAgent('/x.jsonl', line), 'claude');
+});

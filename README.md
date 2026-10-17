@@ -2,7 +2,7 @@
 
 [![test](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml/badge.svg)](https://github.com/tojacob03/agentvcr/actions/workflows/test.yml) ![dependencies: 0](https://img.shields.io/badge/dependencies-0-brightgreen) [![license: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-**Replays for AI coding sessions.** One command turns a Claude Code, Codex, Cursor or Gemini CLI session into a single HTML file anyone can watch, or into a link. Secrets are masked on your machine. No account, no server, no dependencies.
+**Replays for AI coding sessions.** One command turns a Claude Code, Codex, Cursor, Gemini CLI or OpenCode session into a single HTML file anyone can watch, or into a link. Secrets are masked on your machine. No account, no server, no dependencies.
 
 ```bash
 npx agentvcr               # pick a session from this project and open the replay
@@ -67,8 +67,9 @@ Prefer a file? A replay is one HTML file with no external requests. Attach it to
 | Codex CLI and app | `~/.codex/sessions/` | prompts, answers, shell output, `apply_patch` diffs, plans; real working time |
 | Cursor | `~/.cursor/projects/*/agent-transcripts/` | prompts, answers, commands, edits, plans; Cursor keeps no tool output or step times, so the counter counts steps |
 | Gemini CLI | `~/.gemini/tmp/*/chats/` | prompts, answers, shell, edits, searches, todos; rewinds and patches applied the way the CLI loads them |
+| OpenCode | a database; run `opencode export <id> > session.json`, then `npx agentvcr session.json` | prompts, answers, tool calls with output, shell commands, token usage |
 
-Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME` or `GEMINI_CLI_HOME` if yours live elsewhere. OpenCode, Aider and others: [PRs welcome](#how-it-works).
+Set `CLAUDE_CONFIG_DIR`, `CODEX_HOME` or `GEMINI_CLI_HOME` if yours live elsewhere. Aider and others: [PRs welcome](#how-it-works).
 
 ## Claude Code plugin
 

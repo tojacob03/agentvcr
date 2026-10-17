@@ -2,6 +2,7 @@ import { parseClaude } from './claude.js';
 import { parseCodex } from './codex.js';
 import { parseCursor } from './cursor.js';
 import { parseGemini } from './gemini.js';
+import { parseOpenCode } from './opencode.js';
 import { detectAgent } from './detect.js';
 import { makeRedactor, deepMap } from './redact.js';
 
@@ -13,6 +14,7 @@ export function parseTranscript(raw, { path = '', redact = true, home = '', user
     codex: () => parseCodex(raw, { thinking }),
     cursor: () => parseCursor(raw),
     gemini: () => parseGemini(raw, { thinking }),
+    opencode: () => parseOpenCode(raw),
     claude: () => parseClaude(raw, { thinking, sidechains }),
   };
   let session = parsers[agent]();
