@@ -13,6 +13,21 @@ Links:
 - Example share link (same session, via a secret gist): https://tojacob03.github.io/agentvcr/v/?g=tojacob03/e6c8b2f5fff871e9a69597b3abbad84b
 - Repo: https://github.com/tojacob03/agentvcr
 
+## Lists and directories
+
+Positioning: claude-replay (es617/claude-replay, ~850 stars) already makes HTML replays for the same agents and is listed on the big Claude Code lists. Every submission leads with what agentvcr adds: **share links without a server, replays commented on pull requests by the GitHub Action, the Claude Code plugin, and Markdown export for PRs.**
+
+| Where | How | When | Status |
+|---|---|---|---|
+| Piebald-AI/awesome-gemini-cli | pull request | now | opened: Piebald-AI/awesome-gemini-cli#229 |
+| GitHub Marketplace (the Action) | edit release v0.3.1, tick "Publish this Action to the GitHub Marketplace" (needs 2FA and the developer agreement) | now | you |
+| Anthropic's plugin directory | claude.ai/directory/manage → "Plugin bundle" (paid Claude plan); describe the gist upload clearly, the review checks data leaving the machine | now | you |
+| hesreallyhim/awesome-claude-code | the "recommend-resource" issue form on the website, filed by you, not an agent; projects must be 14 days old or have 100 stars | from 30 Oct 2026 | you |
+| RoggeOhta/awesome-codex-cli | issue or PR; the maintainer wants real users or clear unique value | once there are users | later |
+| awesome-opencode, awesome-ai-devtools, awesome-ai-coding-tools | pull requests; large backlogs, and the last two want tools that use AI themselves | low priority | later |
+
+For awesome-claude-code, a description in their style (one line, describes rather than sells): *Turns Claude Code sessions into replays you can share as a link (secret gist, hosted player) or have commented on pull requests by a GitHub Action; also a plugin and Markdown export.*
+
 ## Show HN
 
 **Title:** Show HN: Agentvcr – replays and share links for Claude Code, Codex, Cursor and OpenCode sessions
