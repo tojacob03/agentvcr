@@ -2,10 +2,11 @@
 
 ## Before you post
 
-1. ✓ Published on npm as `agentvcr-cli` (the name `agentvcr` was blocked as too similar to `agent-vcr`).
-2. Upload `docs/social.png` as the social preview: repo Settings → General → Social preview. GitHub has no API for this.
-3. Make one real share link from a session you are happy to show (`npx agentvcr-cli last --share`) and use it in the posts next to the example.
-4. Post Tuesday to Thursday, 15:00 to 17:00 German time (US morning). Spend the first two hours answering every comment.
+1. **Publish 0.7.0 on npm before Tue 20 Oct, 15:30** (`npm publish` in the repo). npm still has 0.4.0, and the scheduled posts name eight agents and `-o clip.gif`, which need 0.7.0. Check with `npm view agentvcr-cli version`.
+2. ✓ Social preview uploaded; GitHub release v0.7.0 out, CI green, `v0` moved.
+3. ✓ Scheduled in Typefully: X thread Tue 20 Oct 15:30, LinkedIn Wed 21 Oct 08:30, X follow-up Thu 22 Oct 16:00 (4,929 ms → 11 ms, links the write-up).
+4. Make one real share link from a session you are happy to show (`npx agentvcr-cli last --share`) and use it in the posts next to the example.
+5. Post Tuesday to Thursday, 15:00 to 17:00 German time (US morning). Spend the first two hours answering every comment.
 
 Links:
 - Site and drag-and-drop player: https://tojacob03.github.io/agentvcr/
