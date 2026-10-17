@@ -1,7 +1,7 @@
 {
   "name": "agentvcr-cli",
-  "version": "0.3.0",
-  "description": "Replays for AI coding sessions. Turn Claude Code, Codex, Cursor and Gemini CLI sessions into one HTML file you can watch and share.",
+  "version": "0.3.1",
+  "description": "Replays for AI coding sessions. Turn Claude Code, Codex, Cursor, Gemini CLI and OpenCode sessions into one HTML file you can watch, share as a link, or embed.",
   "type": "module",
   "bin": {
     "agentvcr": "bin/agentvcr.js"
@@ -28,7 +28,9 @@
     "cursor",
     "gemini-cli",
     "claude-code-plugin",
-    "gist"
+    "gist",
+    "opencode",
+    "github-action"
   ],
   "license": "MIT",
   "repository": {

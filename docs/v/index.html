@@ -627,13 +627,27 @@ function boot(S) {
     r.style.height = Math.round(r.scrollHeight * p) + 'px';
   }
 
+  function measureBox(box) {
+    if (box._measured || !box.offsetParent) return;
+    box._measured = true;
+    const cut = box.scrollHeight > box.clientHeight + 4;
+    box.classList.toggle('cut', cut);
+    box._more.hidden = !cut;
+  }
   function measureClips(el) {
+    for (const box of el.querySelectorAll('.clip')) measureBox(box);
+  }
+  // Measuring forces layout, so long outputs are measured when they come near
+  // the viewport, not all at once when someone skips to the end of a long tape.
+  const clipIO = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { measureBox(e.target); if (e.target._measured) clipIO.unobserve(e.target); }
+    }, { rootMargin: '600px 0px' })
+    : null;
+  function watchClips(el) {
     for (const box of el.querySelectorAll('.clip')) {
-      if (box._measured || !box.offsetParent) continue;
-      box._measured = true;
-      const cut = box.scrollHeight > box.clientHeight + 4;
-      box.classList.toggle('cut', cut);
-      box._more.hidden = !cut;
+      if (box._measured || box._watched) continue;
+      if (clipIO) { box._watched = true; clipIO.observe(box); } else measureBox(box);
     }
   }
 
@@ -716,7 +730,7 @@ function boot(S) {
     for (let i = Math.max(0, Math.min(shown, idx)); i < idx; i++) {
       items[i].el.hidden = false;
       items[i].apply(1);
-      measureClips(items[i].el);
+      watchClips(items[i].el);
     }
     let p = 1;
     let cur = idx < N ? idx : N - 1;
