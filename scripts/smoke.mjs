@@ -10,7 +10,7 @@ import { readFileSync, existsSync, mkdtempSync } from 'node:fs';
 import { join, extname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { loadSession, renderHtml } from '../src/index.js';
+import { loadSession, renderHtml, parseTranscript } from '../src/index.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const chromePath = [process.env.CHROME_PATH, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser']
@@ -19,10 +19,18 @@ if (!chromePath) { console.log('smoke: no Chrome found, skipping'); process.exit
 
 // Serve docs/ plus a freshly rendered replay of the example session.
 const replay = renderHtml(loadSession(join(root, 'examples/demo-session.jsonl')).session);
+// Five reads in a row, to check that runs fold into one row.
+const runRows = [{ type: 'user', timestamp: '2026-01-01T10:00:00Z', message: { role: 'user', content: 'read the config' } }];
+for (let i = 0; i < 5; i++) {
+  runRows.push({ type: 'assistant', timestamp: `2026-01-01T10:00:0${i + 1}Z`, message: { content: [{ type: 'tool_use', id: `r${i}`, name: 'Read', input: { file_path: `/w/c${i}.json` } }] } });
+  runRows.push({ type: 'user', timestamp: `2026-01-01T10:00:0${i + 1}Z`, message: { content: [{ type: 'tool_result', tool_use_id: `r${i}`, content: '{}' }] } });
+}
+const runReplay = renderHtml(parseTranscript(runRows.map((r) => JSON.stringify(r)).join('\n')).session);
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.mp4': 'video/mp4', '.woff2': 'font/woff2', '.json': 'application/json', '.jsonl': 'text/plain' };
 const server = createServer((req, res) => {
   const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (path === '/replay.html') { res.writeHead(200, { 'content-type': 'text/html' }); return res.end(replay); }
+  if (path === '/runs.html') { res.writeHead(200, { 'content-type': 'text/html' }); return res.end(runReplay); }
   if (path === '/session.jsonl') { res.writeHead(200); return res.end(readFileSync(join(root, 'examples/demo-session.jsonl'))); }
   const file = join(root, 'docs', path.endsWith('/') ? path + 'index.html' : path);
   if (!file.startsWith(join(root, 'docs')) || !existsSync(file)) { res.writeHead(404); return res.end(); }
@@ -78,6 +86,17 @@ try {
   await open(`${base}/replay.html#18`, "document.getElementById('clock').textContent.length > 0");
   check('deep link stops at its step', await evaluate("!document.getElementById('e18').hidden && document.getElementById('e19').hidden"));
   check('replay has no script errors', errors.length === 0, errors[0]);
+
+  // 1b. Five reads in a row fold into one row that opens, and deep links open it.
+  await open(`${base}/runs.html`, "!!document.querySelector('#poster h1')");
+  await evaluate("document.getElementById('all').click()");
+  check('a run folds into one row', (await evaluate("document.querySelector('.run .run-row .target')?.textContent")) === '5 files');
+  check('a folded run hides its calls', await evaluate("getComputedStyle(document.getElementById('e3')).display === 'none'"));
+  await evaluate("document.querySelector('.run-row .tool-head').click()");
+  check('the row opens to show the calls', await evaluate("getComputedStyle(document.getElementById('e3')).display !== 'none'"));
+  await open(`${base}/runs.html#3`, "document.getElementById('clock').textContent.length > 0");
+  check('a deep link into a run opens it', await evaluate("document.querySelector('.run').classList.contains('open') && !document.getElementById('e3').hidden"));
+  check('runs have no script errors', errors.length === 0, errors[0]);
 
   // 2. The share viewer without a gist says so.
   check('viewer boots', await open(`${base}/v/`, "/NO SIGNAL/.test(document.querySelector('#poster').textContent)"));

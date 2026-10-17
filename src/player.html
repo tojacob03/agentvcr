@@ -134,6 +134,10 @@ h1 { font-size: clamp(32px, 5.6vw, 58px); line-height: 1.02; letter-spacing: -0.
 .ev.prompt { margin-top: 36px; }
 /* Runs of closed tool calls (reads, searches, browser steps) sit tight together. */
 .ev.closed { margin-bottom: 2px; }
+/* Three or more closed calls of the same tool in a row fold into one row. */
+.run:not(.open) > .ev:not(.run-row) { display: none; }
+.run-row { margin-bottom: 2px; }
+.run.open > .run-row .tc { display: none; }
 .ev.closed + .ev:not(.closed) { margin-top: 12px; }
 .band { background: var(--screen); color: #fff; padding: 14px 20px 16px; max-width: 46em; box-shadow: 5px 5px 0 rgba(27, 42, 230, 0.18); }
 .band .who { font: 20px/1 var(--osd); letter-spacing: 0.06em; color: var(--screen-dim); margin-bottom: 6px; }
@@ -487,6 +491,62 @@ function boot(S) {
   let lastLabel = -Infinity;
   const items = S.events.map((e, i) => build(e, i));
 
+  // Runs: three or more closed calls of the same tool in a row become one row
+  // that counts up during playback and opens to show the calls.
+  const RUN = { read: ['Read', 'file', 'files'], search: ['Ran', 'search', 'searches'], web: ['Fetched', 'page', 'pages'], task: ['Delegated', 'task', 'tasks'] };
+  // MCP calls group by server (a browser's click, scroll and screenshot are one run).
+  const runKey = (e) => e.type === 'tool' && !OPEN[e.kind] ? e.kind + ':' + (e.kind === 'mcp' ? String(e.title).split(' · ')[0] : e.name) : null;
+  const runs = [];
+  for (let i = 0; i < items.length;) {
+    const key = runKey(items[i].e);
+    let j = i + 1;
+    if (key) while (j < items.length && runKey(items[j].e) === key) j++;
+    if (j - i >= 3) runs.push(makeRun(i, j));
+    i = j;
+  }
+
+  function makeRun(from, to) {
+    const e = items[from].e;
+    const wrap = h('div', 'run');
+    const row = h('div', 'ev run-row');
+    const tcEl = items[from].el.querySelector('.tc');
+    if (tcEl) row.append(tcEl.cloneNode(true));
+    const head = h('button', 'tool-head');
+    head.type = 'button';
+    head.setAttribute('aria-expanded', 'false');
+    const verb = h('span', 'verb');
+    const target = h('span', 'target');
+    head.append(h('span', 'chev', '▶'), verb, target, h('span', 'gap'));
+    row.append(head);
+    items[from].el.before(wrap);
+    wrap.append(row);
+    for (let k = from; k < to; k++) wrap.append(items[k].el);
+    // Hidden until playback reaches it; a deep link can land before render() ran.
+    row.hidden = true;
+    const run = { wrap, row, head, verb, target, from, to, e, count: 0 };
+    for (let k = from; k < to; k++) items[k].run = run;
+    head.addEventListener('click', () => setRunOpen(run, !wrap.classList.contains('open')));
+    return run;
+  }
+
+  function setRunOpen(r, open) {
+    r.wrap.classList.toggle('open', open);
+    r.head.setAttribute('aria-expanded', String(open));
+    if (open) measureClips(r.wrap);
+  }
+
+  function updateRun(r) {
+    let n = 0;
+    for (let k = r.from; k < r.to; k++) if (!items[k].el.hidden) n++;
+    r.row.hidden = n === 0;
+    if (n === r.count) return;
+    r.count = n;
+    const word = RUN[r.e.kind];
+    r.verb.textContent = word ? word[0] : 'Called';
+    const name = r.e.kind === 'mcp' ? String(r.e.title).split(' · ')[0] : r.e.name;
+    r.target.textContent = word ? `${n} ${n === 1 ? word[1] : word[2]}` : `${name}, ${n} time${n === 1 ? '' : 's'}`;
+  }
+
   function build(e, i) {
     const kindClass = e.type === 'tool' ? ' k-' + e.kind + (e.error ? ' err' : '') + (OPEN[e.kind] ? '' : ' closed') : '';
     const el = h('section', 'ev ' + e.type + kindClass);
@@ -717,11 +777,13 @@ function boot(S) {
     if (!N) return;
     if (t <= 0 && !playing) {
       for (const it of items) it.el.hidden = true;
+      for (const r of runs) updateRun(r);
       shown = 0;
       display(0, 0);
       return;
     }
     const idx = t >= T ? N : indexAt(t);
+    const prev = shown;
     if (idx < shown) for (let i = idx; i < Math.min(shown + 1, N); i++) items[i].el.hidden = true;
     for (let i = Math.max(0, Math.min(shown, idx)); i < idx; i++) {
       items[i].el.hidden = false;
@@ -740,8 +802,14 @@ function boot(S) {
       for (let i = idx + 1; i < N && !items[i].el.hidden; i++) items[i].el.hidden = true;
     }
     shown = idx;
+    if (runs.length) {
+      const lo = Math.min(prev, idx) - 1;
+      const hi = Math.max(prev, idx) + 1;
+      for (const r of runs) if (r.to > lo && r.from <= hi) updateRun(r);
+    }
     if (current) current.classList.remove('current');
     current = cur >= 0 && t < T ? items[cur].el : null;
+    if (current && items[cur].run && !items[cur].run.wrap.classList.contains('open')) current = items[cur].run.row;
     if (current) current.classList.add('current');
     const ms = idx >= N ? totalMs : activeAt[idx] + p * ((activeAt[idx + 1] ?? activeAt[idx]) - activeAt[idx]);
     display(ms, idx);
@@ -786,6 +854,7 @@ function boot(S) {
 
   function jumpTo(i) {
     i = clamp(i, 0, N - 1);
+    if (items[i].run) setRunOpen(items[i].run, true);
     seek(starts[i] + items[i].dur, true);
     items[i].el.scrollIntoView({ block: 'center' });
   }

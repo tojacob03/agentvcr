@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Runs of three or more closed calls of the same tool fold into one row ("Read 11 files", "cursor-ide-browser, 8 times") that counts up during playback and opens on click; deep links into a run open it. MCP calls group by server.
+- A browser smoke test (`npm run smoke`) checks the player, the share viewer and the landing page in headless Chrome, in CI too.
+
 ## 0.4.0
 
 - The GitHub Action's pull request comment now includes the transcript, folded, so reviewers see how the change came about without downloading anything. Long runs are cut to fit GitHub's comment limit.
