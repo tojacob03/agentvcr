@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.5.0
 
 - Clips: `-o clip.mp4` or `-o clip.gif` records the replay with your installed Chrome and ffmpeg (frame by frame on a controlled clock, so it is smooth on any machine).
 - Runs of three or more closed calls of the same tool fold into one row ("Read 11 files", "cursor-ide-browser, 8 times") that counts up during playback and opens on click; deep links into a run open it. MCP calls group by server.
 - A browser smoke test (`npm run smoke`) checks the player, the share viewer and the landing page in headless Chrome, in CI too.
+- [How agentvcr works](https://tojacob03.github.io/agentvcr/how-it-works/): the formats and their quirks, the masking rules, sharing without a server and how the player stays fast.
 
 ## 0.4.0
 
